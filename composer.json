@@ -1,0 +1,17 @@
+{
+    "name": "cottonwoodgulch/house",
+    "description": "Cottonwood Gulch alumni records",
+    "require": {
+        "smarty/smarty": "3.1.*",
+    	"owasp/phprbac": "2.0.*@dev",
+        "components/jquery": "3.*"
+    },
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Tom Hyde",
+            "email": "tom@russellhyde.net"
+        }
+    ],
+    "minimum-stability": "dev"
+}
