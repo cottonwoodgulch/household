@@ -72,7 +72,6 @@ if(!$is_error && isset($_POST['newpass'])) {
         $is_err=true;
         $err_msg.='Set password query failed: '.$msi->error.' ';
       }
-      unset($phpass);
     }
     else {
       $is_error=true;
