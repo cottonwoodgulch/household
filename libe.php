@@ -38,7 +38,6 @@ $msi = new mysqli($db_host, $db_user, $db_pw, $db_db);
 
 $sitemenu=array(array('d' => 'Home','t' => 'home'),
                 array('d' => 'Details', 't' => 'details'),
-                array('d' => 'Members', 't' => 'members'),
                 array('d' => 'Donations', 't' => 'donations'),
                 array('d' => 'Lookup','t' => 'lookup'),
                 array('d' => 'New Household', 't' => 'new'));
@@ -71,6 +70,16 @@ function getHouseholdFromContact($msi,$smarty,$cid) {
     return FALSE;
   }
   return $hx['household_id'];
+}
+  
+function buildErrorMessage($errmsg,$newerr) {
+  if(strlen($errmsg)) {
+    $errmsg .= '<br />'.$newerr;
+  }
+  else {
+    $errmsg = $newerr;
+  }
+  return $errmsg;
 }
 
 function displayFooter($smarty,$err_msg) {

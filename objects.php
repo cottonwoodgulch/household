@@ -8,7 +8,7 @@ class HouseData {
   public $members = array();
   public $donations = array();
   public $addresses = array();
-  private $errormsg = '';
+  private $ErrMsg = '';
 
   function __construct($msi, $smarty, $hid) {
     if($stmt=$msi->prepare(
@@ -25,7 +25,7 @@ class HouseData {
       $this->household_id=$this->hd['household_id'];
     }
     else {
-      buildErrorMessage(
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
         "HouseData info: unable to create mysql statement object: ".
         $msi->error);
       return;
@@ -49,7 +49,7 @@ class HouseData {
       $result->free();
     }
     else {
-     buildErrorMessage(
+     $this->ErrMsg=buildErrorMessage($this->ErrMsg,
       "HouseData members: unable to create mysql statement object: ".
       $msi->error);
     }
@@ -80,12 +80,13 @@ class HouseData {
       $result->free();
     }
     else {
-      buildErrorMessage(
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
        "HouseData donations: unable to create mysql statement object: ".
         $msi->error);
     }
     
     /* get all addresses for all household members */
+    /* can delete the preferred code? */
     $member_id_list = '';
     foreach($this->members as $tx) {
       $member_id_list .= (strlen($member_id_list) ? ',' : '').$tx['contact_id'];
@@ -118,16 +119,17 @@ class HouseData {
       $result->free();
     }
     else {
-      buildErrorMessage(
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
         "Address info: unable to create mysql statement object: ".
         $msi->error);
       return;
     }
 
-    if(strlen($this->errormsg))$smarty->assign('footer',$this->$errormsg);
+    if(strlen($this->ErrMsg))$smarty->assign('footer',$this->ErrMsg);
   }
   // end construct function
   
+  /* this is not used that I know of - $this->hd['address_id'] has it */
   public function getPreferredAddress() {
     foreach($this->addresses as $ad) {
       if($ad['preferred']) {
@@ -136,26 +138,59 @@ class HouseData {
     }
     return null;
   }
-  
-  function buildErrorMessage($err) {
-    $this->errormsg .= strlen($this->errormsg) ? '<br />' : '' .$err;
-  }
 
-/*
   public function updateHouse($msi,$smarty) {
     if (!isset($_POST['house_name']) || strlen($_POST['house_name'])<1) {
-      buildErrorMessage('Household Name is required');
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,'Household Name is required');
     }
-    else if(!isUniqueHouseholdName($_POST['house_name'],$this->household_id)) {
-      buildErrorMessage('Household Name is already in use');
+    // check if name is in use other than for this household_id
+    if($stmt=$msi->prepare("select 0 from household h
+         where h.name=? and h.household_id!=?")) {
+      $stmt->bind_param('si',$_POST['house_name'],$this->household_id);
+      if($stmt->execute()) {
+        $result=$stmt->get_result();
+        if($result->num_rows) {
+          $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+           'Household Name is already in use');
+        }
+      }
+      else {
+        $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+         'Could not execute dupe house query: '.$msi->error);
+      }
     }
-    if(strlen($this->errormsg))
-    if($stmt=$msi->prepare(
-      "select household_id
-         from household
-        where 
-  
+    else {
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+       'Could not prep dupe house query: '.$msi->error);
+    }
+    $stmt->close;
+    $result->free;
+
+    if(!strlen($this->ErrMsg)) {
+      /* change the current values */
+      $this->hd['name']=$_POST['house_name'];
+      $this->hd['salutation']=$_POST['salutation'];
+      $this->hd['mailname']=$_POST['mail_name'];
+      /* value of pref radio button group is
+           the address_id of the selected address */
+      $this->hd['address_id']=$_POST['pref'];
+      if($stmt=$msi->prepare(
+        "update household set name=?,salutation=?,mailname=?,address_id=?
+           where household_id=?")) {
+        $stmt->bind_param('sssii',$_POST['house_name'],$_POST['salutation'],
+           $_POST['mail_name'],$_POST['pref'],$this->household_id);
+        if(!$stmt->execute()) {
+          $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+            "updateHouse: unable to execute sql update: ".$msi->error);
+        }
+        $stmt->close();
+      }
+      else {
+        $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+          "updateHouse: unable to prep sql update stmt: ".$msi->error);
+      }
+    }
+    displayFooter($smarty,$this->ErrMsg);
   }
-*/
 }
 ?>
