@@ -56,4 +56,36 @@
     <br />
     <input type="submit" id="saveDetailsButton" value="Save">
   </form>
+  <br />
+
+  <form id="members_form" action="details.php?action=move" method="post"
+     style="border: thin solid black; padding: 1%;">
+
+    <table class="edit">
+      <tr>
+        <th id="members_label">Members</th>
+      </tr>
+      {foreach $house->members as $tx}
+      <tr>
+        <td>{$tx.first_name}</td>
+        <td>"{$tx.nickname}"</td>
+        <td>{$tx.middle_name}</td>
+        <td>{$tx.primary_name}</td>
+        <td>{$tx.degree}</td>
+        <td><button type="button" onClick="moveMember($tx.contact_id);"
+               style="vertical-align: top;">
+               <img src="images/edit.png" title="Move">
+        </td>
+      </tr>
+      {/foreach}
+    </table>
+
+  </form>
+  <form id="add_form" action="details.php?action=add" method="post"
+     style="border: thin solid black; padding: 1%;">
+
+    <button type="button" onClick="addMember();"
+               style="vertical-align: top;">Add member</button>
+
+  </form>
 {/block}
