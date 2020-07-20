@@ -55,9 +55,8 @@ class HouseData {
     }
 
     /* get donations */
-    //if($stmt=$msi->prepare("select d.date,d.amount,d.anonymous,d.private,
-    if($stmt=$msi->prepare("select date_format(d.date,'%c/%d/%Y') date,
-                                   format(d.amount,2) amount,d.anonymous,
+    if($stmt=$msi->prepare("select d.donation_id, d.donor_id, d.date, d.amount,
+                                   format(d.amount,2) famount,d.anonymous,
                                    f.fund,d.purpose,c.first_name
                               from household_members hm
                              inner join donation_associations da
@@ -73,6 +72,9 @@ class HouseData {
       $stmt->bind_param('i',$this->household_id);
       $stmt->execute();
       $result=$stmt->get_result();
+      /* for donations, if need to add the donation-id as the array key
+         for use in the add / edit dialog, use:
+        $this->donations[$tx['donation_id']] = $tx;*/
       while($tx = $result->fetch_assoc()) {
         $this->donations[] = $tx;
       }

@@ -128,6 +128,7 @@ table.edit {
   border-spacing: 10px 0;
   background-color: #C49F75;
   font-size: .9em;
+  padding: .5em 0
 }
 
 td {
@@ -145,6 +146,10 @@ td.footermsg {
   padding: 0 5px;
   color: red;
   background-color: #fCCFA6;
+}
+
+.hiddenkey {
+  visibility: hidden;
 }
 
 .email {
