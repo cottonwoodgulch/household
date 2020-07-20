@@ -1,0 +1,37 @@
+<!-- confirm dialog box -->
+
+<div id="ConfirmDialog" style="display: none;">
+  <form id="ConfDialog" method="post">
+    <p id="ConfText"></p>
+  </form>
+</div>
+<div id="ErrorDialog" style="display: none;">
+  <p id="ErrorText"></p>
+</div>
+
+<script>
+function Confirm(ConfirmAction, ConfirmText, CallingForm) {
+  $("#ConfDialog").dialog({
+    dialogClass: "no-close",  // hide close button in top corner
+    height: "auto",
+    width: "auto",
+    closeOnEscape: true,
+    title: ConfirmText,
+    buttons: [
+      { text: ConfirmAction,
+        type: "button",
+        click: function() {
+          $(CallingForm+" input[name=buttonAction]").val(ConfirmAction);
+          $(CallingForm).submit();
+        }
+      },
+      { text: "Cancel",
+        click: function() {
+          $(this).dialog("destroy");
+        }
+      }
+    ]
+  });
+  $("#ConfText").html(ConfirmAction+' '+ConfirmText+"?");
+}
+</script>

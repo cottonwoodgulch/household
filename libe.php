@@ -73,13 +73,7 @@ function getHouseholdFromContact($msi,$smarty,$cid) {
 }
   
 function buildErrorMessage($errmsg,$newerr) {
-  if(strlen($errmsg)) {
-    $errmsg .= '<br />'.$newerr;
-  }
-  else {
-    $errmsg = $newerr;
-  }
-  return $errmsg;
+  return $errmsg . strlen($errmsg) ? '<br />' : '' . $newerr;
 }
 
 function displayFooter($smarty,$err_msg) {

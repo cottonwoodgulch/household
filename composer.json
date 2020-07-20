@@ -1,10 +1,11 @@
 {
     "name": "cottonwoodgulch/house",
-    "description": "Cottonwood Gulch alumni records",
+    "description": "Cottonwood Gulch Donations by Household",
     "require": {
         "smarty/smarty": "3.1.*",
-    	"owasp/phprbac": "2.0.*@dev",
-        "components/jquery": "3.*"
+        "owasp/phprbac": "2.0.*@dev",
+        "components/jquery": "3.*",
+        "components/jqueryui": "1.12.*"
     },
     "license": "GPL-3.0",
     "authors": [

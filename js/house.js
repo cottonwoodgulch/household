@@ -1,9 +1,21 @@
 /* house/js/house.js - javascript functions */
 
-"use strict";
+function slideDropDown() {
+  $(".drop-down li ul").hide().removeClass("fallback");
+  $(".drop-down li").hover(
+    function () {
+      $(this).find("ul").stop().slideDown(400);
+    },
+    function () {
+      $(this).find("ul").stop().slideUp(400);
+    }
+  );
+}
 
-function markChange(currentElement,saveButtonId) {
-  //var currentObject=document.getElementById(elementID);
-  currentElement.style.backgroundColor="#DCEAFC";
-  document.getElementById(saveButtonId).hidden=false;
+$(document).ready(function () {
+  slideDropDown();
+} );
+
+function hideFooter() {
+  $("#footer").hide(200);  
 }
