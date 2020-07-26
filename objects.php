@@ -57,7 +57,7 @@ class HouseData {
     /* get donations */
     if($stmt=$msi->prepare("select d.donation_id, d.donor_id, d.date, d.amount,
                                    format(d.amount,2) famount,d.anonymous,
-                                   f.fund,d.purpose,c.first_name
+                                   f.fund,d.purpose,c.first_name, de.degree
                               from household_members hm
                              inner join donation_associations da
                                 on da.contact_id=hm.contact_id
@@ -67,6 +67,8 @@ class HouseData {
                                 on c.contact_id=hm.contact_id
                              inner join funds f
                                 on f.fund_id=d.fund_id
+                              left join degrees de
+                                on de.degree_id=c.degree_id
                              where hm.household_id=?
                              order by d.date desc")) {
       $stmt->bind_param('i',$this->household_id);
@@ -132,42 +134,25 @@ class HouseData {
   // end construct function
   
   /* this is not used that I know of - $this->hd['address_id'] has it */
-  public function getPreferredAddress() {
+/*  public function getPreferredAddress() {
     foreach($this->addresses as $ad) {
       if($ad['preferred']) {
         return $ad;
       }
     }
     return null;
-  }
+  }*/
 
   public function updateHouse($msi,$smarty) {
     if (!isset($_POST['house_name']) || strlen($_POST['house_name'])<1) {
       $this->ErrMsg=buildErrorMessage($this->ErrMsg,'Household Name is required');
     }
     // check if name is in use other than for this household_id
-    if($stmt=$msi->prepare("select 0 from household h
-         where h.name=? and h.household_id!=?")) {
-      $stmt->bind_param('si',$_POST['house_name'],$this->household_id);
-      if($stmt->execute()) {
-        $result=$stmt->get_result();
-        if($result->num_rows) {
-          $this->ErrMsg=buildErrorMessage($this->ErrMsg,
-           'Household Name is already in use');
-        }
-      }
-      else {
-        $this->ErrMsg=buildErrorMessage($this->ErrMsg,
-         'Could not execute dupe house query: '.$msi->error);
-      }
-    }
-    else {
+    if(isDupeHousehold($msi,$_POST['house_name'],$this->household_id)) {
       $this->ErrMsg=buildErrorMessage($this->ErrMsg,
-       'Could not prep dupe house query: '.$msi->error);
+       'Household Name is already in use');
     }
-    $stmt->close;
-    $result->free;
-
+echo 'after dupehousehold';
     if(!strlen($this->ErrMsg)) {
       /* change the current values */
       $this->hd['name']=$_POST['house_name'];

@@ -36,11 +36,20 @@ $smarty->assign('is_contact_editor',$is_contact_editor);
 include 'config.php';
 $msi = new mysqli($db_host, $db_user, $db_pw, $db_db);
 
-$sitemenu=array(array('d' => 'Home','t' => 'home'),
-                array('d' => 'Details', 't' => 'details'),
-                array('d' => 'Donations', 't' => 'donations'),
-                array('d' => 'Lookup','t' => 'lookup'),
-                array('d' => 'New Household', 't' => 'new'));
+$sitemenu=array(array('d' => 'Home','t' => 'home', 'c' => 0),
+                array('d' => 'Details', 't' => 'details', 'c' => 0),
+                array('d' => 'Donations', 't' => 'donations', 'c' => 0),
+                array('d' => 'Lookup','t' => 'lookup', 'c' => 0));
+foreach($sitemenu as &$sm) {
+  if (stripos(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH), $sm['t']))
+  {
+    $sm['c']=1;
+  }
+  else {
+    $sm['c']=0;
+  }
+}
+unset($sm);
 $smarty->assign('sitemenu',$sitemenu);
 
 function getHouseholdFromContact($msi,$smarty,$cid) {
@@ -70,6 +79,34 @@ function getHouseholdFromContact($msi,$smarty,$cid) {
     return FALSE;
   }
   return $hx['household_id'];
+}
+
+function isDupeHousehold($msi,$house_name,$notID=0) {
+      // check if name is in use other than for household_id notID
+  if($stmt=$msi->prepare("select 0 from household h
+       where h.name=? and h.household_id!=?")) {
+    $stmt->bind_param('si',$house_name,$notID);
+    if($stmt->execute()) {
+      $result=$stmt->get_result();
+      $stmt->close;
+      $retval=$result->num_rows;
+      $result->free;
+      if($retval) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+         'Could not execute dupe house query: '.$msi->error);
+    }
+  }
+  else {
+    $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+      'Could not prep dupe house query: '.$msi->error);
+  }
 }
   
 function buildErrorMessage($errmsg,$newerr) {

@@ -21,7 +21,8 @@
           </td>
       </tr>
       <tr><td class="label">Amount</td>
-          <td><input id="EditAmount" name="EditAmount" value="EditAmount"></td>
+          <td><input id="EditAmount" name="EditAmount" value="EditAmount"
+             autocomplete="off"></td>
       </tr>
       <tr><td class="label">Fund</td>
           <td><select id="EditFund" name="EditFund">
@@ -31,7 +32,8 @@
           </td>
       </tr>
       <tr><td class="label">Purpose</td>
-          <td><input id="EditPurpose" name="EditPurpose" value="EditPurpose">
+          <td><input id="EditPurpose" name="EditPurpose" value="EditPurpose"
+             autocomplete="off">
           </td>
       </tr>
       <tr><td class="label">Anonymous</td>

@@ -56,7 +56,7 @@
           <th>Donor</th>
           </tr>
         {/if}
-        <tr><td class="label">{$md.fdate}</td>
+        <tr><td class="label">{$md.date|date_format:"%m/%d/%Y"}</td>
             <td class="label">{$md.famount}</td>
             <td>{$md.fund}</td>
             <td>{$md.purpose}</td>
