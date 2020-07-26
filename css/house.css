@@ -162,7 +162,7 @@ td.footermsg {
   color: blue;
   text-decoration: none;
   font-family: Palatino, "Times New Roman", "Times Roman", Serif;
-  font-size: .9em;
+  /*font-size: .9em;*/
 }
 
 p.thin {
@@ -193,18 +193,6 @@ input, button, select {
 
 input:hover, button:hover {
   background-color: #fCCFA6;
-}
-
-.del  {
-  background-color: #F0AD9C;
-}
-
-.add {
-  background-color: #E9E485;
-}
-
-.change {
-  background-color: #DCEAFC;
 }
 
 button.menu {

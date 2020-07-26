@@ -22,8 +22,12 @@
       <div id="nav-wrapper">
         <div id="nav1"><ul class="navbar">
           {foreach $sitemenu as $menuitem}
+            {if $menuitem['c']}
+              <li>{$menuitem['d']}</li>
+            {else}
               <li><a class="filelist_normal"
                href="{$menuitem['t']}.php">{$menuitem['d']}</a></li>
+            {/if}
           {/foreach}
           </ul>
         </div>

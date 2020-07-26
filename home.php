@@ -5,7 +5,7 @@ require_once 'libe.php';
 require_once 'objects.php';
 
 // Gary Lesney for testing
-$_GET['cid'] = 140;
+$_GET['cid'] = 581;
 
 if(isset($_GET['cid'])) {
   $hid = getHouseholdFromContact($msi,$smarty,$_GET['cid']);

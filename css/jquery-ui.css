@@ -509,6 +509,10 @@ button.ui-button::-moz-focus-inner {
 	/*margin: -10px 0 0 0;*/
 	padding: 1px;
 }
+/* tom */
+.no-titlebar .ui-dialog-titlebar{
+  display: none;
+}
 .no-close .ui-dialog-titlebar-close {
   display: none;
 }
