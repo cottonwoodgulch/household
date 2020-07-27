@@ -1,89 +1,53 @@
 {extends file="page.tpl"}
 
+{block name="js"}
+  <link rel="stylesheet" href="css/jquery-ui.css" />
+  <script src="vendor/components/jqueryui/jquery-ui.js"></script>
+  <script src="js/details.js"></script>
+{/block}
+
 {block name="dialog"}
   <div id="MoveMemberDialog" style="display: none">
-  <form method="post" action="donations.php"
-        id="MoveMemberForm">
+  <div id="LookupInfo"></div>
+  <form method="post" id="MoveMemberForm" action="details.php">
+    <input type="hidden" name="buttonAction">
     <table class="edit">
       <tr>
-        <td>{$tx.first_name}</td>
-        <td>"{$tx.nickname}"</td>
-        <td>{$tx.middle_name}</td>
-        <td>{$tx.primary_name}</td>
+        <td class="label" id="LookupByName">by Household Name</td>
+        <td>
+          <input id="NameLookup" name="HouseName" value="">
+        </td>
       </tr>
-      { * address = a1, a2, city, state, country, postal_code * }
-      <tr>New Household Address</tr>
-      <tr><td class="label">Address 1</td>
-          <td><input id="EditAddress1" value="Address1"></td>
+      <tr><td>&nbsp;</td></tr>
+      <tr>
+        <td class="label">by a Member's Name</td>
+        <td>
+          <input id="MemberLookup" name="MemberName" value="">
+        </td>
       </tr>
-      <tr><td class="label">Address 2</td>
-          <td><input id="EditAddress2" value="Address2"></td>
-      </tr>
-      <tr><td class="label">City</td>
-          <td><select id="EditCity" name="City"></td>
-      </tr>
-      <tr><td class="label">State</td>
-          <td><input id="EditState" value="State"></td>
-      </tr>
-      <tr><td class="label">Country</td>
-          <td><input id="EditCountry" value="Country"></td>
-      </tr>
-      <tr><td class="label">Postal Code</td>
-          <td><input id="EditPostalCode" value="Postal Code"></td>
-      </tr>
-  </table>
+    </table>
   </form> {* MoveMemberForm *}
   </div> {* MoveMemberDialog *}
-{/block}
 
-{block name="dialog"}
-  <div id="MemberDialog" style="display: none">
-  <form method="post" action="donations.php"
-        id="MemberForm">
+  <div id="AddMemberDialog" style="display: none">
+  <h2>Look up contact to add to this household</h2>
+  <form method="post" id="AddMemberForm" action="details.php">
+    <input type="hidden" name="buttonAction">
     <table class="edit">
       <tr>
-        <td>{$tx.first_name}</td>
-        <td>"{$tx.nickname}"</td>
-        <td>{$tx.middle_name}</td>
-        <td>{$tx.primary_name}</td>
-      </tr>
-      <tr>New Household Address</tr>
-      <tr>
-        <td><select id="SelectContact" name="SelectContact">
-          {foreach from=$contact_search_list item=fl}
-            <option value="{$fl.primary_name}></option>
-          {/foreach}
+        <td class="label" id="LookupByName">by Household Name</td>
+        <td>
+          <input id="NameLookup" name="HouseName" value="">
         </td>
-        <td><input id="EditAddress1" value="Address1"></td>
       </tr>
-  </table>
-  </form> {* MemberForm *}
-  </div> {* MemberDialog *}
-{/block}
-
-{block name="dialog"}
-  <div id="SearchDialog" style="display: none">
-  <form method="post" action="details.php"
-        id="SearchForm">
-    <table class="edit">
+      <tr><td>&nbsp;</td></tr>
       <tr>
-        <td>{$tx.first_name}</td>
-        <td>"{$tx.nickname}"</td>
-        <td>{$tx.middle_name}</td>
-        <td>{$tx.primary_name}</td>
+        <td class="label">by a Member's Name</td>
+        <td><input id="MemberLookup" name="MemberName" value=""></td>
       </tr>
-      <tr>New Household Address</tr>
-      <tr>
-        <td><select id="SelectContact" name="SelectContact">
-          {foreach from=$contact_search_list item=fl}
-            <option value="{$fl.primary_name}></option>
-          {/foreach}
-        </td>
-        <td><input id="EditAddress1" value="Address1"></td>
-      </tr>
-  </table>
-  </form> {* MemberForm *}
-  </div> {* MemberDialog *}
+    </table>
+  </form> {* AddMemberForm *}
+  </div> {* AddMemberDialog *}
 {/block}
 
 {block name="content"}
@@ -142,6 +106,7 @@
     <br />
     <input type="submit" id="saveDetailsButton" value="Save">
   </form>
+
   <br />
 
   <form id="members_form" action="details.php?action=move" method="post"
@@ -153,20 +118,20 @@
       </tr>
       {foreach $house->members as $tx}
       <tr>
+        <td><button type="button" onClick="moveMember()"
+          style="vertical-align: top;">
+          <img src="images/move.jpg" title="Move">
+        </td>
         <td>{$tx.first_name}</td>
         <td>"{$tx.nickname}"</td>
         <td>{$tx.middle_name}</td>
         <td>{$tx.primary_name}</td>
         <td>{$tx.degree}</td>
-        <td><button type="button" onClick="moveMember($tx.contact_id);"
-               style="vertical-align: top;">
-               <img src="images/edit.png" title="Move">
-        </td>
       </tr>
       {/foreach}
     </table>
 
-    <button type="button" onClick="addMember({$house->hd.household_id})"
+    <button type="button" onClick="addMember()"
             style="vertical-align: top;">Add Member</button>
 
   </form>
