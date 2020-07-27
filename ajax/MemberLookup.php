@@ -13,7 +13,8 @@ class SF {
 $ErrMsg='';
 if(isset($_GET['value'])){
     $value='%'.strtolower($_GET['value']).'%';
-    $query="select h.name,c.first_name,c.primary_name,ifnull(d.degree,'') degree ".
+    $query="select h.household_id, concat(h.name,': ',concat_ws(' ',c.first_name, ".
+           "c.primary_name,d.degree)) ".
            "from contacts c inner join household_members hm ".
            "on hm.contact_id=c.contact_id left join household h ".
            "on h.household_id=hm.household_id left join degrees d ".
@@ -26,7 +27,7 @@ if(isset($_GET['value'])){
       goto sqlerror;
     }
     while($rx=$result->fetch_row()) {
-      $retval[]=new SF($rx[0],$rx[0]);
+      $retval[]=new SF($rx[1],$rx[0]);
     }
     echo json_encode($retval);
 }

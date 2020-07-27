@@ -62,7 +62,7 @@ function lookupHouseDialog() {
       })
     },
     select: function(event, ui) {
-      $("#LookupForm input[name=buttonAction]").val("house");
+      $("#LookupForm input[name=buttonAction]").val("member");
       $("#LookupForm").submit();
     }
   })
@@ -71,7 +71,7 @@ function lookupHouseDialog() {
 function lookupHouse() {
   /* look up household for default */
   lookupHouseDialog();
-  $("#LookupInfo").html("<p>Lookup new default household</p>");
+  $("#LookupInfo").html("Lookup new default household");
 }
 
 function lookupMoveHouse() {

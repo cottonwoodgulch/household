@@ -133,15 +133,14 @@ class HouseData {
   }
   // end construct function
   
-  /* this is not used that I know of - $this->hd['address_id'] has it */
-/*  public function getPreferredAddress() {
+  public function getPreferredAddress() {
     foreach($this->addresses as $ad) {
       if($ad['preferred']) {
         return $ad;
       }
     }
     return null;
-  }*/
+  }
 
   public function updateHouse($msi,$smarty) {
     if (!isset($_POST['house_name']) || strlen($_POST['house_name'])<1) {

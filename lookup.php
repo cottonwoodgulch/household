@@ -2,6 +2,7 @@
 
 require_once 'libe.php';
 
+/*
 $ErrMsg='';
 if(isset($_POST['buttonAction'])) {
   if($_POST['buttonAction']=='house') {
@@ -14,6 +15,7 @@ if(isset($_POST['buttonAction'])) {
     $ErrMsg=buildErrorMessage($ErrMsg,'buttonAction: '.$_POST['buttonAction']);
   }
 }
+*/
 
 displayFooter($smarty,$ErrMsg);
 $smarty->display('lookup.tpl');

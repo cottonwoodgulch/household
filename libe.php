@@ -36,7 +36,7 @@ $smarty->assign('is_contact_editor',$is_contact_editor);
 include 'config.php';
 $msi = new mysqli($db_host, $db_user, $db_pw, $db_db);
 
-$sitemenu=array(array('d' => 'Home','t' => 'home', 'c' => 0),
+$sitemenu=array(array('d' => 'Summary','t' => 'summary', 'c' => 0),
                 array('d' => 'Details', 't' => 'details', 'c' => 0),
                 array('d' => 'Donations', 't' => 'donations', 'c' => 0),
                 array('d' => 'Lookup','t' => 'lookup', 'c' => 0));

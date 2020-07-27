@@ -9,8 +9,8 @@
 
 {block name="dialog"}
   <div id="LookupDialog" style="display: none">
-  <div id="LookupInfo"></div>
-  <form method="post" id="LookupForm" action="lookup.php">
+  <h3 id="LookupInfo"></h3>
+  <form method="post" id="LookupForm" action="summary.php">
     <input type="hidden" name="buttonAction">
     <table class="edit">
       <tr>
@@ -29,7 +29,7 @@
   </div> {* LookupDialog *}
 
   <div id="NewHouseDialog" style="display: none">
-    <h2>Add new household</h2>
+    <h3>Add new household</h3>
     <form method="post" id="NewHouseForm" action="newhouse.php">
       <table class="edit">
         <tr>
