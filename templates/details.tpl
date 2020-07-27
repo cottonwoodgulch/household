@@ -120,7 +120,7 @@
       <tr>
         <td><button type="button" onClick="moveMember()"
           style="vertical-align: top;">
-          <img src="images/move.jpg" title="Move">
+          <img src="images/edit.png" title="Move">
         </td>
         <td>{$tx.first_name}</td>
         <td>"{$tx.nickname}"</td>
