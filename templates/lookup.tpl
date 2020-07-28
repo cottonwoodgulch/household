@@ -33,8 +33,7 @@
 {block name="content"}
   <ul style="border: thin solid black; padding: 1%;">
     <li><button 
-      onClick="lookupHouse('Look up new default household')"
-      >Look up Household</button></li>
+      onClick="lookupHouse('Look up new default household','summary.php')">Look up Household</button></li>
     <li>&nbsp;</li>
     <li><button onClick="newHouse()">New Household</button></li>
   </ul>

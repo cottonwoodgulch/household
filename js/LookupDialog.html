@@ -1,35 +1,34 @@
-<!-- lookup household dialog box 
+{*<!-- lookup household dialog box 
   Templates that use this must add to their smarty dialog block:
     {include file="js/LookupDialog.html"}
   A button to activate it could be:
     <button onClick="lookupHouse(title)">Look up Household</button>
-  where title is the 
--->
+  where title is why you are doing the lookup
+-->*}
 
 <div id="LookupDialog" style="display: none">
 <div id="LookupInfo"></div>
-<form method="post" id="LookupForm" action="lookup.php">
+<form method="post" id="LookupForm">
   <input type="hidden" name="buttonAction">
   <table class="edit">
     <tr>
       <td class="label" id="LookupByName">by Household Name</td>
       <td>
-        <input id="NameLookup" name="HouseName" value="">
+        <input id="NameLookup" name="NameHouseID" value="">
       </td>
     </tr>
     <tr><td>&nbsp;</td></tr>
     <tr>
       <td class="label">by a Member's Name</td>
-      <td><input id="MemberLookup" name="MemberName" value=""></td>
+      <td><input id="MemberLookup" name="MemberHouseID" value=""></td>
     </tr>
   </table>
 </form>
 </div>
 
 <script>
-function lookupHouseDialog() {
+function lookupHouse(title,form_action) {
   $("#LookupDialog").dialog ({
-    classes: {"ui-dialog": "no-titlebar"},
     height: "auto",
     width: "auto",
     closeOnEscape: true,
@@ -47,16 +46,20 @@ function lookupHouseDialog() {
       }
     ]
   });
+  /* this could be done in the initialization, but here, it gets areound
+     smarty's confusion about braces */
+  $("#LookupDialog").dialog("option","classes.ui-dialog","no-titlebar");
+  $("#LookupForm").attr("action",form_action);
+  $("#LookupInfo").html("<p>"+title+"</p>");
   $("#NameLookup").autocomplete({
     minLength: 3,
-    position: {my: "left top", at: "left bottom", collision: "fit"},
     source: function(request, response) {
       $.ajax({
         type: "GET",
         url: "ajax/NameLookup.php?value="+$("#NameLookup").val(),
         dataType: "json",
         success: function(res_html, textStatus, xhr) {
-          //alert('name success: '+res_html);
+          //alert(textStatus+': '+res_html);
           response(res_html);
           res_html="";
         },
@@ -67,12 +70,12 @@ function lookupHouseDialog() {
     },
     select: function(event, ui) {
       $("#LookupForm input[name=buttonAction]").val("house");
+      //alert('select val: '.$("NameLookup").val());
       $("#LookupForm").submit();
     }
-  })
+  });
   $("#MemberLookup").autocomplete({
     minLength: 3,
-    position: {my: "left top", at: "left bottom", collision: "fit"},
     source: function(request, response) {
       $.ajax({
         type: "GET",
@@ -88,15 +91,9 @@ function lookupHouseDialog() {
       })
     },
     select: function(event, ui) {
-      $("#LookupForm input[name=buttonAction]").val("house");
+      $("#LookupForm input[name=buttonAction]").val("member");
       $("#LookupForm").submit();
     }
-  })
-}
-
-function lookupHouse(title) {
-  /* look up household for default */
-  lookupHouseDialog();
-  $("#LookupInfo").html("<p>"+title+"</p>");
+  });
 }
 </script>
