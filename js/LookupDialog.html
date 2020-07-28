@@ -1,0 +1,102 @@
+<!-- lookup household dialog box 
+  Templates that use this must add to their smarty dialog block:
+    {include file="js/LookupDialog.html"}
+  A button to activate it could be:
+    <button onClick="lookupHouse(title)">Look up Household</button>
+  where title is the 
+-->
+
+<div id="LookupDialog" style="display: none">
+<div id="LookupInfo"></div>
+<form method="post" id="LookupForm" action="lookup.php">
+  <input type="hidden" name="buttonAction">
+  <table class="edit">
+    <tr>
+      <td class="label" id="LookupByName">by Household Name</td>
+      <td>
+        <input id="NameLookup" name="HouseName" value="">
+      </td>
+    </tr>
+    <tr><td>&nbsp;</td></tr>
+    <tr>
+      <td class="label">by a Member's Name</td>
+      <td><input id="MemberLookup" name="MemberName" value=""></td>
+    </tr>
+  </table>
+</form>
+</div>
+
+<script>
+function lookupHouseDialog() {
+  $("#LookupDialog").dialog ({
+    classes: {"ui-dialog": "no-titlebar"},
+    height: "auto",
+    width: "auto",
+    closeOnEscape: true,
+    /* title: title, */
+    buttons: [
+      {
+        text: "Cancel",
+        click: function() {
+          $("#NameLookup").val("");
+          $("#NameLookup").autocomplete("destroy");
+          $("#MemberLookup").val("");
+          $("#MemberLookup").autocomplete("destroy");
+          $(this).dialog("destroy");
+        }
+      }
+    ]
+  });
+  $("#NameLookup").autocomplete({
+    minLength: 3,
+    position: {my: "left top", at: "left bottom", collision: "fit"},
+    source: function(request, response) {
+      $.ajax({
+        type: "GET",
+        url: "ajax/NameLookup.php?value="+$("#NameLookup").val(),
+        dataType: "json",
+        success: function(res_html, textStatus, xhr) {
+          //alert('name success: '+res_html);
+          response(res_html);
+          res_html="";
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          $("#content").html(textStatus+errorThrown);
+        }
+      })
+    },
+    select: function(event, ui) {
+      $("#LookupForm input[name=buttonAction]").val("house");
+      $("#LookupForm").submit();
+    }
+  })
+  $("#MemberLookup").autocomplete({
+    minLength: 3,
+    position: {my: "left top", at: "left bottom", collision: "fit"},
+    source: function(request, response) {
+      $.ajax({
+        type: "GET",
+        url: "ajax/MemberLookup.php?value="+$("#MemberLookup").val(),
+        dataType: "json",
+        success: function(res_html, textStatus, xhr) {
+          response(res_html);
+          res_html="";
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          $("#content").html(textStatus+errorThrown);
+        }
+      })
+    },
+    select: function(event, ui) {
+      $("#LookupForm input[name=buttonAction]").val("house");
+      $("#LookupForm").submit();
+    }
+  })
+}
+
+function lookupHouse(title) {
+  /* look up household for default */
+  lookupHouseDialog();
+  $("#LookupInfo").html("<p>"+title+"</p>");
+}
+</script>

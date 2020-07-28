@@ -1,5 +1,5 @@
 <?php
-/* lookup household by member name for lookup.js */
+/* lookup household by member name for LookupDialog.html */
 require_once "../libe.php";
 
 class SF {
