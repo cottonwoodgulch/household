@@ -11,8 +11,7 @@ function newHouse() {
         text: "Save",
         type: "button",
         click: function() {
-          if(validateHousehold()) {
-            $("#DonationEditForm input[name=buttonAction]").val(title);
+          if(validateHousehold($("#HouseholdName"),0)) {
             $("#DonationEditForm").submit();
           }
         }
@@ -20,6 +19,9 @@ function newHouse() {
       {
         text: "Cancel",
         click: function() {
+          $("#HouseholdName").val("");
+          $("#Salutation").val("");
+          $("#MailName").val("");
           $(this).dialog("destroy");
         }
       }
@@ -34,16 +36,16 @@ function validateHousehold(hname,hid) {
   }
   $.ajax({
     type: "GET",
-    url: "ajax/ajax_details.php?hname="+hname+"&hid="+hid,
+    url: "ajax/ValidateHouse.php?hname="+hname+"&hid="+hid,
     dataType: "text",
     success: function(res_html, textStatus, xhr) {
       alert("validate success: "+res_html);
-      if(res_html == "1") {
+      if(res_html) {
         $ErrMsg += "Household name is in use</br>";
       }
     },
     error: function(xhr, textStatus, errorThrown) {
-      $ErrMsg +=      $("#house_name_error").html(textStatus+" "+errorThrown);
+      $ErrMsg += $("#house_name_error").html(textStatus+" "+errorThrown);
     }
   })
 }

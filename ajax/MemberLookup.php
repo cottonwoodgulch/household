@@ -10,6 +10,7 @@ class SF {
     $this->value=$v;
   }
 }
+
 $ErrMsg='';
 if(isset($_GET['value'])){
     $value='%'.strtolower($_GET['value']).'%';

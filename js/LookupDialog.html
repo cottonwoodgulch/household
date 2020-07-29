@@ -14,13 +14,13 @@
     <tr>
       <td class="label" id="LookupByName">by Household Name</td>
       <td>
-        <input id="NameLookup" name="NameHouseID" value="">
+        <input id="NameLookup" name="NameHouseID">
       </td>
     </tr>
     <tr><td>&nbsp;</td></tr>
     <tr>
       <td class="label">by a Member's Name</td>
-      <td><input id="MemberLookup" name="MemberHouseID" value=""></td>
+      <td><input id="MemberLookup" name="MemberHouseID"></td>
     </tr>
   </table>
 </form>
@@ -61,7 +61,6 @@ function lookupHouse(title,form_action) {
         success: function(res_html, textStatus, xhr) {
           //alert(textStatus+': '+res_html);
           response(res_html);
-          res_html="";
         },
         error: function(xhr, textStatus, errorThrown) {
           $("#content").html(textStatus+errorThrown);
@@ -70,7 +69,6 @@ function lookupHouse(title,form_action) {
     },
     select: function(event, ui) {
       $("#LookupForm input[name=buttonAction]").val("house");
-      //alert('select val: '.$("NameLookup").val());
       $("#LookupForm").submit();
     }
   });
@@ -83,7 +81,6 @@ function lookupHouse(title,form_action) {
         dataType: "json",
         success: function(res_html, textStatus, xhr) {
           response(res_html);
-          res_html="";
         },
         error: function(xhr, textStatus, errorThrown) {
           $("#content").html(textStatus+errorThrown);
