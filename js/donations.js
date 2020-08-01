@@ -122,22 +122,7 @@ function validateDonation() {
     ErrMsg=buildErrorMessage(ErrMsg,'Select Primary Donor');
   }
   if(ErrMsg.length) {
-    $("#ErrorDialog").dialog({
-      dialogClass: "no-close",  // hide close button in top corner
-      height: "auto",
-      width: "auto",
-      closeOnEscape: true,
-      title: "Incomplete Entries",
-      buttons: [
-        {
-          text: "OK",
-          click: function() {
-            $(this).dialog("destroy");
-          }
-        }
-      ]
-    });
-    $("#ErrorText").html(ErrMsg);
+    displayError("Incomplete Entries",ErrMsg);
     return false;
   }
   return true;
