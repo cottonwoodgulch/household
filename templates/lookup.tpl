@@ -8,22 +8,25 @@
 
 {block name="dialog"}
   {include file="js/LookupDialog.html"}
+  {include file="js/ConfirmDialog.html"}
+  {include file="js/ErrorDialog.html"}
 
   <div id="NewHouseDialog" style="display: none">
     <h2>Add new household</h2>
-    <form method="post" id="NewHouseForm" action="newhouse.php">
+    <form method="post" id="NewHouseForm" action="lookup.php">
+      <input type="hidden" name="buttonAction">
       <table class="edit">
         <tr>
           <td class="label">Household Name</td>
-          <td><input id="HouseholdName" name="HouseholdName"></td>
+          <td><input id="HouseholdName" name="HouseholdName" autocomplete="off" value="Hyde"></td>
         </tr>
         <tr>
           <td class="label">Salutation</td>
-          <td><input id="Salutation" name="Salutation"></td>
+          <td><input id="Salutation" name="Salutation" autocomplete="off" value="asd"></td>
         </tr>
         <tr>
           <td class="label">Mail Name</td>
-          <td><input id="MailName" name="MailName"></td>
+          <td><input id="MailName" name="MailName" autocomplete="off" value="jkl"></td>
         </tr>
       </table>
     </form> {* NewHouseForm *}

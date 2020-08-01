@@ -12,7 +12,6 @@
           <input name="house_name" value="{$house->hd.name}" 
             id="house_name">
         </td>
-        <td id="house_name_error"></td>
       </tr>
       <tr>
         <td class="label">

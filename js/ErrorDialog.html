@@ -1,0 +1,30 @@
+{* confirm dialog box 
+  templates that use this must add to their smarty dialog block:
+    {include file="js/ErrorDialog.html"}
+
+
+<div id="ErrorDialog" style="display: none;">
+  <p id="ErrorText"></p>
+</div>
+*}
+<script>
+function displayError(title,ErrMsg) {
+  $("#ErrorDialog").dialog({
+    dialogClass: "no-close",  // hide close button in top corner
+    height: "auto",
+    width: "auto",
+    closeOnEscape: true,
+    title: title,
+    buttons: [
+      {
+        text: "OK",
+        click: function() {
+          $(this).dialog("destroy");
+        }
+      }
+    ]
+  });
+  $("#ErrorText").html(ErrMsg);
+  return false;
+}
+</script>

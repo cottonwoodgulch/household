@@ -50,7 +50,7 @@ function lookupHouse(title,form_action) {
      smarty's confusion about braces */
   $("#LookupDialog").dialog("option","classes.ui-dialog","no-titlebar");
   $("#LookupForm").attr("action",form_action);
-  $("#LookupInfo").html("<p>"+title+"</p>");
+  $("#LookupInfo").html("<h3>"+title+"</h3>");
   $("#NameLookup").autocomplete({
     minLength: 3,
     source: function(request, response) {

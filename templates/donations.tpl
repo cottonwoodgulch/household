@@ -8,6 +8,7 @@
 
 {block name="dialog"}
   {include file="js/ConfirmDialog.html"}
+  {include file="js/ErrorDialog.html"}
   <div id="DonationEditDialog" style="display: none">
   <form method="post" action="donations.php"
         id="DonationEditForm">

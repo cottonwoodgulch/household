@@ -11,8 +11,9 @@ function newHouse() {
         text: "Save",
         type: "button",
         click: function() {
-          if(validateHousehold($("#HouseholdName"),0)) {
-            $("#DonationEditForm").submit();
+          if(validateHousehold($("#HouseholdName").val(),0)) {
+            $("#NewHouseForm input[name=buttonAction]").val("save");
+            $("#NewHouseForm").submit();
           }
         }
       },
@@ -30,24 +31,36 @@ function newHouse() {
 }
 
 function validateHousehold(hname,hid) {
-  ErrMsg = new String();
+  let ErrMsg = "";
+  let ErrType = "";
+  let retval=true;
   if(hname.length <= 0) {
     ErrMsg += "Household name is required<br />";
   }
   $.ajax({
-    type: "GET",
-    url: "ajax/ValidateHouse.php?hname="+hname+"&hid="+hid,
+    method: "GET",
+    url: "../ajax/ValidateHouse.php",
+    data: {"hname": hname, "&hid=": hid},
     dataType: "text",
     success: function(res_html, textStatus, xhr) {
-      alert("validate success: "+res_html);
       if(res_html) {
-        $ErrMsg += "Household name is in use</br>";
+        ErrMsg += "Household name is in use</br>";
+      }
+      if(ErrMsg.length) {
+        retval=false;
+        ErrType="Household Name Error";
       }
     },
     error: function(xhr, textStatus, errorThrown) {
-      $ErrMsg += $("#house_name_error").html(textStatus+" "+errorThrown);
+      ErrMsg = textStatus+" "+errorThrown;
+      ErrType = "Ajax Error";
+      retval=false;
     }
-  })
+  });
+  displayError(ErrType,ErrMsg);
+  console.log('retval: '+retval+', error: '+ErrMsg+', ErrType: '+ErrType);
+  alert("hello");
+  return retval;
 }
 
 /* for delete household
