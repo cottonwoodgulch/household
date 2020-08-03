@@ -30,6 +30,7 @@ if(isset($_GET['value'])){
     while($rx=$result->fetch_row()) {
       $retval[]=new SF($rx[1],$rx[0]);
     }
+    $result->free();
     echo json_encode($retval);
 }
 else {
