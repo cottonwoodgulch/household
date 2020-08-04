@@ -9,7 +9,7 @@ if(!isset($_SESSION['household_id'])) {
 
 $house=new HouseData($msi,$smarty,$_SESSION['household_id']);
 
-if(isset($_GET['action']) && $_GET['action']=='save') {
+if(isset($_POST['saveChange'])) {
   // update household info and preferred address from $_POST
   $house->updateHouse($msi, $smarty);
 }

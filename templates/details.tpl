@@ -1,7 +1,15 @@
 {extends file="page.tpl"}
 
+{block name="js"}
+  <link rel="stylesheet" href="css/jquery-ui.css" />
+  <script src="vendor/components/jqueryui/jquery-ui.js"></script>
+{/block}
+
 {block name="content"}
-  <form id="details_form" action="details.php?action=save" method="post"
+  <div id="DetailsDiv">
+  {include file="js/ErrorDialog.html"}
+  {include file="js/NewHouseDialog.html"}
+  <form id="details_form" action="details.php" method="post"
      style="border: thin solid black; padding: 1%;">
     <table class="edit">
       <tr>
@@ -53,6 +61,8 @@
     </table>
 
     <br />
-    <input type="submit" id="saveDetailsButton" value="Save">
+    <button id="SaveButton" name="saveChange">Save</button>
+    <input type="button" id="NewButton" name="new" onClick="newHouse()" value="New">
   </form>
+  </div>
 {/block}
