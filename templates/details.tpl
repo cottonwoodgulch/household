@@ -7,27 +7,9 @@
 {/block}
 
 {block name="dialog"}
-  <div id="MoveMemberDialog" style="display: none">
-  <div id="LookupInfo"></div>
-  <form method="post" id="MoveMemberForm" action="details.php">
-    <input type="hidden" name="buttonAction">
-    <table class="edit">
-      <tr>
-        <td class="label" id="LookupByName">by Household Name</td>
-        <td>
-          <input id="NameLookup" name="HouseName" value="">
-        </td>
-      </tr>
-      <tr><td>&nbsp;</td></tr>
-      <tr>
-        <td class="label">by a Member's Name</td>
-        <td>
-          <input id="MemberLookup" name="MemberName" value="">
-        </td>
-      </tr>
-    </table>
-  </form> {* MoveMemberForm *}
-  </div> {* MoveMemberDialog *}
+  {include file="js/LookupDialog.html"}
+  {include file="js/ConfirmDialog.html"}
+  {include file="js/ErrorDialog.html"}
 
   <div id="AddMemberDialog" style="display: none">
   <h2>Look up contact to add to this household</h2>
@@ -110,6 +92,7 @@
 
   <form id="members_form" action="details.php?action=move" method="post"
      style="border: thin solid black; padding: 1%;">
+    <input type="hidden" name="selected_contact_id" value="">
 
     <table class="edit">
       <tr>
@@ -117,7 +100,9 @@
       </tr>
       {foreach $house->members as $tx}
       <tr>
-        <td><button type="button" onClick="moveMember()"
+        <td><input type="button" onClick="moveMemberDialog('Look up another household to place {$tx.nickname} {$tx.primary_name}',
+         'details.php',
+         {$tx.contact_id})"
           style="vertical-align: top;">
           <img src="images/edit.png" title="Move">
         </td>
@@ -129,9 +114,13 @@
       </tr>
       {/foreach}
     </table>
+  </form>
 
-    <button type="button" onClick="addMember()"
-            style="vertical-align: top;">Add Member</button>
+  <form id="add_form" action="details.php?action=add" method="post"
+     style="none;">
+    <input type="button" 
+            onClick="addMemberDialog('Add a member to this household, 'details.php')"
+            style="vertical-align: top;" value="Add Member">
 
   </form>
 {/block}

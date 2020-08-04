@@ -13,9 +13,7 @@
   <table class="edit">
     <tr>
       <td class="label" id="LookupByName">by Household Name</td>
-      <td>
-        <input id="NameLookup" name="NameHouseID">
-      </td>
+      <td><input id="NameLookup" name="NameHouseID"></td>
     </tr>
     <tr><td>&nbsp;</td></tr>
     <tr>
@@ -27,6 +25,17 @@
 </div>
 
 <script>
+function moveMemberDialog(title, move_action, cid) {
+  /* lookup household from db to move this person*/
+  lookupHouse(title, move_action);
+  $("#members_form input[name=selected_contact_id]").val(cid);
+}
+
+function addMemberDialog(title, add_action) {
+  /* lookup contact from db to add to this household*/
+  // lookupContact(title, add_action);
+}
+
 function lookupHouse(title,form_action) {
   $("#LookupDialog").dialog ({
     height: "auto",
