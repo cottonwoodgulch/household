@@ -3,40 +3,20 @@
 {block name="js"}
   <link rel="stylesheet" href="css/jquery-ui.css" />
   <script src="vendor/components/jqueryui/jquery-ui.js"></script>
-  <script src="js/newhouse.js"></script>
 {/block}
 
 {block name="dialog"}
   {include file="js/LookupDialog.html"}
   {include file="js/ConfirmDialog.html"}
   {include file="js/ErrorDialog.html"}
-
-  <div id="NewHouseDialog" style="display: none">
-    <h2>Add new household</h2>
-    <form method="post" id="NewHouseForm" action="lookup.php">
-      <input type="hidden" name="buttonAction">
-      <table class="edit">
-        <tr>
-          <td class="label">Household Name</td>
-          <td><input id="HouseholdName" name="HouseholdName" autocomplete="off" value="Hyde"></td>
-        </tr>
-        <tr>
-          <td class="label">Salutation</td>
-          <td><input id="Salutation" name="Salutation" autocomplete="off" value="asd"></td>
-        </tr>
-        <tr>
-          <td class="label">Mail Name</td>
-          <td><input id="MailName" name="MailName" autocomplete="off" value="jkl"></td>
-        </tr>
-      </table>
-    </form> {* NewHouseForm *}
-  </div> {* NewHouseDialog *}
+  {include file="js/NewHouseDialog.html"}
 {/block}
 
 {block name="content"}
   <ul style="border: thin solid black; padding: 1%;">
-    <li><button 
-      onClick="lookupHouse('Look up new default household','summary.php')">Look up Household</button></li>
+    <li><input type="button"
+      onClick="lookupHouse('Look up new default household','summary.php')"
+      value="Look up Household"></li>
     <li>&nbsp;</li>
     <li><button onClick="newHouse()">New Household</button></li>
   </ul>

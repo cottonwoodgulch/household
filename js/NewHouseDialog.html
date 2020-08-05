@@ -1,0 +1,100 @@
+{*<!-- new household dialog box 
+  Templates that use this must add to their smarty dialog block:
+    {include file="js/NewHouseDialog.html"}
+  A button to activate it could be:
+    <button onClick="newHouse()">Add New Household</button>
+-->*}
+
+<div id="NewHouseDialog" style="display: none">
+  <h2>Add new household</h2>
+  <form method="post" id="NewHouseForm" action="details.php">
+    <input type="hidden" name="buttonAction">
+    <table class="edit">
+      <tr>
+        <td class="label">Household Name</td>
+        <td><input id="HouseholdName" name="HouseholdName" autocomplete="off"  value="Hyde"></td>
+      </tr>
+      <tr>
+        <td class="label">Salutation</td>
+        <td><input id="Salutation" name="Salutation" autocomplete="off" value="asd"></td>
+      </tr>
+      <tr>
+        <td class="label">Mail Name</td>
+        <td><input id="MailName" name="MailName" autocomplete="off" value="jkl"></td>
+      </tr>
+    </table>
+  </form> {* NewHouseForm *}
+</div> {* NewHouseDialog *}
+
+{literal}<script>
+/* the literal tags are because the braces in javascript confuse smarty */
+function newHouse() {
+  $("#NewHouseDialog").dialog ({
+    classes: {"ui-dialog": "no-titlebar"},
+    height: "auto",
+    width: "auto",
+    modal: true,
+    closeOnEscape: true,
+    buttons: [
+      {
+        text: "Save",
+        type: "button",
+        click: function() {
+          if(validateHousehold($("#HouseholdName").val(),0)) {
+            $("#NewHouseForm input[name=buttonAction]").val("save");
+            $("#NewHouseForm").submit();
+          }
+        }
+      },
+      {
+        text: "Cancel",
+        click: function() {
+          $("#HouseholdName").val("");
+          $("#Salutation").val("");
+          $("#MailName").val("");
+          $(this).dialog("destroy");
+        }
+      }
+    ]
+  });
+  return false;
+}
+
+function validateHousehold(hname,hid) {
+  if(hname.length <= 0) {
+    displayError("Household Name Error","Household name is required");
+    return false;
+  }
+  xhr=$.ajax({
+    method: "GET",
+    url: "ajax/ValidateHouse.php",
+    data: "hname="+hname+"&hid="+hid,
+    dataType: "text",
+    success: function(responseText, textStatus, xhr) {
+      alert("success response: "+responseText);
+      if(responseText) {
+        displayError("Household Name Error","Household name is in use");
+      }
+      console.log("success, responseText, textStatus: "+responseText+", "+textStatus);
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      displayError("Ajax Error",textStatus+" "+errorThrown);
+    }
+  });
+  console.log("ajax response: "+xhr.statusText+", "+xhr.responseText);
+  return xhr.responseText;
+  //alert("hello");
+}
+
+/* for delete household
+      {
+        text: "Delete",
+        type: "button",
+        id: "DeleteButton",
+        click: function() {
+          $("#DonationEditForm input[name=buttonAction]").val("Delete");
+          Confirm("Delete",donation+" Donation","#DonationEditForm");
+        }
+      },
+*/
+</script>{/literal}

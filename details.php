@@ -67,11 +67,11 @@ if(!isset($_SESSION['household_id'])) {
 $house=new HouseData($msi,$smarty,$_SESSION['household_id']);
 
 if(isset($_GET['action'])){
-  /* house information is updated */
+/* house information is updated */
   if($_GET['action']=='save') {
     $house->updateHouse($msi, $smarty);
 
-  /* house members are moved or added */
+/* house members are moved or added */
   } else {
     $ErrMsg='';
     if(isset($_POST['buttonAction'])) {
@@ -87,7 +87,7 @@ if(isset($_GET['action'])){
 
       }
     
-      /* form action (add or move) */
+/* form action (add or move) */
       if ($_GET['action']=='move') {
         $contact_id=$_POST['selected_contact_id'];
         moveMember($contact_id, $hid);
@@ -100,6 +100,10 @@ if(isset($_GET['action'])){
   
     }
   }
+}
+if(isset($_POST['saveChange'])) {
+  // update household info and preferred address from $_POST
+  $house->updateHouse($msi, $smarty);
 }
 displayFooter($smarty,$ErrMsg);
 

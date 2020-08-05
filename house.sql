@@ -38,3 +38,5 @@ insert into household values(null,'Hyde','Tom',
     'Tom Hyde',4022);
 
 insert into household_members values(3,695,2636);
+
+insert into household values(null,'Overgaard','Lynn and Jørgen','Lynn and Jørgen Overgaard',88);
