@@ -1,6 +1,9 @@
 {* confirm dialog box 
   templates that use this must add to their smarty dialog block:
     {include file="js/ConfirmDialog.html"}
+  sets input buttonAction on CallingForm to ConfirmAction
+  ConfirmAction is displayed on the affirmative button
+  ConfirmAction + ConfirmText + '?' is displayed as dialog box header
 *}
 
 <div id="ConfirmDialog" style="display: none;">

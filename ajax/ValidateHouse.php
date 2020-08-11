@@ -4,8 +4,10 @@
 
 require_once "../libe.php";
 
-/*$_GET['hname']='Hyde';
-$_GET['hid']=0;*/
+/*
+$_GET['hname']='Hyder';
+$_GET['hid']=0;
+*/
 
 if($stmt=$msi->prepare(
    "select 0 from household where name=? and household_id !=?")) {

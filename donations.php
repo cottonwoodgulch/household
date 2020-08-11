@@ -3,10 +3,18 @@
 require_once 'libe.php';
 require_once 'objects.php';
 
-if(!isset($_SESSION['household_id'])) {
+$ErrMsg='';
+if(isset($_POST['SelectedHouseID'])) {
+  $hid=$_POST['SelectedHouseID'];
+  $_SESSION['household_id']=$hid;
+}
+else if(isset($_SESSION['household_id'])) {
+  $hid=$_SESSION['household_id'];
+}
+else {
   header("Location: lookup.php");
 }
-$ErrMsg='';
+
 if(isset($_POST['buttonAction'])) {
     $msi->autocommit(false);
   if($_POST['buttonAction'] == 'Add') {
@@ -126,7 +134,7 @@ if(isset($_POST['buttonAction'])) {
   $msi->autocommit(true);
 }
 
-$house=new HouseData($msi,$smarty,$_SESSION['household_id']);
+$house=new HouseData($msi,$smarty,$hid);
 
 /* fund list for Add and Edit Donation dialogs */
 if($result=$msi->query('select fund_id,fund from funds')) {

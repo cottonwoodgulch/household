@@ -8,12 +8,13 @@ class HouseData {
   public $members = array();
   public $donations = array();
   public $addresses = array();
+  public $emails = array();
   private $ErrMsg = '';
 
   function __construct($msi, $smarty, $hid) {
     if($stmt=$msi->prepare(
          "select h.household_id, h.name, h.salutation, h.mailname,
-                 h.address_id
+                 h.email_id, h.address_id
             from household h
            where h.household_id=?")) {
       $stmt->bind_param('i',$hid);
@@ -90,7 +91,6 @@ class HouseData {
     }
     
     /* get all addresses for all household members */
-    /* can delete the preferred code? */
     $member_id_list = '';
     foreach($this->members as $tx) {
       $member_id_list .= (strlen($member_id_list) ? ',' : '').$tx['contact_id'];
@@ -127,6 +127,39 @@ class HouseData {
         "Address info: unable to create mysql statement object: ".
         $msi->error);
       return;
+    }    
+    /* get all emails for all household members
+       member_id_list was created in the address section */
+    if($stmt=$msi->prepare(
+         "select distinct 0 preferred, et.email_type, e.email_id,
+                 cx.first_name, e.email
+            from contacts c
+           inner join email_associations ea
+              on ea.contact_id=c.contact_id
+           inner join emails e
+              on e.email_id=ea.email_id
+           inner join email_types et
+              on et.email_type_id=e.email_type_id
+            left join contacts cx
+              on cx.contact_id=e.owner_id
+           where c.contact_id in (?)")) {
+      $stmt->bind_param('i',$member_id_list);
+      $stmt->execute();
+      $result=$stmt->get_result();
+      while($tx = $result->fetch_assoc()) {
+        if($tx['email_id'] == $this->hd['email_id']) {
+          $tx['preferred'] = 1;
+        }
+        $this->emails[] = $tx;
+      }
+      $stmt->close();
+      $result->free();
+    }
+    else {
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+        "Email info: unable to create mysql statement object: ".
+        $msi->error);
+      return;
     }
 
     if(strlen($this->ErrMsg))$smarty->assign('footer',$this->ErrMsg);
@@ -151,7 +184,6 @@ class HouseData {
       $this->ErrMsg=buildErrorMessage($this->ErrMsg,
        'Household Name is already in use');
     }
-echo 'after dupehousehold';
     if(!strlen($this->ErrMsg)) {
       /* change the current values */
       $this->hd['name']=$_POST['house_name'];
@@ -159,12 +191,14 @@ echo 'after dupehousehold';
       $this->hd['mailname']=$_POST['mail_name'];
       /* value of pref radio button group is
            the address_id of the selected address */
-      $this->hd['address_id']=$_POST['pref'];
+      $this->hd['address_id']=$_POST['prefaddress'];
+      $this->hd['email_id']=$_POST['prefemail'];
       if($stmt=$msi->prepare(
-        "update household set name=?,salutation=?,mailname=?,address_id=?
-           where household_id=?")) {
-        $stmt->bind_param('sssii',$_POST['house_name'],$_POST['salutation'],
-           $_POST['mail_name'],$_POST['pref'],$this->household_id);
+        "update household set name=?,salutation=?,mailname=?,address_id=?,
+           email_id=?,modified=now() where household_id=?")) {
+        $stmt->bind_param('sssiii',$_POST['house_name'],$_POST['salutation'],
+           $_POST['mail_name'],$_POST['prefaddress'],$_POST['prefemail'],
+           $this->household_id);
         if(!$stmt->execute()) {
           $this->ErrMsg=buildErrorMessage($this->ErrMsg,
             "updateHouse: unable to execute sql update: ".$msi->error);

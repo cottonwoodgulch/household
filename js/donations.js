@@ -36,21 +36,6 @@ function editDonation(donation_id) {
   });  
 };
 
-/*
-function addDonation() {
-  $("#EditDate").val("2020-07-19");
-  $("#EditAmount").val("4");
-  $("#EditFund option").each(function(index) {
-    $(this).prop("selected",false);
-  });
-  $("#EditPurpose").val("purpose");
-  $("#EditAnonymous").prop("checked",true);
-  $("#EditPrimaryDonor").val(1259);
-  // old donation_id and old primary donor id are not needed for add
-  DonationDialog("Add","",0);
-}
-*/
-
 function addDonation() {
   $("#EditDate").val("");
   $("#EditAmount").val("");

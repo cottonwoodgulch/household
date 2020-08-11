@@ -9,7 +9,7 @@
 <div id="LookupDialog" style="display: none">
 <h3 id="LookupInfo"></h3>
 <form method="post" id="LookupForm">
-  <input type="hidden" id="SelectedHouseID" name="SelectedHouseID">
+  <input type="hidden" name="SelectedHouseID" id="SelectedHouseID">
   <table class="edit">
     <tr>
       <td class="label" id="LookupByName">by Household Name</td>
@@ -38,6 +38,7 @@ function lookupHouse(title,form_action) {
   $("#LookupDialog").dialog ({
     height: "auto",
     width: "auto",
+    modal: true,
     classes: {"ui-dialog": "no-titlebar"},
     closeOnEscape: true,
     /* title: title, */
@@ -54,10 +55,7 @@ function lookupHouse(title,form_action) {
       }
     ]
   });
-  /* this could be done in the initialization, but here, it gets areound
-     smarty's confusion about braces */
-  //$("#LookupDialog").dialog("option","classes.ui-dialog","no-titlebar");
-  $("#LookupForm").attr("action","../".form_action);
+  $("#LookupForm").attr("action",form_action);
   $("#LookupInfo").html(title);
   $("#NameLookup").autocomplete({
     minLength: 3,

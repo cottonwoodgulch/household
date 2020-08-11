@@ -1,8 +1,6 @@
 {extends file="page.tpl"}
 
 {block name="js"}
-  <link rel="stylesheet" href="css/jquery-ui.css" />
-  <script src="vendor/components/jqueryui/jquery-ui.js"></script>
   <script src="js/donations.js"></script>
 {/block}
 
@@ -56,11 +54,16 @@
 {/block}
 
 {block name="content"}
+  {include file="js/LookupDialog.html"}
   {if isset($house)}
     <table class="edit">
     <tr style="font-size: 1.1em; font-weight: bold;">
     <td>Donations for {$house->hd.name} household</td><td>&nbsp;</td>
     <td><button onClick="addDonation()">Add Donation</button></td>
+    <td><input type="button"
+      onClick="lookupHouse('Look up new default household','donations.php')"
+      value="Look Up Household">
+    </td>
     </tr>
     </table>
     <table class="edit">
@@ -95,7 +98,8 @@
       {/foreach}
 
     </table>
-  {else}
-    <p>No household specified</p>
+  {else}<input type="button"
+      onClick="lookupHouse('Look up new default household','donations.php')"
+      value="Look Up Household">
   {/if}
 {/block}
