@@ -27,12 +27,6 @@
 </div>
 
 {literal}<script>
-function moveMemberDialog(title, move_action, cid) {
-  /* lookup household from db to move this person*/
-  $("#members_form input[name=selected_contact_id]").val(cid);
-  lookupHouse(title, move_action);
-}
-
 /* the literal tags are because the braces in javascript confuse smarty */
 function lookupHouse(title,form_action) {
   $("#LookupDialog").dialog ({
@@ -73,9 +67,8 @@ function lookupHouse(title,form_action) {
       })
     },
     select: function(event, ui) {
+      //$("#SelectedHouseID").val($("#NameLookup").val());
       $("#SelectedHouseID").val(ui.item.value);
-      alert('lookup form action, selectedhouseid: '+$("#LookupForm").attr("action")+
-         ", "+$("#SelectedHouseID").val());
       $("#LookupForm").submit();
     }
   });
@@ -95,9 +88,8 @@ function lookupHouse(title,form_action) {
       })
     },
     select: function(event, ui) {
+      //$("#SelectedHouseID").val($("#MemberLookup").val());
       $("#SelectedHouseID").val(ui.item.value);
-      alert('lookup form action, selectedhouseid: '+$("#LookupForm").attr("action")+
-         ", "+$("#SelectedHouseID").val());
       $("#LookupForm").submit();
     }
   });
