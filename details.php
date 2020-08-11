@@ -5,7 +5,7 @@ require_once 'objects.php';
 
 function moveMember($cid, $destination_hid){
   /* 
-  NOT TESTED
+  UNTESTED
   parameters:
     $cid : contact_id, 
     $destination_hid : household_id of house where user is being moved
@@ -23,42 +23,35 @@ function moveMember($cid, $destination_hid){
 
 function addMember($cid, $hid){
   /* 
-  NOT TESTED
+  UNTESTED
   parameters:
     $cid : contact_id of member to be added, 
     $hid : household_id of house where user is being moved
   */
 
-  /* fetch email_id */
-  if($email_req=$msi->prepare(
-    "select email_id from email_assocations where contact_id=?"
-    )){
-    $email_req->bind_param('i', $cid);
-
-    if($email_req->execute()) {
-      $result=$email_req->get_result();
-      $vars=$result->fetch_assoc();
-      $email_id=$vars['email_id'];
-      $stmt->close;
-      $result->free;
+  /* if member is in another household */
+  $already_member=$msi->query("select 1 from household_members where contact_id=?");
+  if($already_member){
+    if($stmt=$msi->prepare(
+      "update household_members set household_id=? where contact_id=?)")) {
+        $stmt->bind_param('ii', $hid, $cid);
+    }
+  /* if member is not in any household */
+  } else {
+    if($stmt=$msi->prepare(
+      "insert into household_members values (?, ?, ?)")) {
+        $stmt->bind_param('iii', $hid, $cid);
     }
   }
-  if(!$email_req->execute()) {
-    //set email_id = null
-  }
-  /* if member is in another household */
 
-  /* if member is not in any household */
-  if($stmt=$msi->prepare(
-    "insert into household_members values (?, ?, ?)")) {
-      $stmt->bind_param('iii', $hid, $cid, $email_id);
-  }
   if(!$stmt->execute()) {
-      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
-        "addMember: unable to execute sql update: ".$msi->error);
+    $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+      "addMember: unable to execute sql update: ".$msi->error);
   }
   $stmt->close();
 }
+
+/* Script starts here */ 
 
 if(!isset($_SESSION['household_id'])) {
   header("Location: lookup.php");

@@ -1,0 +1,40 @@
+{*<!-- lookup member dialog box 
+    Templates that use this must add to their smarty dialog block:
+      {include file="js/AddMemberDialog.html"}
+    A button to activate it could be:
+      <button onClick="lookupMember(title)">Add a household member</button>
+    where title is why you are doing the lookup
+    Then the php script will have to call addMember($cid, $hid) (in details.php)
+  -->*}
+
+<div id="AddMemberDialog" style="display: none">
+    <h2>Look up contact to add to this household</h2>
+    <form method="post" id="AddMemberForm" action="details.php">
+      <input type="hidden" name="buttonAction">
+      <table class="edit">
+        <tr>
+          <td class="label" id="LookupByName">by Household Name</td>
+          <td>
+            <input id="NameLookup" name="HouseName" value="">
+          </td>
+        </tr>
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+          <td class="label">by a Member's Name</td>
+          <td><input id="MemberLookup" name="MemberName" value=""></td>
+        </tr>
+      </table>
+    </form> {* AddMemberForm *}
+    </div> {* AddMemberDialog *}
+
+{literal}<script>
+
+function addMemberDialog(title, add_action) {
+  /* lookup contact from db to add to this household*/
+  // lookupContact(title, add_action);
+}
+
+function lookupMember(title, form_action) {
+    //pass
+}
+</script>{/literal}

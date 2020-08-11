@@ -8,8 +8,8 @@
 
 <div id="LookupDialog" style="display: none">
 <h3 id="LookupInfo"></h3>
-<form method="post" id="LookupForm" action="summary.php">
-  <input type="hidden" id="SelectedHouseID">
+<form method="post" id="LookupForm">
+  <input type="hidden" id="SelectedHouseID" name="SelectedHouseID">
   <table class="edit">
     <tr>
       <td class="label" id="LookupByName">by Household Name</td>
@@ -29,13 +29,8 @@
 {literal}<script>
 function moveMemberDialog(title, move_action, cid) {
   /* lookup household from db to move this person*/
-  lookupHouse(title, move_action);
   $("#members_form input[name=selected_contact_id]").val(cid);
-}
-
-function addMemberDialog(title, add_action) {
-  /* lookup contact from db to add to this household*/
-  // lookupContact(title, add_action);
+  lookupHouse(title, move_action);
 }
 
 /* the literal tags are because the braces in javascript confuse smarty */
@@ -80,7 +75,7 @@ function lookupHouse(title,form_action) {
       })
     },
     select: function(event, ui) {
-      $("#SelectedHouseID").val($("#NameLookup").val());
+      $("#SelectedHouseID").val(ui.item.value);
       alert('lookup form action, selectedhouseid: '+$("#LookupForm").attr("action")+
          ", "+$("#SelectedHouseID").val());
       $("#LookupForm").submit();
@@ -102,7 +97,7 @@ function lookupHouse(title,form_action) {
       })
     },
     select: function(event, ui) {
-      $("#SelectedHouseID").val($("#MemberLookup").val());
+      $("#SelectedHouseID").val(ui.item.value);
       alert('lookup form action, selectedhouseid: '+$("#LookupForm").attr("action")+
          ", "+$("#SelectedHouseID").val());
       $("#LookupForm").submit();
