@@ -1,6 +1,7 @@
 {extends file="page.tpl"}
 
 {block name="content"}
+  {include file="js/LookupDialog.html"}
   {if isset($house)}
     <table class="edit">
       <tr>
@@ -42,6 +43,10 @@
             No members
          {/foreach}
        </td>
+       <td><input type="button"
+         onClick="lookupHouse('Look up new default household','summary.php')"
+         value="Look Up Household">
+       </td>
       </tr>
     </table>
     <br />
@@ -68,6 +73,8 @@
 
     </table>
   {else}
-    <p>No household specified</p>
+    <input type="button"
+         onClick="lookupHouse('Look up new default household','summary.php')"
+         value="Look Up Household">
   {/if}
 {/block}

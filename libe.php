@@ -38,8 +38,7 @@ $msi = new mysqli($db_host, $db_user, $db_pw, $db_db);
 
 $sitemenu=array(array('d' => 'Summary','t' => 'summary', 'c' => 0),
                 array('d' => 'Details', 't' => 'details', 'c' => 0),
-                array('d' => 'Donations', 't' => 'donations', 'c' => 0),
-                array('d' => 'Lookup','t' => 'lookup', 'c' => 0));
+                array('d' => 'Donations', 't' => 'donations', 'c' => 0));
 foreach($sitemenu as &$sm) {
   if (stripos(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH), $sm['t']))
   {

@@ -4,6 +4,8 @@
   <link rel="stylesheet" href="css/house.css" />
   <link rel="icon" href="images/skull.ico" />
   <script src="vendor/components/jquery/jquery.min.js"></script>
+  <link rel="stylesheet" href="css/jquery-ui.css" />
+  <script src="vendor/components/jqueryui/jquery-ui.js"></script>
   <script src="js/house.js"></script>
   {block name="js"}
   {/block}

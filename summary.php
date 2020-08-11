@@ -10,6 +10,9 @@ require_once 'objects.php';
 if(isset($_POST['SelectedHouseID'])) {
   $hid=$_POST['SelectedHouseID'];
 }
+else if(isset($_SESSION['household_id'])) {
+  $hid=$_SESSION['household_id'];
+}
 else if(isset($_GET['cid'])) {
   // contact id sent in from gulchdbi
   $hid = getHouseholdFromContact($msi,$smarty,$_GET['cid']);
@@ -21,9 +24,7 @@ if($hid) {
   $smarty->assign('house',$tx);
   $smarty->assign('address',$tx->getPreferredAddress());
 }
-else {
-  header("Location: lookup.php");
-}
+/* if $hid is not set, only the Look up Household button will show */
 
 $smarty->assign('referrer','home');
 $smarty->display('summary.tpl');
