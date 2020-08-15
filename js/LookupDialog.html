@@ -10,6 +10,7 @@
 <h3 id="LookupInfo"></h3>
 <form method="post" id="LookupForm">
   <input type="hidden" name="SelectedHouseID" id="SelectedHouseID">
+  <input type="hidden" name="buttonAction">
   <table class="edit">
     <tr>
       <td class="label" id="LookupByName">by Household Name</td>
@@ -28,7 +29,7 @@
 
 {literal}<script>
 /* the literal tags are because the braces in javascript confuse smarty */
-function lookupHouse(title,form_action) {
+function lookupHouse(title,form_action,buttonAction="selectHouse") {
   $("#LookupDialog").dialog ({
     height: "auto",
     width: "auto",
@@ -69,6 +70,7 @@ function lookupHouse(title,form_action) {
     select: function(event, ui) {
       //$("#SelectedHouseID").val($("#NameLookup").val());
       $("#SelectedHouseID").val(ui.item.value);
+      $("#LookupForm input[name=buttonAction]").val(buttonAction);
       $("#LookupForm").submit();
     }
   });
@@ -90,6 +92,7 @@ function lookupHouse(title,form_action) {
     select: function(event, ui) {
       //$("#SelectedHouseID").val($("#MemberLookup").val());
       $("#SelectedHouseID").val(ui.item.value);
+      $("#LookupForm input[name=buttonAction]").val(buttonAction);
       $("#LookupForm").submit();
     }
   });

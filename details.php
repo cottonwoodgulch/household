@@ -5,16 +5,17 @@ require_once 'objects.php';
 
 $ErrMsg="";
 
-if(isset($_POST['SelectedHouseID'])) {
-  $hid=$_POST['SelectedHouseID'];
-  $_SESSION['household_id']=$hid;
-}
-else if(isset($_SESSION['household_id'])) {
+if(isset($_SESSION['household_id'])) {
   $hid=$_SESSION['household_id'];
 }
 
-/* buttonAction defaults to "" */
-if($_POST['buttonAction']=='SaveNewHouse') {
+/* buttonAction defaults to "" - that is, isset will always be true */
+if($_POST['buttonAction']=='selectHouse') {
+  /* yes, I know - this will re-set what was just set to $_SESSION[household_id] */
+  $hid=$_POST['SelectedHouseID'];
+  $_SESSION['household_id']=$hid;
+}
+else if($_POST['buttonAction']=='SaveNewHouse') {
   if(!$stmt=$msi->prepare('insert into household
     (name,salutation,mailname,modified) values(?,?,?,now())')) {
     $ErrMsg=buildErrorMessage($ErrMsg,
@@ -34,7 +35,6 @@ if($_POST['buttonAction']=='SaveNewHouse') {
   }
   $hid=$msi->insert_id;
   $_SESSION['household_id']=$hid;
-  $house=new HouseData($msi,$smarty,$hid);
 sqlerror:
   $stmt->close();
 }
@@ -83,18 +83,17 @@ delerror:
     $msi->commit();
   }
   $msi->autocommit(true);
+  $hid=0;
+  $_SESSION['household_id']=0;
 }
-//else if(isset($_POST['saveChange'])) {
 else if($_POST['buttonAction']=='saveChange') {
   // update household info and preferred address from $_POST
   $house=new HouseData($msi,$smarty,$hid);
   $house->updateHouse($msi, $smarty);
 }
-else {
-  $house=new HouseData($msi,$smarty,$hid);
-}
 
 displayFooter($smarty,$ErrMsg);
+$house=new HouseData($msi,$smarty,$hid);
 $smarty->assign('house',$house);
 $smarty->display('details.tpl');
 
