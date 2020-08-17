@@ -58,7 +58,7 @@ function getHouseholdFromContact($msi,$smarty,$cid) {
           from contacts c
           left join household_members hm
             on hm.contact_id=c.contact_id
-          left join household h
+          left join households h
             on h.household_id=hm.household_id
          where c.contact_id=?")) {
     $stmt->bind_param('i',$cid);
@@ -82,7 +82,7 @@ function getHouseholdFromContact($msi,$smarty,$cid) {
 
 function isDupeHousehold($msi,$house_name,$notID=0) {
       // check if name is in use other than for household_id notID
-  if($stmt=$msi->prepare("select 0 from household h
+  if($stmt=$msi->prepare("select 0 from households h
        where h.name=? and h.household_id!=?")) {
     $stmt->bind_param('si',$house_name,$notID);
     if($stmt->execute()) {

@@ -61,9 +61,8 @@
     <table class="edit">
       {foreach $house->emails as $tx}
       <tr>
-        <td><input type="checkbox"
-          {if $tx.email_id==$house->hd.email_id} checked{/if}
-          name="prefemail" value="{$tx.email_id}"></td>
+        <td><input type="checkbox" {if $tx.preferred}checked{/if}
+          name="prefemail{$tx.email_id}" value="{$tx.email_id}"></td>
         <td>{$tx.email_type}</td>
         <td>{$tx.email}</td>
         <td>({$tx.first_name})</td>
@@ -76,7 +75,6 @@
     <input type="button" value="Save" onClick="{
        $('#details_form input[name=buttonAction]').val('saveChange');
        $('#details_form').submit();}">
-    {*<button name="saveChange">Save</button>*}
     <input type="button" onClick="newHouse()" value="New">
     <input type="button" onClick="Confirm('Delete',
       '{$house->hd.name} Household','#details_form')" value="Delete">

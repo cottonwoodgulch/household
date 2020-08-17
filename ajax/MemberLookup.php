@@ -17,7 +17,7 @@ if(isset($_GET['value'])){
     $query="select h.household_id, concat(h.name,': ',concat_ws(' ',c.first_name, ".
            "c.primary_name,d.degree)) ".
            "from contacts c inner join household_members hm ".
-           "on hm.contact_id=c.contact_id left join household h ".
+           "on hm.contact_id=c.contact_id left join households h ".
            "on h.household_id=hm.household_id left join degrees d ".
            "on d.degree_id=c.degree_id where c.primary_name like '".$value."' ".
            "or c.first_name like '".$value."' or c.middle_name like '".$value."' ".

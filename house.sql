@@ -1,13 +1,12 @@
 /* create household tables */
 
-drop table household;
-create table household (
+drop table households;
+create table households (
   household_id int(11) auto_increment primary key,
   name varchar(64),
   salutation varchar(128),
   mailname varchar(128),
   address_id int(11),
-  email_id int(11),
   modified datetime
 );
 
@@ -17,7 +16,7 @@ create table household (
 
 drop table household_members;
 create table household_members (
-  household_member_id int(11),
+  household_member_id int(11) auto_increment primary key,
   household_id int(11),
   contact_id int(11),
   modified datetime,
@@ -25,26 +24,36 @@ create table household_members (
   constraint unique_contact unique (contact_id)
 );
 
-insert into household values(null,'Lesney','Alice and Gary',
-    'Alice and Gary Lesney',381,null,now());
+drop table preferred_emails;
+create table preferred_emails (
+  preferred_email_id int(11) auto_increment primary key,
+  household_id int(11),
+  email_id int(11)
+);
+
+insert into households values(null,'Lesney','Alice and Gary',
+    'Alice and Gary Lesney',381,now());
+
+insert into households values(null,'French','Jamey and Robin',
+   'Jamey and Robin French',883,now());
+   
+insert into households values(null,'Hyde','Tom',
+    'Tom Hyde',4022,now());
+
+insert into households values(null,'Overgaard','Lynn and Jørgen','Lynn and Jørgen Overgaard',88,now());
 
 insert into household_members (household_id,contact_id,modified)
    values(1,1259,now());
 insert into household_members (household_id,contact_id,modified)
     values(1,140,now());
-
-insert into household values(null,'French','Jamey and Robin',
-   'Jamey and Robin French',883,null,now());
-
+    
 insert into household_members (household_id,contact_id,modified)
     values(2,581,now());
 insert into household_members (household_id,contact_id,modified)
     values(2,1317,now());
 
-insert into household values(null,'Hyde','Tom',
-    'Tom Hyde',4022,null,now());
-
 insert into household_members (household_id,contact_id,modified)
     values(3,695,now());
 
-insert into household values(null,'Overgaard','Lynn and Jørgen','Lynn and Jørgen Overgaard',88,null,now());
+/* tom@russellhyde.net */
+insert into preferred_emails values (null,3,2636);

@@ -13,9 +13,8 @@ class HouseData {
 
   function __construct($msi, $smarty, $hid) {
     if($stmt=$msi->prepare(
-         "select h.household_id, h.name, h.salutation, h.mailname,
-                 h.email_id, h.address_id
-            from household h
+         "select h.household_id, h.name, h.salutation, h.mailname,h.address_id
+            from households h
            where h.household_id=?")) {
       $stmt->bind_param('i',$hid);
       $stmt->execute();
@@ -109,8 +108,7 @@ class HouseData {
               on at.address_type_id=a.address_type_id
             left join contacts cx
               on cx.contact_id=a.owner_id
-           where c.contact_id in (?)")) {
-      $stmt->bind_param('i',$member_id_list);
+           where c.contact_id in ($member_id_list)")) {
       $stmt->execute();
       $result=$stmt->get_result();
       while($tx = $result->fetch_assoc()) {
@@ -129,27 +127,27 @@ class HouseData {
       return;
     }    
     /* get all emails for all household members
-       member_id_list was created in the address section */
+       - member_id_list was created in the address section */
     if($stmt=$msi->prepare(
-         "select distinct 0 preferred, et.email_type, e.email_id,
-                 cx.first_name, e.email
+         "select distinct !isnull(pe.email_id) preferred, et.email_type, 
+                 e.email_id,cx.first_name, e.email
             from contacts c
            inner join email_associations ea
               on ea.contact_id=c.contact_id
            inner join emails e
               on e.email_id=ea.email_id
-           inner join email_types et
+            left join email_types et
               on et.email_type_id=e.email_type_id
             left join contacts cx
               on cx.contact_id=e.owner_id
-           where c.contact_id in (?)")) {
-      $stmt->bind_param('i',$member_id_list);
+            left join preferred_emails pe
+              on pe.email_id=e.email_id
+           where c.contact_id in ($member_id_list)
+             and (isnull(pe.household_id)
+              or pe.household_id=".$this->household_id.")")) {
       $stmt->execute();
       $result=$stmt->get_result();
       while($tx = $result->fetch_assoc()) {
-        if($tx['email_id'] == $this->hd['email_id']) {
-          $tx['preferred'] = 1;
-        }
         $this->emails[] = $tx;
       }
       $stmt->close();
@@ -162,7 +160,7 @@ class HouseData {
       return;
     }
 
-    if(strlen($this->ErrMsg))$smarty->assign('footer',$this->ErrMsg);
+    displayFooter($smarty,$this->ErrMsg);
   }
   // end construct function
   
@@ -178,39 +176,73 @@ class HouseData {
   public function updateHouse($msi,$smarty) {
     if (!isset($_POST['house_name']) || strlen($_POST['house_name'])<1) {
       $this->ErrMsg=buildErrorMessage($this->ErrMsg,'Household Name is required');
+      goto updateError;
     }
     // check if name is in use other than for this household_id
     if(isDupeHousehold($msi,$_POST['house_name'],$this->household_id)) {
       $this->ErrMsg=buildErrorMessage($this->ErrMsg,
        'Household Name is already in use');
+      goto updateError;
     }
-    if(!strlen($this->ErrMsg)) {
-      /* change the current values */
-      $this->hd['name']=$_POST['house_name'];
-      $this->hd['salutation']=$_POST['salutation'];
-      $this->hd['mailname']=$_POST['mail_name'];
-      /* value of pref radio button group is
-           the address_id of the selected address */
-      $this->hd['address_id']=$_POST['prefaddress'];
-      $this->hd['email_id']=$_POST['prefemail'];
-      if($stmt=$msi->prepare(
-        "update household set name=?,salutation=?,mailname=?,address_id=?,
-           email_id=?,modified=now() where household_id=?")) {
-        $stmt->bind_param('sssiii',$_POST['house_name'],$_POST['salutation'],
-           $_POST['mail_name'],$_POST['prefaddress'],$_POST['prefemail'],
-           $this->household_id);
-        if(!$stmt->execute()) {
-          $this->ErrMsg=buildErrorMessage($this->ErrMsg,
-            "updateHouse: unable to execute sql update: ".$msi->error);
-        }
-        $stmt->close();
-      }
-      else {
+    /* change the current values 
+       these will be re-displayed even if the db update fails */
+    $this->hd['name']=$_POST['house_name'];
+    $this->hd['salutation']=$_POST['salutation'];
+    $this->hd['mailname']=$_POST['mail_name'];
+    /* value of pref radio button group is
+         the address_id of the selected address */
+    $this->hd['address_id']=$_POST['prefaddress'];
+    /* pretend that MySQL transactions work */
+    $msi->autocommit(false);
+    if(!$stmt=$msi->prepare(
+      "update households set name=?,salutation=?,mailname=?,address_id=?,
+         modified=now() where household_id=?")) {
         $this->ErrMsg=buildErrorMessage($this->ErrMsg,
-          "updateHouse: unable to prep sql update stmt: ".$msi->error);
+          "update household: unable to prep sql update stmt: ".$msi->error);
+      goto updateError;
+    }
+    if(!$stmt->bind_param('sssii',$_POST['house_name'],$_POST['salutation'],
+           $_POST['mail_name'],$_POST['prefaddress'],$this->household_id)) {
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+        "update household: unable to execute sql update: ".$msi->error);
+      $stmt->close();
+      goto updateError;     
+    }
+    if(!$stmt->execute()) {
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+        "update household: unable to execute sql update: ".$msi->error);
+      $stmt->close();
+      goto updateError;
+    }
+    /* update preferred emails */
+    if(!$msi->query("delete from preferred_emails ".
+       "where household_id=".$this->household_id)) {
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+        "update pref e-mail: unable to delete: ".$msi->error);
+      goto updateError;       
+    }
+    $email_error="";
+    foreach($this->emails as $tx) {
+      if(isset($_POST['prefemail'.$tx['email_id']])) {
+        if(!$msi->query("insert into preferred_emails values(null,".
+           $this->household_id.",".$tx['email_id'].")")) {
+          $email_error.=$tx['email_id']." ";
+        }
       }
     }
+    if(strlen($email_error)) {
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+        "update pref e-mail: error inserting ids:".$email_error.
+        $msi->error);
+      goto updateError;
+    }
+    $msi->commit();
+    $msi->autocommit(true);
+    return;
+updateError:
+    $msi->rollback();
+    $msi->autocommit(true);
     displayFooter($smarty,$this->ErrMsg);
   }
-}
+}  // end HouseData object
 ?>

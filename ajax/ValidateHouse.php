@@ -10,7 +10,7 @@ $_GET['hid']=0;
 */
 
 if($stmt=$msi->prepare(
-   "select 0 from household where name=? and household_id !=?")) {
+   "select 0 from households where name=? and household_id !=?")) {
   $stmt->bind_param('si',$_GET['hname'], $_GET['hid']);
   $stmt->execute();
   $result=$stmt->get_result();

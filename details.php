@@ -16,10 +16,10 @@ if($_POST['buttonAction']=='selectHouse') {
   $_SESSION['household_id']=$hid;
 }
 else if($_POST['buttonAction']=='SaveNewHouse') {
-  if(!$stmt=$msi->prepare('insert into household
+  if(!$stmt=$msi->prepare('insert into households
     (name,salutation,mailname,modified) values(?,?,?,now())')) {
     $ErrMsg=buildErrorMessage($ErrMsg,
-       'unable to prep add household query: '.$msi->error);
+       'unable to prep add households query: '.$msi->error);
     goto sqlerror;
   }
   if(!$stmt->bind_param('sss',$_POST['HouseholdName'],$_POST['Salutation'],
@@ -59,7 +59,7 @@ else if($_POST['buttonAction']=='Delete') {
     goto delerror;
   }
   /* delete household */
-  if(!$stmt=$msi->prepare('delete from household where household_id=?')) {
+  if(!$stmt=$msi->prepare('delete from households where household_id=?')) {
     buildErrorMessage($ErrMsg,
         'unable to prep delete household query'.$msi->error);
     goto delerror;

@@ -15,7 +15,7 @@ class SF {
 $ErrMsg='';
 if(isset($_GET['value'])){
     $value='%'.strtolower($_GET['value']).'%';    
-    $query="select household_id, name from household where lower(name) like '$value'";
+    $query="select household_id, name from households where lower(name) like '$value'";
     if(!$result=$msi->query($query)) {
       $ErrMsg=buildErrorMessage($ErrMsg,'unable to execute look up name query'.
          $msi->error);
