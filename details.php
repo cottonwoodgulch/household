@@ -91,6 +91,17 @@ else if($_POST['buttonAction']=='saveChange') {
   $house=new HouseData($msi,$smarty,$hid);
   $house->updateHouse($msi, $smarty);
 }
+else if ($_POST['buttonAction']=='moveMember') {
+  // make an msi query
+  $house=new HouseData($msi,$smarty,$hid);
+  $house->updateHouse($msi, $smarty);
+}
+else if ($_POST['buttonAction']=='addMember') {
+  // check if the person is in another household
+  // either add them to the household_members table or change their entry
+  $house=new HouseData($msi,$smarty,$hid);
+  $house->updateHouse($msi, $smarty);
+}
 
 displayFooter($smarty,$ErrMsg);
 $house=new HouseData($msi,$smarty,$hid);
