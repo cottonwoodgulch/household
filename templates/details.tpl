@@ -97,11 +97,12 @@
       {foreach $house->members as $tx}
       <tr>
         <td>
-        <input type="button" value="Move" onClick="{
-          $('#SelectedContactID').val(contact_id);
-          lookupHouse('Look up another household to place {if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}',
-          'details.php',buttonAction="moveMember");}" style="vertical-align:top;">
-         {* <img src="images/edit.png" title="Move"></button> *}
+        <button type="button" value="Move" onClick="{
+          $('#SelectedContactID').val({$tx.contact_id});
+          lookupHouse('Select another household to place {if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}',
+          'details.php', 'moveMember');}" style="vertical-align:top;">
+         <img src="images/edit.png" title="Move">
+         </button>
         </td>
         <td>{$tx.first_name}</td>
         <td>{$tx.nickname|NickName}</td>
@@ -114,11 +115,12 @@
 
   </form>
 
-  <form id="add_form" method="post"
-     style="none;">
-    <input type="button" onClick="addMemberDialog('Add a member to this household', 
-      'details.php', {$house->hd.household_id});" style="vertical-align:top;"
-       value='Add Member'>
+  <form id="add_form" method="post" style="none;">
+    <input type="hidden" name="SelectedHouseID" id="SelectedHouseID">
+    <input type="button" onClick="{
+      $('#SelectedHouseID').val({$house->hd.household_id});
+      lookupMember('Add a member to this household', 'details.php', 'addMember');}" 
+      style="vertical-align:top;" value='Add Member'>
   </form>
 
   </div>

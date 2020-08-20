@@ -14,6 +14,8 @@ if($_POST['buttonAction']=='selectHouse') {
   /* yes, I know - this will re-set what was just set to $_SESSION[household_id] */
   $hid=$_POST['SelectedHouseID'];
   $_SESSION['household_id']=$hid;
+
+  buildErrorMessage($ErrMsg, $_POST['buttonAction'].$msi->error);
 }
 else if($_POST['buttonAction']=='SaveNewHouse') {
   if(!$stmt=$msi->prepare('insert into households
@@ -92,9 +94,15 @@ else if($_POST['buttonAction']=='saveChange') {
   $house->updateHouse($msi, $smarty);
 }
 else if ($_POST['buttonAction']=='moveMember') {
-  // make an msi query
-  $house=new HouseData($msi,$smarty,$hid);
-  $house->updateHouse($msi, $smarty);
+  $cid=$_POST['SelectedContactID'];
+  $target_hid=$_POST['SelectedHouseID'];
+  echo $cid;
+  echo $target_hid;
+  if($stmt=$msi->prepare('update households set household_id=? where contact_id=?')){
+    $stmt->bind_param('ii', $target_hid, $cid);
+    $stmt->execute();
+  }
+  echo $_POST['buttonAction'];
 }
 else if ($_POST['buttonAction']=='addMember') {
   // check if the person is in another household

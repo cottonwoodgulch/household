@@ -10,17 +10,16 @@
 <div id="AddMemberDialog" style="display: none">
 <h3 id="AddInfo"></h3>
 <form method="post" id="LookupForm" action="details.php">
-  <input type="hidden" name="SelectedMemberID" id="SelectedMemberID">
   <input type="hidden" name="SelectedHouseID" id="SelectedHouseID">
   <input type="hidden" name="buttonAction">
   <table class="edit">
-    <tr>
+    <!-- <tr>
       <td class="label" id="LookupByName">by Household Name</td>
       <td>
         <input id="NameLookup" name="HouseName" value="">
       </td>
     </tr>
-    <tr><td>&nbsp;</td></tr>
+    <tr><td>&nbsp;</td></tr> -->
     <tr>
       <td class="label">by a Member's Name</td>
       <td><input id="MemberLookup" name="MemberName" value=""></td>
@@ -30,12 +29,6 @@
 </div> {* addMemberDialog *}
 
 {literal}<script>
-
-function addMemberDialog(title, add_action, household_id) {
-  /* lookup contact from db to add to this household*/
-  $("#SelectedHouseID").val(household_id);
-  lookupMember(title, move_action);
-}
 
 function lookupMember(title, form_action, buttonAction="addMember") {
   $("#AddMemberDialog").dialog ({
@@ -49,8 +42,8 @@ function lookupMember(title, form_action, buttonAction="addMember") {
       {
         text: "Cancel",
         click: function() {
-          $("#NameLookup").val("");
-          $("#NameLookup").autocomplete("destroy");
+          // $("#NameLookup").val("");
+          // $("#NameLookup").autocomplete("destroy");
           $("#MemberLookup").val("");
           $("#MemberLookup").autocomplete("destroy");
           $(this).dialog("destroy");
@@ -60,28 +53,27 @@ function lookupMember(title, form_action, buttonAction="addMember") {
   });
   $("#LookupForm").attr("action",form_action);
   $("#AddInfo").html(title);
-  $("#NameLookup").autocomplete({
-    minLength: 3,
-    source: function(request, response) {
-      $.ajax({
-        type: "GET",
-        url: "ajax/NameLookup.php?value="+$("#NameLookup").val(),
-        dataType: "json",
-        success: function(res_html, textStatus, xhr) {
-          response(res_html);
-        },
-        error: function(xhr, textStatus, errorThrown) {
-          $("#content").html(textStatus+errorThrown);
-        }
-      })
-    },
-    select: function(event, ui) {
-      //$("#SelectedHouseID").val($("#NameLookup").val());
-      $("#SelectedHouseID").val(ui.item.value);
-      $("#LookupForm input[name=buttonAction]").val(buttonAction);
-      $("#LookupForm").submit();
-    }
-  });
+  // $("#NameLookup").autocomplete({
+  //   minLength: 3,
+  //   source: function(request, response) {
+  //     $.ajax({
+  //       type: "GET",
+  //       url: "ajax/NameLookup.php?value="+$("#NameLookup").val(),
+  //       dataType: "json",
+  //       success: function(res_html, textStatus, xhr) {
+  //         response(res_html);
+  //       },
+  //       error: function(xhr, textStatus, errorThrown) {
+  //         $("#content").html(textStatus+errorThrown);
+  //       }
+  //     })
+  //   },
+  //   select: function(event, ui) {
+  //     $("#SelectedContactID").val(ui.item.value);
+  //     $("#LookupForm input[name=buttonAction]").val(buttonAction);
+  //     $("#LookupForm").submit();
+  //   }
+  // });
   $("#MemberLookup").autocomplete({
     minLength: 3,
     source: function(request, response) {
@@ -98,8 +90,7 @@ function lookupMember(title, form_action, buttonAction="addMember") {
       })
     },
     select: function(event, ui) {
-      //$("#SelectedHouseID").val($("#MemberLookup").val());
-      $("#SelectedHouseID").val(ui.item.value);
+      $("#SelectedContactID").val(ui.item.value);
       $("#LookupForm input[name=buttonAction]").val(buttonAction);
       $("#LookupForm").submit();
     }
