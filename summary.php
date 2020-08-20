@@ -7,15 +7,16 @@ require_once 'objects.php';
 // Gary Lesney for testing
 //$_GET['cid'] = 581;
 
-if(isset($_POST['SelectedHouseID'])) {
+
+if(isset($_GET['cid'])) {
+  // contact id sent in from gulchdbi
+  $hid = getHouseholdFromContact($msi,$smarty,$_GET['cid']);
+}
+else if(isset($_POST['SelectedHouseID'])) {
   $hid=$_POST['SelectedHouseID'];
 }
 else if(isset($_SESSION['household_id'])) {
   $hid=$_SESSION['household_id'];
-}
-else if(isset($_GET['cid'])) {
-  // contact id sent in from gulchdbi
-  $hid = getHouseholdFromContact($msi,$smarty,$_GET['cid']);
 }
 
 if($hid) {

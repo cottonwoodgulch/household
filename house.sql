@@ -10,17 +10,16 @@ create table households (
   modified datetime
 );
 
-/* can't figure out why foreign key constraints DO NOT WORK in mysql */
-,
+/* can't figure out why foreign key constraints DO NOT WORK in mysql
   constraint `fk_hh_address` foreign key (address_id) references addresses(address_id)
+*/
 
 drop table household_members;
 create table household_members (
   household_member_id int(11) auto_increment primary key,
-  household_id int(11),
-  contact_id int(11),
+  household_id int(11) not null,
+  contact_id int(11) not null,
   modified datetime,
-  primary key (household_id, contact_id),
   constraint unique_contact unique (contact_id)
 );
 
@@ -29,6 +28,18 @@ create table preferred_emails (
   preferred_email_id int(11) auto_increment primary key,
   household_id int(11),
   email_id int(11)
+);
+
+drop table hdonations;
+create table hdonations (
+  donation_id int(11) auto_increment primary key,
+  primary_donor_id int(11),
+  ddate date,
+  amount double,
+  anonymous tinyint,
+  fund_id int(11),
+  purpose varchar(250),
+  modified datetime
 );
 
 insert into households values(null,'Lesney','Alice and Gary',

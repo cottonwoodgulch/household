@@ -65,7 +65,7 @@ class HouseData {
                                 on d.donation_id=da.donation_id
                              inner join contacts c
                                 on c.contact_id=hm.contact_id
-                             inner join funds f
+                              left join funds f
                                 on f.fund_id=d.fund_id
                               left join degrees de
                                 on de.degree_id=c.degree_id
