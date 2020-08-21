@@ -7,10 +7,11 @@
     Then the php script will have to call addMember($cid, $hid) (in details.php)
   -->*}
 
-<div id="AddMemberDialog" style="display: none">
+<div id="AddDialog" style="display: none">
 <h3 id="AddInfo"></h3>
-<form method="post" id="LookupForm" action="details.php">
-  <input type="hidden" name="SelectedHouseID" id="SelectedHouseID">
+<form method="post" id="AddForm" action="details.php">
+  <input type="hidden" name="AddHouseID" id="AddHouseID">
+  <input type="hidden" name="AddContactID" id="AddContactID">
   <input type="hidden" name="buttonAction">
   <table class="edit">
     <!-- <tr>
@@ -22,16 +23,16 @@
     <tr><td>&nbsp;</td></tr> -->
     <tr>
       <td class="label">by a Member's Name</td>
-      <td><input id="MemberLookup" name="MemberName" value=""></td>
+      <td><input id="AddMemberLookup" name="AddMemberName" value=""></td>
     </tr>
   </table>
-</form> {* addMemberForm *}
-</div> {* addMemberDialog *}
+</form> {* addForm *}
+</div> {* addDialog *}
 
 {literal}<script>
 
 function lookupMember(title, form_action, buttonAction="addMember") {
-  $("#AddMemberDialog").dialog ({
+  $("#AddDialog").dialog ({
     height: "auto",
     width: "auto",
     modal: true,
@@ -44,14 +45,14 @@ function lookupMember(title, form_action, buttonAction="addMember") {
         click: function() {
           // $("#NameLookup").val("");
           // $("#NameLookup").autocomplete("destroy");
-          $("#MemberLookup").val("");
-          $("#MemberLookup").autocomplete("destroy");
+          $("#AddMemberLookup").val("");
+          $("#AddMemberLookup").autocomplete("destroy");
           $(this).dialog("destroy");
         }
       }
     ]
   });
-  $("#LookupForm").attr("action",form_action);
+  $("#AddForm").attr("action",form_action);
   $("#AddInfo").html(title);
   // $("#NameLookup").autocomplete({
   //   minLength: 3,
@@ -74,12 +75,12 @@ function lookupMember(title, form_action, buttonAction="addMember") {
   //     $("#LookupForm").submit();
   //   }
   // });
-  $("#MemberLookup").autocomplete({
+  $("#AddMemberLookup").autocomplete({
     minLength: 3,
     source: function(request, response) {
       $.ajax({
         type: "GET",
-        url: "ajax/MemberLookup.php?value="+$("#MemberLookup").val(),
+        url: "ajax/AddLookup.php?value="+$("#AddMemberLookup").val(),
         dataType: "json",
         success: function(res_html, textStatus, xhr) {
           response(res_html);
@@ -90,9 +91,9 @@ function lookupMember(title, form_action, buttonAction="addMember") {
       })
     },
     select: function(event, ui) {
-      $("#SelectedContactID").val(ui.item.value);
-      $("#LookupForm input[name=buttonAction]").val(buttonAction);
-      $("#LookupForm").submit();
+      $("#AddContactID").val(ui.item.value);
+      $("#AddForm input[name=buttonAction]").val(buttonAction);
+      $("#AddForm").submit();
     }
   });
 }

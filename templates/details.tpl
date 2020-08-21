@@ -87,38 +87,33 @@
 
   <br />
 
-  <form id="members_form" method="post"
-     style="border: thin solid black; padding: 1%;">
-    <input type="hidden" name="SelectedContactID" id="SelectedContactID">
-    <table class="edit">
-      <tr>
-        <th id="members_label">Members</th>
-      </tr>
-      {foreach $house->members as $tx}
-      <tr>
-        <td>
-        <button type="button" value="Move" onClick="{
-          $('#SelectedContactID').val({$tx.contact_id});
-          lookupHouse('Select another household to place {if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}',
-          'details.php', 'moveMember');}" style="vertical-align:top;">
-         <img src="images/edit.png" title="Move">
-         </button>
-        </td>
-        <td>{$tx.first_name}</td>
-        <td>{$tx.nickname|NickName}</td>
-        <td>{$tx.middle_name}</td>
-        <td>{$tx.primary_name}</td>
-        <td>{$tx.degree}</td>
-      </tr>
-      {/foreach}
-    </table>
-
-  </form>
+  <table class="edit" style="border: thin solid black; padding: 1%;">
+    <tr>
+      <th id="members_label">Members</th>
+    </tr>
+    {foreach $house->members as $tx}
+    <tr>
+      <td>
+      <button type="button" value="Move" onClick="{
+        $('#SelectedContactID').val({$tx.contact_id});
+        lookupHouse('Select another household to place {if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}',
+        'details.php', 'moveMember');}" style="vertical-align:top;">
+        <img src="images/edit.png" title="Move">
+        </button>
+      </td>
+      <td>{$tx.first_name}</td>
+      <td>{$tx.nickname|NickName}</td>
+      <td>{$tx.middle_name}</td>
+      <td>{$tx.primary_name}</td>
+      <td>{$tx.degree}</td>
+    </tr>
+    {/foreach}
+  </table>
+  
 
   <form id="add_form" method="post" style="none;">
-    <input type="hidden" name="SelectedHouseID" id="SelectedHouseID">
     <input type="button" onClick="{
-      $('#SelectedHouseID').val({$house->hd.household_id});
+      $('#AddHouseID').val({$house->hd.household_id});
       lookupMember('Add a member to this household', 'details.php', 'addMember');}" 
       style="vertical-align:top;" value='Add Member'>
   </form>

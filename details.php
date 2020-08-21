@@ -93,22 +93,67 @@ else if($_POST['buttonAction']=='saveChange') {
   $house=new HouseData($msi,$smarty,$hid);
   $house->updateHouse($msi, $smarty);
 }
+
 else if ($_POST['buttonAction']=='moveMember') {
   $cid=$_POST['SelectedContactID'];
   $target_hid=$_POST['SelectedHouseID'];
-  echo $cid;
-  echo $target_hid;
-  if($stmt=$msi->prepare('update households set household_id=? where contact_id=?')){
-    $stmt->bind_param('ii', $target_hid, $cid);
-    $stmt->execute();
+  echo "contact_id: $cid";
+  echo "target household_id: $target_hid";
+
+  if(!$stmt=$msi->prepare('update household_members set household_id=? where contact_id=?')){
+    $ErrMsg=buildErrorMessage($ErrMsg,
+       'unable to prep move member query: '.$msi->error);
+    goto moveerror;
   }
-  echo $_POST['buttonAction'];
+  if(!$stmt->bind_param('ii', $target_hid, $cid)){
+    $ErrMsg=buildErrorMessage($ErrMsg,
+        'unable to bind move member query params'.$msi->error);
+    goto moveerror;
+  }
+  if(!$stmt->execute()){
+    $ErrMsg=buildErrorMessage($ErrMsg,
+        'unable to execute move member query'.$msi->error);
+    goto moveerror;
+  }
+
+  echo "buttonAction: ".$_POST['buttonAction'];
+  // Do we want to the change $_SESSION to the target household?
+  moveerror:
+    echo "moveerror";
 }
+
 else if ($_POST['buttonAction']=='addMember') {
-  // check if the person is in another household
-  // either add them to the household_members table or change their entry
-  $house=new HouseData($msi,$smarty,$hid);
-  $house->updateHouse($msi, $smarty);
+  $cid=$_POST['AddContactID'];
+  $target_hid=$_POST['AddHouseID'];
+  // the contact is already in another household
+  $already_member = $msi->query("select * from household_members where contact_id=".$cid);
+  if($already_member->num_rows){
+    $stmt=$msi->prepare('update household_members set household_id=? where contact_id=?');
+  // the contact has no household
+  } else {
+    $stmt=$msi->prepare("insert into household_members (household_id, contact_id, modified) values (?, ?, now())");
+  }
+  $already_member->free();
+
+  if(!$stmt){
+    $ErrMsg=buildErrorMessage($ErrMsg,
+       'unable to prep move member query: '.$msi->error);
+    goto adderror;
+  }
+  if(!$stmt->bind_param('ii', $target_hid, $cid)){
+    $ErrMsg=buildErrorMessage($ErrMsg,
+        'unable to bind move member query params'.$msi->error);
+    goto adderror;
+  }
+  if(!$stmt->execute()){
+    $ErrMsg=buildErrorMessage($ErrMsg,
+        'unable to execute move member query'.$msi->error);
+    goto adderror;
+  }
+  echo "buttonAction: ".$_POST['buttonAction'];
+
+  adderror:
+    echo "adderror";
 }
 
 displayFooter($smarty,$ErrMsg);
