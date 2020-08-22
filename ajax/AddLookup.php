@@ -1,5 +1,6 @@
 <?php
-/* lookup household by member name for LookupDialog.html */
+/* lookup member by first/middle/last name for AddDialog.html */
+/* identical to MemberLookup.php except returns contact_id instead of household_id */
 require_once "../libe.php";
 
 class SF {
