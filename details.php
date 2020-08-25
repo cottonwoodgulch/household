@@ -1,6 +1,9 @@
 <?php
 
 require_once 'libe.php';
+if(!$rbac->Users->hasRole('Financial Information Editor',$_SESSION['user_id'])) {
+  header("Location: NotAuthorized.html");
+}
 require_once 'objects.php';
 
 $ErrMsg="";
@@ -14,6 +17,8 @@ if($_POST['buttonAction']=='selectHouse') {
   /* yes, I know - this will re-set what was just set to $_SESSION[household_id] */
   $hid=$_POST['SelectedHouseID'];
   $_SESSION['household_id']=$hid;
+
+  buildErrorMessage($ErrMsg, $_POST['buttonAction'].$msi->error);
 }
 else if($_POST['buttonAction']=='SaveNewHouse') {
   if(!$stmt=$msi->prepare('insert into households

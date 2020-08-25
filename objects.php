@@ -55,20 +55,16 @@ class HouseData {
     }
 
     /* get donations */
-    if($stmt=$msi->prepare("select d.donation_id, d.primary_donor_id, d.ddate, d.amount,
-                                   format(d.amount,2) famount,d.anonymous,
-                                   f.fund,d.purpose,c.first_name, de.degree
-                              from household_members hm
-                             inner join hdonations d
-                                on d.primary_donor_id=hm.contact_id
-                             inner join contacts c
-                                on c.contact_id=hm.contact_id
-                              left join funds f
-                                on f.fund_id=d.fund_id
-                              left join degrees de
-                                on de.degree_id=c.degree_id
-                             where hm.household_id=?
-                             order by d.ddate desc")) {
+    if($stmt=$msi->prepare(
+        "select d.donation_id, d.primary_donor_id, d.ddate, d.amount,".
+        "format(d.amount,2) famount,d.anonymous,".
+        "f.fund,d.purpose,c.first_name, de.degree ".
+        "from household_members hm inner join hdonations d ".
+        "on d.primary_donor_id=hm.contact_id ".
+        "inner join contacts c on c.contact_id=hm.contact_id ".
+        "left join funds f on f.fund_id=d.fund_id ".
+        "left join degrees de on de.degree_id=c.degree_id ".
+        "where hm.household_id=? order by d.ddate desc")) {
       $stmt->bind_param('i',$this->household_id);
       $stmt->execute();
       $result=$stmt->get_result();

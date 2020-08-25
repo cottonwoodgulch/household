@@ -2,11 +2,13 @@
 /* summary.php */
 
 require_once 'libe.php';
+if(!$rbac->Users->hasRole('Financial Information Viewer',$_SESSION['user_id'])) {
+  header("Location: NotAuthorized.html");
+}
 require_once 'objects.php';
 
 // Gary Lesney for testing
 //$_GET['cid'] = 581;
-
 
 if(isset($_GET['cid'])) {
   // contact id sent in from gulchdbi
