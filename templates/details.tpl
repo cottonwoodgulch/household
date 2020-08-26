@@ -96,7 +96,9 @@
       <td>
       <button type="button" value="Move" onClick="{
         $('#SelectedContactID').val({$tx.contact_id});
-        lookupHouse('Select another household to place {if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}',
+        var contact_name = '{if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}';
+        $('#SelectedContactName').val(contact_name);
+        lookupHouse('Select another household to place '+contact_name,
         'details.php', 'moveMember');}" style="vertical-align:top;">
         <img src="images/edit.png" title="Move">
         </button>

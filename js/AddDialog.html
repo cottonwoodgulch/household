@@ -10,6 +10,7 @@
 <form method="post" id="AddForm" action="details.php">
   <input type="hidden" name="AddHouseID" id="AddHouseID">
   <input type="hidden" name="AddContactID" id="AddContactID">
+  <input type="hidden" name="CurrentHouseID" id="CurrentHouseID">
   <input type="hidden" name="buttonAction">
   <table class="edit">
     <tr>
@@ -62,9 +63,14 @@ function lookupMember(title, form_action, buttonAction="addMember") {
     },
     select: function(event, ui) {
       $("#AddContactID").val(ui.item.value);
+      $("#CurrentHouseD").val(ui.item.hid);
+      if ($("CurrentHouseID"))
+        var confmsg = "Move "+ui.item.name+" from "+ui.item.housename+" household to this household";
+      else
+        var confmsg = "Add "+ui.item.name+" (not in a household) to this household";
       // Customizing the member and household will take some work
-      // What we have access to right here is #AddContactID and #AddHouseID
-      Confirm(buttonAction, "Really add member to household", "#AddForm");
+      // What we have access to is #AddContactID and #AddHouseID
+      Confirm(buttonAction, confmsg, "#AddForm");
     }
   });
 }

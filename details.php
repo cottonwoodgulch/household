@@ -97,8 +97,6 @@ else if($_POST['buttonAction']=='saveChange') {
 else if ($_POST['buttonAction']=='moveMember') {
   $cid=$_POST['SelectedContactID'];
   $target_hid=$_POST['SelectedHouseID'];
-  echo "contact_id: $cid";
-  echo "target household_id: $target_hid";
 
   if(!$stmt=$msi->prepare('update household_members set household_id=? where contact_id=?')){
     $ErrMsg=buildErrorMessage($ErrMsg,
@@ -125,15 +123,14 @@ else if ($_POST['buttonAction']=='moveMember') {
 else if ($_POST['buttonAction']=='addMember') {
   $cid=$_POST['AddContactID'];
   $target_hid=$_POST['AddHouseID'];
+  $already_member=$_POST['CurrentHouseID'];
   // the contact is already in another household
-  $already_member = $msi->query("select * from household_members where contact_id=".$cid);
-  if($already_member->num_rows){
+  if($already_member){
     $stmt=$msi->prepare('update household_members set household_id=? where contact_id=?');
   // the contact has no household
   } else {
     $stmt=$msi->prepare("insert into household_members (household_id, contact_id, modified) values (?, ?, now())");
   }
-  $already_member->free();
 
   if(!$stmt){
     $ErrMsg=buildErrorMessage($ErrMsg,
@@ -150,7 +147,6 @@ else if ($_POST['buttonAction']=='addMember') {
         'unable to execute move member query'.$msi->error);
     goto adderror;
   }
-  echo "buttonAction: ".$_POST['buttonAction'];
 
   adderror:
     echo "adderror";

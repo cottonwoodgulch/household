@@ -11,6 +11,7 @@
 <form method="post" id="LookupForm">
   <input type="hidden" name="SelectedHouseID" id="SelectedHouseID">
   <input type="hidden" name="SelectedContactID" id="SelectedContactID">
+  <input type="hidden" name="SelectedContactName" id="SelectedContactName">
   <input type="hidden" name="buttonAction" value="">
   <table class="edit">
     <tr>
@@ -71,8 +72,13 @@ function lookupHouse(title,form_action,buttonAction="selectHouse") {
     select: function(event, ui) {
       //$("#SelectedHouseID").val($("#NameLookup").val());
       $("#SelectedHouseID").val(ui.item.value);
-      $("#LookupForm input[name=buttonAction]").val(buttonAction);
-      $("#LookupForm").submit();
+      if (buttonAction=="moveMember") {
+        var confmsg = "Move "+$("#SelectedContactName").val()+" to "+ui.item.housename+" household";
+        Confirm(buttonAction, confmsg, "#LookupForm");
+      } else { // buttonAction = "selectHouse" 
+        $("#LookupForm input[name=buttonAction]").val(buttonAction);
+        $("#LookupForm").submit();
+      }
     }
   });
   $("#MemberLookup").autocomplete({
@@ -91,10 +97,14 @@ function lookupHouse(title,form_action,buttonAction="selectHouse") {
       })
     },
     select: function(event, ui) {
-      //$("#SelectedHouseID").val($("#MemberLookup").val());
       $("#SelectedHouseID").val(ui.item.value);
-      $("#LookupForm input[name=buttonAction]").val(buttonAction);
-      $("#LookupForm").submit();
+      if (buttonAction=="moveMember") {
+        var confmsg = "Move "+$("#SelectedContactName").val()+" to "+ui.item.housename+" household";
+        Confirm(buttonAction, confmsg, "#LookupForm");
+      } else { // buttonAction = "selectHouse" 
+        $("#LookupForm input[name=buttonAction]").val(buttonAction);
+        $("#LookupForm").submit();
+      }
     }
   });
 }
