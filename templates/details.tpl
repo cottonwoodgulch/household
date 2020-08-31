@@ -95,11 +95,8 @@
     <tr>
       <td>
       <button type="button" value="Move" onClick="{
-        $('#SelectedContactID').val({$tx.contact_id});
         var contact_name = '{if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}';
-        $('#SelectedContactName').val(contact_name);
-        lookupHouse('Select another household to place '+contact_name,
-        'details.php', 'moveMember');}" style="vertical-align:top;">
+        moveMember({$tx.contact_id}, contact_name, "details.php");}" style="vertical-align:top;">
         <img src="images/edit.png" title="Move">
         </button>
       </td>
@@ -112,13 +109,9 @@
     {/foreach}
   </table>
   
-
-  <form id="add_form" method="post" style="none;">
-    <input type="button" onClick="{
-      $('#AddHouseID').val({$house->hd.household_id});
-      lookupMember('Add a member to this household', 'details.php', 'addMember');}" 
-      style="vertical-align:top;" value='Add Member'>
-  </form>
+  <input type="button" onClick="{
+    addMember({$house->hd.household_id}, "details.php");}"
+    style="vertical-align:top;" value='Add Member'>
 
   </div>
 {/block}

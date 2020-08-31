@@ -116,7 +116,7 @@ else if ($_POST['buttonAction']=='moveMember') {
 
   echo "buttonAction: ".$_POST['buttonAction'];
   // Do we want to the change $_SESSION to the target household?
-  moveerror:
+moveerror:
     echo "moveerror";
 }
 
@@ -148,7 +148,7 @@ else if ($_POST['buttonAction']=='addMember') {
     goto adderror;
   }
 
-  adderror:
+adderror:
     echo "adderror";
 }
 
