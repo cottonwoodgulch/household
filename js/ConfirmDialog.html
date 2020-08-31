@@ -12,19 +12,18 @@
   </form>
 </div>
 
-<script>
-function Confirm(ConfirmAction, ConfirmText, CallingForm) {
+{literal}<script>
+function Confirm(ButtonLabel, ConfirmText, buttonAction, CallingForm) {
   $("#ConfDialog").dialog({
-    dialogClass: "no-close",  // hide close button in top corner
+    classes: {"ui-dialog": "no-titlebar"},
     height: "auto",
     width: "auto",
     closeOnEscape: true,
-    title: ConfirmText,
     buttons: [
-      { text: ConfirmAction,
+      { text: ButtonLabel,
         type: "button",
         click: function() {
-          $(CallingForm+" input[name=buttonAction]").val(ConfirmAction);
+          $(CallingForm+" input[name=buttonAction]").val(buttonAction);
           $(CallingForm).submit();
         }
       },
@@ -35,6 +34,6 @@ function Confirm(ConfirmAction, ConfirmText, CallingForm) {
       }
     ]
   });
-  $("#ConfText").html(ConfirmAction+' '+ConfirmText+"?");
+  $("#ConfText").html(ConfirmText+"?");
 }
-</script>
+</script>{/literal}

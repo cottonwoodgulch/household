@@ -1,11 +1,12 @@
 {extends file="page.tpl"}
 
 {block name="content"}
-  <div id="DetailsDiv">
   {include file="js/ErrorDialog.html"}
   {include file="js/NewHouseDialog.html"}
   {include file="js/ConfirmDialog.html"}
   {include file="js/LookupDialog.html"}
+  {*{include file="js/AddDialog.html"}*}
+
   <form id="details_form" action="details.php" method="post"
      style="border: thin solid black; padding: 1%;">
     <table class="edit">
@@ -82,5 +83,36 @@
       onClick="lookupHouse('Look up new default household','details.php')"
       value="Look Up Household">
   </form>
-  </div>
+
+  <br />
+
+  <table class="edit" style="border: thin solid black; padding: 1%;">
+    <tr>
+      <th id="members_label">Members</th>
+    </tr>
+    {foreach $house->members as $tx}
+    <tr>
+      <td>
+      <button type="button" value="Move" onClick="{
+        $('#SelectedContactID').val({$tx.contact_id});
+        var contact_name = '{if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}';
+        $('#SelectedContactName').val(contact_name);
+        lookupHouse('Select another household to place '+contact_name,
+        'details.php', 'moveMember');}" style="vertical-align:top;">
+        <img src="images/edit.png" title="Move">
+        </button>
+      </td>
+      <td>{$tx.first_name}</td>
+      <td>{$tx.nickname|NickName}</td>
+      <td>{$tx.middle_name}</td>
+      <td>{$tx.primary_name}</td>
+      <td>{$tx.degree}</td>
+    </tr>
+    {/foreach}
+  </table>
+  
+  <input type="button" onClick="{
+    $('#AddHouseID').val({$house->hd.household_id});
+    lookupMember('Add a member to this household', 'details.php', 'addMember');}" 
+    style="vertical-align:top;" value='Add Member'>
 {/block}

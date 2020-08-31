@@ -64,8 +64,8 @@ function DonationDialog(title,donation,donation_id) {
         type: "button",
         id: "DeleteButton",
         click: function() {
-          $("#DonationEditForm input[name=buttonAction]").val("Delete");
-          Confirm("Delete",donation+" Donation","#DonationEditForm");
+          //$("#DonationEditForm input[name=buttonAction]").val("Delete");
+          Confirm("Delete","Delete donation "+donation,"Delete","#DonationEditForm");
         }
       },
       {
