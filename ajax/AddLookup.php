@@ -18,13 +18,12 @@ class SF {
   }
 }
 
-// $_GET['value']="Pax";
 
 $ErrMsg='';
 if(isset($_GET['value'])){
     $value="'%".strtolower($_GET['value'])."%'";
-    $query="select c.contact_id, concat(ifnull(h.name, 'no house'),': ',concat_ws(' ',c.first_name, ".
-           "c.primary_name,d.degree)), ifnull(hm.household_id, 0), h.name, ".
+    $query="select concat(ifnull(h.name, 'no house'),': ',concat_ws(' ',c.first_name, ".
+           "c.primary_name,d.degree)), c.contact_id, ifnull(hm.household_id, 0), h.name, ".
            "concat(c.first_name,' ', c.primary_name) ".
            "from contacts c left join household_members hm ".
            "on hm.contact_id=c.contact_id left join households h ".
@@ -32,14 +31,13 @@ if(isset($_GET['value'])){
            "on d.degree_id=c.degree_id where lower(c.primary_name) like $value ".
            "or lower(c.first_name) like $value or lower(c.middle_name) like $value ".
            "or lower(c.nickname) like $value";
-    // echo $query;
     if(!$result=$msi->query($query)) {
       $ErrMsg=buildErrorMessage($ErrMsg,'unable to execute look up member query'.
          $msi->error);
       goto sqlerror;
     }
     while($rx=$result->fetch_row()) {
-      $retval[]=new SF($rx[1],$rx[0], $rx[2], $rx[3], $rx[4]);
+      $retval[]=new SF($rx[0], $rx[1], $rx[2], $rx[3], $rx[4]);
     }
     $result->free();
     echo json_encode($retval);

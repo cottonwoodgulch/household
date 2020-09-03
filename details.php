@@ -12,7 +12,7 @@ if(isset($_SESSION['household_id'])) {
 /* buttonAction defaults to "" - that is, isset will always be true */
 if($_POST['buttonAction']=='selectHouse') {
   /* yes, I know - this will re-set what was just set to $_SESSION[household_id] */
-  $hid=$_POST['SelectedHouseID'];
+  $hid=$_POST['TargetHouseID'];
   $_SESSION['household_id']=$hid;
 
   buildErrorMessage($ErrMsg, $_POST['buttonAction'].$msi->error);
@@ -95,8 +95,8 @@ else if($_POST['buttonAction']=='saveChange') {
 }
 
 else if ($_POST['buttonAction']=='moveMember') {
-  $cid=$_POST['SelectedContactID'];
-  $target_hid=$_POST['SelectedHouseID'];
+  $cid=$_POST['ContactID'];
+  $target_hid=$_POST['TargetHouseID'];
 
   if(!$stmt=$msi->prepare('update household_members set household_id=? where contact_id=?')){
     $ErrMsg=buildErrorMessage($ErrMsg,
@@ -113,17 +113,17 @@ else if ($_POST['buttonAction']=='moveMember') {
         'unable to execute move member query'.$msi->error);
     goto moveerror;
   }
-
   echo "buttonAction: ".$_POST['buttonAction'];
-  // Do we want to the change $_SESSION to the target household?
+
 moveerror:
     echo "moveerror";
 }
 
 else if ($_POST['buttonAction']=='addMember') {
-  $cid=$_POST['AddContactID'];
-  $target_hid=$_POST['AddHouseID'];
-  $already_member=$_POST['CurrentHouseID'];
+  $cid=$_POST['ContactID'];
+  $target_hid=$_POST['TargetHouseID'];
+  $already_member=$_POST['CurrentHouseID']; //query in AddLookup.php will set this to 0 if null
+
   // the contact is already in another household
   if($already_member){
     $stmt=$msi->prepare('update household_members set household_id=? where contact_id=?');

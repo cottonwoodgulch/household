@@ -62,14 +62,13 @@ function lookupMember(title, form_action, buttonAction="addMember") {
       })
     },
     select: function(event, ui) {
-      $("#AddContactID").val(ui.item.value);
-      $("#CurrentHouseD").val(ui.item.hid);
-      if ($("CurrentHouseID"))
+      $("#ContactID").val(ui.item.value);
+      $("#CurrentHouseID").val(ui.item.hid);
+      if ( $("#CurrentHouseID") != 0 ) {
         var confmsg = "Move "+ui.item.name+" from "+ui.item.housename+" household to this household";
-      else
+      } else {
         var confmsg = "Add "+ui.item.name+" (not in a household) to this household";
-      // Customizing the member and household will take some work
-      // What we have access to is #AddContactID and #AddHouseID
+      }
       Confirm(buttonAction, confmsg, "#AddForm");
     }
   });

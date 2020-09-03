@@ -1,0 +1,186 @@
+{*<!-- dialog box for looking up either a household (buttonAction = "selectHouse", "moveMember")
+    or a contact ("addMember").
+    The page that calls this script must also {include file="js/ConfirmDialog.html"}
+  -->*}
+  
+  <form method="post" id="LookupForm">
+    <input type="hidden" name="TargetHouseID" id="TargetHouseID">
+    <input type="hidden" name="CurrentHouseID" id="CurrentHouseID">
+    <input type="hidden" name="ContactID" id="ContactID">
+    <input type="hidden" name="ContactName" id="ContactName">
+    <input type="hidden" name="buttonAction" value="">
+  </form>
+
+  <div id="LookupDialog" style="display: none">
+  <h3 id="LookupInfo"></h3>
+    <table class="edit">
+      <tr>
+        <td class="label" id="LookupByName">by Household Name</td>
+        <td>
+          <input id="NameLookup">
+        </td>
+      </tr>
+      <tr><td>&nbsp;</td></tr>
+      <tr>
+        <td class="label">by a Member's Name</td>
+        <td><input id="MemberLookup"></td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="AddDialog" style="display: none">
+    <h3 id="AddInfo"></h3>
+      <table class="edit">
+        <tr>
+          <td class="label">by a First/Middle/Last Name</td>
+          <td><input id="AddMemberLookup" name="AddMemberName" value=""></td>
+        </tr>
+      </table>
+    </div> {* addDialog *}
+  
+  {literal}<script>
+  /* the literal tags are because the braces in javascript confuse smarty */
+  
+  function addMember(target_household_id, form_action){
+    $("#TargetHouseID").val(target_household_id);
+    lookupMember('Add a member to this household', form_action, "addMember");
+  }
+
+  function moveMember(nickname, first_name, primary_name, selected_contact_id, form_action) {
+    if (nickname.length != 0) {
+      var contact_name = nickname + ' ' + primary_name;
+    } else {
+      var contact_name = first_name + ' ' + primary_name; 
+    }
+    $("#ContactName").val(contact_name);
+    $("#ContactID").val(selected_contact_id);
+    lookupHouse('Select another household to place '+contact_name, form_action, buttonAction='moveMember');
+  }
+
+  function confirmIfNotSelecthouse(buttonLabel, confirm_msg, buttonAction, form_to_submit) {
+    if (buttonAction !== "selectHouse") {
+      Confirm(buttonLabel, confirm_msg, buttonAction, form_to_submit);
+    } else {
+      $(form_to_submit+ " input[name=buttonAction]").val(buttonAction);
+      $(form_to_submit).submit();
+    }
+  }
+
+  function lookupHouse(title,form_action,buttonAction="selectHouse") {
+    $("#LookupDialog").dialog ({
+      height: "auto",
+      width: "auto",
+      modal: true,
+      classes: {"ui-dialog": "no-titlebar"},
+      closeOnEscape: true,
+      buttons: [
+        {
+          text: "Cancel",
+          click: function() {
+            $("#NameLookup").val("");
+            $("#NameLookup").autocomplete("destroy");
+            $("#MemberLookup").val("");
+            $("#MemberLookup").autocomplete("destroy");
+            $(this).dialog("destroy");
+          }
+        }
+      ]
+    });
+    $("#LookupForm").attr("action",form_action);
+    $("#LookupInfo").html(title);
+    $("#NameLookup").autocomplete({
+      minLength: 3,
+      source: function(request, response) {
+        $.ajax({
+          type: "GET",
+          url: "ajax/NameLookup.php?value="+$("#NameLookup").val(),
+          dataType: "json",
+          success: function(res_html, textStatus, xhr) {
+            response(res_html);
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            $("#content").html(textStatus+errorThrown);
+          }
+        })
+      },
+      select: function(event, ui) {
+        $("#TargetHouseID").val(ui.item.value);
+        var confmsg = "Move "+$("#ContactName").val()+" to "+ui.item.housename+" household";
+        confirmIfNotSelecthouse("Move", confmsg, buttonAction, "#LookupForm");
+      }
+    });
+    $("#MemberLookup").autocomplete({
+      minLength: 3,
+      source: function(request, response) {
+        $.ajax({
+          type: "GET",
+          url: "ajax/MemberLookup.php?value="+$("#MemberLookup").val(),
+          dataType: "json",
+          success: function(res_html, textStatus, xhr) {
+            response(res_html);
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            $("#content").html(textStatus+errorThrown);
+          }
+        })
+      },
+      select: function(event, ui) {
+        $("#TargetHouseID").val(ui.item.value);
+        var confmsg = "Move "+$("#ContactName").val()+" to "+ui.item.housename+" household";
+        confirmIfNotSelecthouse("Move", confmsg, buttonAction, "#LookupForm");
+      }
+    });
+  }
+
+  function lookupMember(title, form_action, buttonAction="addMember") {
+  // title: the label on the dialog box (string)
+  // form_action: script that receives the data from the dialog (string)
+  // buttonAction: the value to put into the buttonAction html field, defaults to "addMember" (string, optional)
+  $("#AddDialog").dialog ({
+    height: "auto",
+    width: "auto",
+    modal: true,
+    classes: {"ui-dialog": "no-titlebar"},
+    closeOnEscape: true,
+    buttons: [
+      {
+        text: "Cancel",
+        click: function() {
+          $("#AddMemberLookup").val("");
+          $("#AddMemberLookup").autocomplete("destroy");
+          $(this).dialog("destroy");
+        }
+      }
+    ]
+  });
+  $("#LookupForm").attr("action",form_action);
+  $("#AddInfo").html(title);
+  $("#AddMemberLookup").autocomplete({
+    minLength: 3,
+    source: function(request, response) {
+      $.ajax({
+        type: "GET",
+        url: "ajax/AddLookup.php?value="+$("#AddMemberLookup").val(),
+        dataType: "json",
+        success: function(res_html, textStatus, xhr) {
+          response(res_html);
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          $("#content").html(textStatus+errorThrown);
+        }
+      })
+    },
+    select: function(event, ui) {
+      $("#ContactID").val(ui.item.value);
+      $("#CurrentHouseID").val(ui.item.hid);
+      if ($("CurrentHouseID") != 0) {
+        var confmsg = "Move "+ui.item.name+" from "+ui.item.housename+" household to this household";
+      } else {
+        var confmsg = "Add "+ui.item.name+" (not in a household) to this household";
+      }
+      Confirm("Add", confmsg, buttonAction, "#LookupForm");
+    }
+  });
+}
+  </script>{/literal}
+  

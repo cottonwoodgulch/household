@@ -1,12 +1,10 @@
 {extends file="page.tpl"}
 
 {block name="content"}
-  <div id="DetailsDiv">
   {include file="js/ErrorDialog.html"}
   {include file="js/NewHouseDialog.html"}
   {include file="js/ConfirmDialog.html"}
-  {include file="js/LookupDialog.html"}
-  {include file="js/AddDialog.html"}
+  {include file="js/Dialog.html"}
   
   <form id="details_form" action="details.php" method="post"
      style="border: thin solid black; padding: 1%;">
@@ -79,7 +77,7 @@
        $('#details_form').submit();}">
     <input type="button" onClick="newHouse()" value="New">
     <input type="button" onClick="Confirm('Delete',
-      '{$house->hd.name} Household','#details_form')" value="Delete">
+      'Really delete {$house->hd.name} Household', 'Delete', '#details_form')" value="Delete">
     <input type="button"
       onClick="lookupHouse('Look up new default household','details.php')"
       value="Look Up Household">
@@ -94,9 +92,9 @@
     {foreach $house->members as $tx}
     <tr>
       <td>
-      <button type="button" value="Move" onClick="{
-        var contact_name = '{if strlen($tx.nickname)} {$tx.nickname} {else} {$tx.first_name} {/if} {$tx.primary_name}';
-        moveMember({$tx.contact_id}, contact_name, "details.php");}" style="vertical-align:top;">
+      <button type="button" value="Move" 
+        onClick="moveMember('{$tx.nickname}', '{$tx.first_name}', '{$tx.primary_name}', '{$tx.contact_id}', 'details.php')" 
+        style="vertical-align:top;">
         <img src="images/edit.png" title="Move">
         </button>
       </td>
@@ -109,9 +107,7 @@
     {/foreach}
   </table>
   
-  <input type="button" onClick="{
-    addMember({$house->hd.household_id}, "details.php");}"
+  <input type="button" onClick="addMember({$house->hd.household_id}, 'details.php')"
     style="vertical-align:top;" value='Add Member'>
 
-  </div>
 {/block}
