@@ -1,7 +1,7 @@
 {extends file="page.tpl"}
 
 {block name="content"}
-  {include file="js/LookupDialog.html"}
+  {include file="js/Dialog.html"}
   {if isset($house)}
     <table class="edit">
       <tr>
