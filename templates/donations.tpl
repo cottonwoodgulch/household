@@ -82,15 +82,16 @@
         <tr>
           <td><button type="button" onClick="editDonation({$md.donation_id})">
                <img src="images/edit.png" title="Edit"></button>
-            <td class="label">{$md.date|date_format:"%m/%d/%Y"}</td>
+            <td class="label">{$md.ddate|date_format:"%m/%d/%Y"}</td>
             <td class="label">{$md.famount}</td>
             <td id="Fund{$md.donation_id}">{$md.fund}</td>
             <td id="Purpose{$md.donation_id}">{$md.purpose}</td>
             <td id="Anonymous{$md.donation_id}">{if $md.anonymous}x{/if}</td>
             <td id="PrimaryDonor{$md.donation_id}">{$md.first_name} {$md.degree}</td>
-            <td id="Date{$md.donation_id}" class="hiddenkey">{$md.date}</td>
+            <td id="Date{$md.donation_id}" class="hiddenkey">{$md.ddate}</td>
             <td id="Amount{$md.donation_id}" class="hiddenkey">{$md.amount}</td>
-            <td id="DonorID{$md.donation_id}" class="hiddenkey">{$md.donor_id}</td>
+            <td id="DonorID{$md.donation_id}"
+                class="hiddenkey">{$md.primary_donor_id}</td>
             {*<td>{$md.donation_id}</td>*}
         </tr> 
       {foreachelse}

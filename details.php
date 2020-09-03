@@ -1,6 +1,9 @@
 <?php
 
 require_once 'libe.php';
+if(!$rbac->Users->hasRole('Financial Information Editor',$_SESSION['user_id'])) {
+  header("Location: NotAuthorized.html");
+}
 require_once 'objects.php';
 
 $ErrMsg="";

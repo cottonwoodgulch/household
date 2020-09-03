@@ -64,8 +64,8 @@ function DonationDialog(title,donation,donation_id) {
         type: "button",
         id: "DeleteButton",
         click: function() {
-          $("#DonationEditForm input[name=buttonAction]").val("Delete");
-          Confirm("Delete",donation+" Donation","#DonationEditForm");
+          //$("#DonationEditForm input[name=buttonAction]").val("Delete");
+          Confirm("Delete","Delete donation "+donation,"Delete","#DonationEditForm");
         }
       },
       {
@@ -89,10 +89,11 @@ function DonationDialog(title,donation,donation_id) {
   if(title != "Edit") {
     $("#DeleteButton").hide();
   }
-  /* so PHP has access to the donation and old donor IDs
-         to change or delete the donation_assn rec */
+  /* so PHP has access to the donation id
+         to change or delete the donation rec */
   $("#EditDonationID").val(donation_id);
-  $("#OldPrimaryDonorID").val($("#DonorID"+donation_id).html());
+  /* this was only needed for the donation_association rec
+   *$("#OldPrimaryDonorID").val($("#DonorID"+donation_id).html());*}*/
 }
 
 function validateDonation() {

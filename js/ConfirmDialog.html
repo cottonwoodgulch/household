@@ -13,27 +13,27 @@
 </div>
 
 {literal}<script>
-  function Confirm(ButtonLabel, ConfirmText, buttonAction, CallingForm) {
-    $("#ConfDialog").dialog({
-      classes: {"ui-dialog": "no-titlebar"},
-      height: "auto",
-      width: "auto",
-      closeOnEscape: true,
-      buttons: [
-        { text: ButtonLabel,
-          type: "button",
-          click: function() {
-            $(CallingForm+" input[name=buttonAction]").val(buttonAction);
-            $(CallingForm).submit();
-          }
-        },
-        { text: "Cancel",
-          click: function() {
-            $(this).dialog("destroy");
-          }
+function Confirm(ButtonLabel, ConfirmText, buttonAction, CallingForm) {
+  $("#ConfDialog").dialog({
+    classes: {"ui-dialog": "no-titlebar"},
+    height: "auto",
+    width: "auto",
+    closeOnEscape: true,
+    buttons: [
+      { text: ButtonLabel,
+        type: "button",
+        click: function() {
+          $(CallingForm+" input[name=buttonAction]").val(buttonAction);
+          $(CallingForm).submit();
         }
-      ]
-    });
-    $("#ConfText").html(ConfirmText+"?");
-  }
-  </script>{/literal}
+      },
+      { text: "Cancel",
+        click: function() {
+          $(this).dialog("destroy");
+        }
+      }
+    ]
+  });
+  $("#ConfText").html(ConfirmText+"?");
+}
+</script>{/literal}

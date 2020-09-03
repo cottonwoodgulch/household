@@ -71,10 +71,7 @@
     </table>
 
     <br />
-    <input type="hidden" name="buttonAction">
-    <input type="button" value="Save" onClick="{
-       $('#details_form input[name=buttonAction]').val('saveChange');
-       $('#details_form').submit();}">
+    <button type="submit" name="buttonAction" value="saveChange">Save</button>
     <input type="button" onClick="newHouse()" value="New">
     <input type="button" onClick="Confirm('Delete',
       'Really delete {$house->hd.name} Household', 'Delete', '#details_form')" value="Delete">

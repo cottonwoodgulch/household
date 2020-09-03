@@ -23,32 +23,36 @@ else {
   }
 }
 
-/* Set permissions.
-   Viewer can see everyone's information, editor can make changes
-*/
-$rbac = new PhpRbac\Rbac();
-$smarty->assign('is_contact_viewer',
-  $rbac->Users->hasRole('Contact Information Viewer',$user_id));
-$is_contact_editor=
-   $rbac->Users->hasRole('Contact Information Editor',$user_id);
-$smarty->assign('is_contact_editor',$is_contact_editor);
 // database connection
 include 'config.php';
 $msi = new mysqli($db_host, $db_user, $db_pw, $db_db);
 
-$sitemenu=array(array('d' => 'Summary','t' => 'summary', 'c' => 0),
-                array('d' => 'Details', 't' => 'details', 'c' => 0),
-                array('d' => 'Donations', 't' => 'donations', 'c' => 0));
-foreach($sitemenu as &$sm) {
-  if (stripos(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH), $sm['t']))
-  {
-    $sm['c']=1;
+/* Set permissions.
+   Viewer can see summary, Editor can see Details and Donations pages
+*/
+$rbac = new PhpRbac\Rbac();
+/* not needed at this point - financial viewer can only see summary
+$is_financial_viewer=
+  $rbac->Users->hasRole('Financial Information Viewer',$user_id);
+$is_contact_editor=
+   $rbac->Users->hasRole('Financial Information Editor',$user_id);*/
+
+$sitemenu=array();
+if($rbac->Users->hasRole('Financial Information Editor',$user_id)) {
+  $sitemenu[]=array('d' => 'Summary','t' => 'summary', 'c' => 0);
+  $sitemenu[]=array('d' => 'Details', 't' => 'details', 'c' => 0);
+  $sitemenu[]=array('d' => 'Donations', 't' => 'donations', 'c' => 0);
+  foreach($sitemenu as &$sm) {
+    if (stripos(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH), $sm['t']))
+    {
+      $sm['c']=1;
+    }
+    else {
+      $sm['c']=0;
+    }
   }
-  else {
-    $sm['c']=0;
-  }
+  unset($sm);
 }
-unset($sm);
 $smarty->assign('sitemenu',$sitemenu);
 
 function getHouseholdFromContact($msi,$smarty,$cid) {
