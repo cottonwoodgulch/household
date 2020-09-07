@@ -173,7 +173,7 @@
     select: function(event, ui) {
       $("#ContactID").val(ui.item.value);
       $("#CurrentHouseID").val(ui.item.hid);
-      if ($("#CurrentHouseID") !== 0) {
+      if (parseInt($("#CurrentHouseID").val())) {
         var confmsg = "Move "+ui.item.name+" from "+ui.item.housename+" household to this household";
       } else {
         var confmsg = "Add "+ui.item.name+" (not in a household) to this household";

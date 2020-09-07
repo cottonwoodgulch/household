@@ -108,12 +108,12 @@ else if ($_POST['buttonAction']=='moveMember') {
   }
   if(!$stmt->bind_param('ii', $target_hid, $cid)){
     $ErrMsg=buildErrorMessage($ErrMsg,
-        'unable to bind move member query params'.$msi->error);
+        'unable to bind move member query params: '.$msi->error);
     goto moveerror;
   }
   if(!$stmt->execute()){
     $ErrMsg=buildErrorMessage($ErrMsg,
-        'unable to execute move member query'.$msi->error);
+        'unable to execute move member query: '.$msi->error);
     goto moveerror;
   }
   echo "buttonAction: ".$_POST['buttonAction'];
@@ -125,8 +125,9 @@ moveerror:
 else if ($_POST['buttonAction']=='addMember') {
   $cid=$_POST['ContactID'];
   $target_hid=$_POST['TargetHouseID'];
-  $already_member=$_POST['CurrentHouseID']; //query in AddLookup.php will set this to 0 if null
-
+  $already_member=(int)$_POST['CurrentHouseID']; //query in AddLookup.php will set this to 0 if null
+  
+  echo "<br>CurrentHouseID: ".$already_member." (".gettype($already_member).")</br>";
   // the contact is already in another household
   if($already_member){
     $stmt=$msi->prepare('update household_members set household_id=? where contact_id=?');
@@ -142,12 +143,12 @@ else if ($_POST['buttonAction']=='addMember') {
   }
   if(!$stmt->bind_param('ii', $target_hid, $cid)){
     $ErrMsg=buildErrorMessage($ErrMsg,
-        'unable to bind move member query params'.$msi->error);
+        'unable to bind move member query params: '.$msi->error);
     goto adderror;
   }
   if(!$stmt->execute()){
     $ErrMsg=buildErrorMessage($ErrMsg,
-        'unable to execute move member query'.$msi->error);
+        'unable to execute move member query: '.$msi->error);
     goto adderror;
   }
 
