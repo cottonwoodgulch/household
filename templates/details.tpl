@@ -1,11 +1,13 @@
 {extends file="page.tpl"}
 
-{block name="content"}
+{block name="js"}
   {include file="js/ErrorDialog.html"}
   {include file="js/NewHouseDialog.html"}
   {include file="js/ConfirmDialog.html"}
   {include file="js/Dialog.html"}
-  
+{/block}
+
+{block name="content"}
   <form id="details_form" action="details.php" method="post"
      style="border: thin solid black; padding: 1%;">
     <table class="edit">
@@ -15,7 +17,7 @@
         </td>
         <td>
           <input name="house_name" value="{$house->hd.name}" 
-            id="house_name" autocomplete="off"/>
+            id="house_name" size="50" autocomplete="off"/>
         </td>
       </tr>
       <tr>
@@ -24,7 +26,7 @@
         </td>
         <td>
           <input name="salutation" value="{$house->hd.salutation}"
-             autocomplete="off"/>
+             size="50" autocomplete="off"/>
         </td>
       </tr>
       <tr>
@@ -32,7 +34,7 @@
           <label for="mail_name">Mail Name</label>
         </td>
         <td>
-          <input name="mail_name" value="{$house->hd.mailname}" autocomplete="off"/>
+          <input name="mail_name" value="{$house->hd.mailname}" size="50" autocomplete="off"/>
         </td>
       </tr>
     </table>
@@ -71,12 +73,16 @@
     </table>
 
     <br />
-    <button type="submit" name="buttonAction" value="saveChange">Save</button>
+    <input type="submit" value="Save" onClick="{
+        $('#details_form input[name="buttonAction"]).val('saveChange');
+        $('#details_form').submit();
+      }">
+    <input type="hidden" name="buttonAction">
     <input type="button" onClick="newHouse()" value="New">
     <input type="button" onClick="Confirm('Delete',
       'Really delete {$house->hd.name} Household', 'Delete', '#details_form')" value="Delete">
     <input type="button"
-      onClick="lookupHouse('Look up new default household','details.php')"
+      onClick="lookupHouse('Look up new default household','details.php','selectHouse')"
       value="Look Up Household">
   </form>
 

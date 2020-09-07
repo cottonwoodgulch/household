@@ -2,11 +2,12 @@
 
 {block name="js"}
   <script src="js/donations.js"></script>
+  {include file="js/ConfirmDialog.html"}
+  {include file="js/ErrorDialog.html"}
+  {include file="js/Dialog.html"}
 {/block}
 
 {block name="dialog"}
-  {include file="js/ConfirmDialog.html"}
-  {include file="js/ErrorDialog.html"}
   <div id="DonationEditDialog" style="display: none">
   <form method="post" action="donations.php"
         id="DonationEditForm">
@@ -54,14 +55,13 @@
 {/block}
 
 {block name="content"}
-  {include file="js/LookupDialog.html"}
   {if isset($house)}
     <table class="edit">
     <tr style="font-size: 1.1em; font-weight: bold;">
     <td>Donations for {$house->hd.name} household</td><td>&nbsp;</td>
     <td><button onClick="addDonation()">Add Donation</button></td>
     <td><input type="button"
-      onClick="lookupHouse('Look up new default household','donations.php')"
+      onClick="lookupHouse('Look up new default household','donations.php','selectHouse')"
       value="Look Up Household">
     </td>
     </tr>
@@ -100,7 +100,7 @@
 
     </table>
   {else}<input type="button"
-      onClick="lookupHouse('Look up new default household','donations.php')"
+      onClick="lookupHouse('Look up new default household','donations.php','selectHouse')"
       value="Look Up Household">
   {/if}
 {/block}

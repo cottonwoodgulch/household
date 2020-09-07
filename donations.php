@@ -1,14 +1,16 @@
 <?php
 
 require_once 'libe.php';
-if(!$rbac->Users->hasRole('Financial Information Editor',$_SESSION['user_id'])) {
+
+if(!$rbac->Users->hasRole('Financial Information Editor',
+  $_SESSION['user_id'])) {
   header("Location: NotAuthorized.html");
 }
 require_once 'objects.php';
 
 $ErrMsg='';
-if(isset($_POST['SelectedHouseID'])) {
-  $hid=$_POST['SelectedHouseID'];
+if(isset($_POST['TargetHouseID'])) {
+  $hid=$_POST['TargetHouseID'];
   $_SESSION['household_id']=$hid;
 }
 else if(isset($_SESSION['household_id'])) {
@@ -20,10 +22,6 @@ else {
 
 if(isset($_POST['buttonAction'])) {
   if($_POST['buttonAction'] == 'Add') {
-    /* donation_id, donor_id, date, amount, [check_number, check_id, fund_id,
-       anonymous, share_count, share_value, share_company,] purpose, modified */
-    /* this only adds a donation_associations rec for the primary donor */
-    // first, add donation rec
     if(!$stmt=$msi->prepare('insert into hdonations 
       (primary_donor_id, ddate, amount, fund_id, anonymous, purpose, modified)
       values(?,str_to_date(?,\'%Y-%m-%d\'),?,?,?,?,now())')) {
@@ -43,21 +41,6 @@ if(isset($_POST['buttonAction'])) {
          'unable to exec add donation query: '.$msi->error);
       goto sqlerror;
     }
-    
-    // then add donation_associations rec
-    /*$new_donation_id=$msi->insert_id;
-    if(!$stmt=$msi->prepare('insert into donation_associations values(null,?,?)')) {
-      $ErrMsg=buildErrorMessage($ErrMsg,
-         'unable to prep donation assn query: '.$msi->error);
-      goto sqlerror;
-    }
-    $stmt->bind_param('ii',$_POST['EditPrimaryDonor'],$new_donation_id);
-    if(!$stmt->execute()) {
-      $ErrMsg=buildErrorMessage($ErrMsg,
-        'unable to exec donation assn query: '.$msi->error);
-      goto sqlerror;
-    }
-    $stmt->free_result();*/
   }
   else if($_POST['buttonAction'] == 'Edit') {
     // update donations rec
@@ -82,27 +65,6 @@ if(isset($_POST['buttonAction'])) {
          'unable to exec update donation query: '.$msi->error);
       goto sqlerror;
     }
-    // update donation_associations rec if nec
-    /*if($_POST['EditPrimaryDonor'] != $_POST['OldPrimaryDonorID']) {
-      if(!$stmt=$msi->prepare('update donation_associations set contact_id=?
-         where donation_id=? and contact_id=?')) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to prep update donation assn query'.$msi->error);
-        goto sqlerror;
-      }
-      if(!$stmt->bind_param('iii',$_POST['EditPrimaryDonor'],
-         $_POST['EditDonationID'],$_POST['OldPrimaryDonorID'])) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind update donation assn query params'.$msi->error);
-        goto sqlerror;
-      }
-      if(!$stmt->execute()) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec update donation assn query'.$msi->error);
-        goto sqlerror;
-      }
-      $stmt->free_result();
-    } */
   }
   else if($_POST['buttonAction'] == 'Delete') {
     /* delete request has been confirmed in the ConfirmDialog */
@@ -121,24 +83,6 @@ if(isset($_POST['buttonAction'])) {
           'unable to exec delete donation query'.$msi->error);
       goto sqlerror;
     }
-    
-    /*if(!$stmt=$msi->prepare('delete from donation_associations where
-       donation_id=? and contact_id=?')) {
-      buildErrorMessage($ErrMsg,
-          'unable to exec update donation assn query'.$msi->error);
-      goto sqlerror;
-      }
-    if(!$stmt->bind_param('ii',$_POST['EditDonationID'],
-        $_POST['OldPrimaryDonorID'])) {
-      buildErrorMessage($ErrMsg,
-          'unable to bind update donation assn query params'.$msi->error);
-      goto sqlerror;
-    }
-    if(!$stmt->execute()) {
-      buildErrorMessage($ErrMsg,
-          'unable to exec update donation assn query'.$msi->error);
-      goto sqlerror;
-    }*/
   }
   sqlerror:
   $stmt->free_result;

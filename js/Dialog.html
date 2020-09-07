@@ -1,5 +1,6 @@
-{*<!-- dialog box for looking up either a household (buttonAction = "selectHouse", "moveMember")
-    or a contact ("addMember").
+{*<!-- dialog box for looking up either a household
+       (buttonAction = "selectHouse", "moveMember")
+       or a contact ("addMember").
     The page that calls this script must also {include file="js/ConfirmDialog.html"}
   -->*}
   
@@ -57,16 +58,29 @@
     lookupHouse('Select another household to place '+contact_name, form_action, buttonAction='moveMember');
   }
 
-  function confirmIfNotSelecthouse(buttonLabel, confirm_msg, buttonAction, form_to_submit) {
+/*  function confirmIfNotSelecthouse(buttonLabel, confirm_msg, buttonAction, form_to_submit) {
     if (buttonAction !== "selectHouse") {
       Confirm(buttonLabel, confirm_msg, buttonAction, form_to_submit);
     } else {
       $(form_to_submit+ " input[name=buttonAction]").val(buttonAction);
       $(form_to_submit).submit();
     }
-  }
+  }*/
 
-  function lookupHouse(title,form_action,buttonAction="selectHouse") {
+  function lookupSelect(ui,buttonAction) {
+    $("#TargetHouseID").val(ui.item.value);
+    if(buttonAction !== 'selectHouse') {
+      var confmsg = "Move "+$("#ContactName").val()+" to "
+         +ui.item.housename+" household";
+      Confirm("Move", confmsg, buttonAction, "#LookupForm");
+    }
+    else {
+      $("#LookupForm input[name=buttonAction]").val(buttonAction);
+      $("#LookupForm").submit();
+    }
+  }
+  
+  function lookupHouse(title,form_action,buttonAction) {
     $("#LookupDialog").dialog ({
       height: "auto",
       width: "auto",
@@ -103,11 +117,7 @@
           }
         })
       },
-      select: function(event, ui) {
-        $("#TargetHouseID").val(ui.item.value);
-        var confmsg = "Move "+$("#ContactName").val()+" to "+ui.item.housename+" household";
-        confirmIfNotSelecthouse("Move", confmsg, buttonAction, "#LookupForm");
-      }
+      select: function(event, ui) {lookupSelect(ui,buttonAction);}
     });
     $("#MemberLookup").autocomplete({
       minLength: 3,
@@ -124,11 +134,7 @@
           }
         })
       },
-      select: function(event, ui) {
-        $("#TargetHouseID").val(ui.item.value);
-        var confmsg = "Move "+$("#ContactName").val()+" to "+ui.item.housename+" household";
-        confirmIfNotSelecthouse("Move", confmsg, buttonAction, "#LookupForm");
-      }
+      select: function(event, ui) {lookupSelect(ui,buttonAction);}
     });
   }
 

@@ -1,7 +1,11 @@
 {extends file="page.tpl"}
 
-{block name="content"}
+{block name="js"}
+  {include file="js/ConfirmDialog.html"}
   {include file="js/Dialog.html"}
+{/block}
+
+{block name="content"}
   {if isset($house)}
     <table class="edit">
       <tr>
@@ -44,7 +48,7 @@
          {/foreach}
        </td>
        <td><input type="button"
-         onClick="lookupHouse('Look up new default household','summary.php')"
+         onClick="lookupHouse('Look up new default household','summary.php','selectHouse')"
          value="Look Up Household">
        </td>
       </tr>
@@ -74,7 +78,7 @@
     </table>
   {else}
     <input type="button"
-         onClick="lookupHouse('Look up new default household','summary.php')"
+         onClick="lookupHouse('Look up new default household','summary.php','selectHouse')"
          value="Look Up Household">
   {/if}
 {/block}

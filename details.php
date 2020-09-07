@@ -52,7 +52,7 @@ else if($_POST['buttonAction']=='Delete') {
         'unable to prep delete household members query'.$msi->error);
     goto delerror;
   }
-  /* $hid was set from $_SESSION or SelectedHouseID */
+  /* $hid was set from $_SESSION or TargetHouseID */
   if(!$stmt->bind_param('i',$hid)) {
     buildErrorMessage($ErrMsg,
         'unable to bind delete household members query params'.$msi->error);
@@ -116,18 +116,16 @@ else if ($_POST['buttonAction']=='moveMember') {
         'unable to execute move member query: '.$msi->error);
     goto moveerror;
   }
-  echo "buttonAction: ".$_POST['buttonAction'];
-
 moveerror:
-    echo "moveerror";
 }
 
 else if ($_POST['buttonAction']=='addMember') {
   $cid=$_POST['ContactID'];
   $target_hid=$_POST['TargetHouseID'];
-  $already_member=(int)$_POST['CurrentHouseID']; //query in AddLookup.php will set this to 0 if null
+  //query in AddLookup.php will set this to 0 if null
+  $already_member=(int)$_POST['CurrentHouseID'];
   
-  echo "<br>CurrentHouseID: ".$already_member." (".gettype($already_member).")</br>";
+  //echo "<br>CurrentHouseID: ".$already_member." (".gettype($already_member).")</br>";
   // the contact is already in another household
   if($already_member){
     $stmt=$msi->prepare('update household_members set household_id=? where contact_id=?');
@@ -153,7 +151,6 @@ else if ($_POST['buttonAction']=='addMember') {
   }
 
 adderror:
-    echo "adderror";
 }
 
 displayFooter($smarty,$ErrMsg);

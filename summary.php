@@ -14,8 +14,8 @@ if(isset($_GET['cid'])) {
   // contact id sent in from gulchdbi
   $hid = getHouseholdFromContact($msi,$smarty,$_GET['cid']);
 }
-else if(isset($_POST['SelectedHouseID'])) {
-  $hid=$_POST['SelectedHouseID'];
+else if(isset($_POST['TargetHouseID'])) {
+  $hid=$_POST['TargetHouseID'];
 }
 else if(isset($_SESSION['household_id'])) {
   $hid=$_SESSION['household_id'];
