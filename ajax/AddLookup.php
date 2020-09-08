@@ -18,7 +18,6 @@ class SF {
   }
 }
 
-
 $ErrMsg='';
 if(isset($_GET['value'])){
   if(!strlen($_GET['value'])) {

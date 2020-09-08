@@ -19,22 +19,12 @@ class SF {
 
 $ErrMsg='';
 if(isset($_GET['value'])){
-/*    $value='%'.strtolower($_GET['value']).'%';
-    $query="select concat(h.name,': ',concat_ws(' ',c.first_name, ".
-           "c.primary_name,d.degree)), h.household_id, h.name ".
-           "from contacts c inner join household_members hm ".
-           "on hm.contact_id=c.contact_id left join households h ".
-           "on h.household_id=hm.household_id left join degrees d ".
-           "on d.degree_id=c.degree_id where c.primary_name like '".$value."' ".
-           "or c.first_name like '".$value."' or c.middle_name like '".$value."' ".
-           "or c.nickname like '".$value."'";*/
-
   if(!strlen($_GET['value'])) {
     // don't search on empty string - it will return everyone in the db
     $ErrMsg=buildErrorMessage($ErrMsg,'Search string is empty');
     goto sqlerror;
   }
-    $query="select concat(h.name,': ',concat_ws(' ',c.first_name, ".
+  $query="select concat(h.name,': ',concat_ws(' ',c.first_name, ".
            "c.primary_name,d.degree)), h.household_id, h.name ".
            "from contacts c inner join household_members hm ".
            "on hm.contact_id=c.contact_id left join households h ".
