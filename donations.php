@@ -16,9 +16,6 @@ if(isset($_POST['TargetHouseID'])) {
 else if(isset($_SESSION['household_id'])) {
   $hid=$_SESSION['household_id'];
 }
-else {
-  header("Location: lookup.php");
-}
 
 if(isset($_POST['buttonAction'])) {
   if($_POST['buttonAction'] == 'Add') {
@@ -88,20 +85,22 @@ if(isset($_POST['buttonAction'])) {
   $stmt->free_result;
 }
 
-$house=new HouseData($msi,$smarty,$hid);
+if(isset($hid)) {
+  $house=new HouseData($msi,$smarty,$hid);
 
-/* fund list for Add and Edit Donation dialogs */
-if($result=$msi->query('select fund_id,fund from funds')) {
-  while($tx = $result->fetch_assoc()) {
-    $fund_list[]=$tx;
-  }  
-  $smarty->assign('fund_list',$fund_list);
+  /* fund list for Add and Edit Donation dialogs */
+  if($result=$msi->query('select fund_id,fund from funds')) {
+    while($tx = $result->fetch_assoc()) {
+      $fund_list[]=$tx;
+    }  
+    $smarty->assign('fund_list',$fund_list);
+  }
+  else {
+    buildErrorMessage($ErrMsg,'fund query failed: '.$msi->error);
+  }
+  /* list of members for primary donor */
+  $smarty->assign('members',$house->members);
 }
-else {
-  buildErrorMessage($ErrMsg,'fund query failed: '.$msi->error);
-}
-/* list of members for primary donor */
-$smarty->assign('members',$house->members);
 
 displayFooter($smarty,$ErrMsg);
 $smarty->assign('house',$house);

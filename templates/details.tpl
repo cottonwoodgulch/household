@@ -73,11 +73,11 @@
     </table>
 
     <br />
+    <input type="hidden" name="buttonAction">
     <input type="submit" value="Save" onClick="{
-        $('#details_form input[name="buttonAction"]).val('saveChange');
+        $('#details_form input[name=buttonAction]').val('saveChange');
         $('#details_form').submit();
       }">
-    <input type="hidden" name="buttonAction">
     <input type="button" onClick="newHouse()" value="New">
     <input type="button" onClick="Confirm('Delete',
       'Really delete {$house->hd.name} Household', 'Delete', '#details_form')" value="Delete">
@@ -101,11 +101,8 @@
         <img src="images/edit.png" title="Move">
         </button>
       </td>
-      <td>{$tx.first_name}</td>
-      <td>{$tx.nickname|NickName}</td>
-      <td>{$tx.middle_name}</td>
-      <td>{$tx.primary_name}</td>
-      <td>{$tx.degree}</td>
+      <td>{$tx.first_name} {$tx.nickname|NickName} {$tx.middle_name} 
+           {$tx.primary_name} {$tx.degree}</td>
     </tr>
     {/foreach}
   </table>
