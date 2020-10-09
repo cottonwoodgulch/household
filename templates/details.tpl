@@ -74,13 +74,13 @@
 
     <br />
     <input type="hidden" name="buttonAction">
-    <input type="submit" value="Save" onClick="{
+    <input type="submit" value="Save Household" onClick="{
         $('#details_form input[name=buttonAction]').val('saveChange');
         $('#details_form').submit();
       }">
-    <input type="button" onClick="newHouse()" value="New">
+    <input type="button" onClick="newHouse()" value="New Household">
     <input type="button" onClick="Confirm('Delete',
-      'Really delete {$house->hd.name} Household', 'Delete', '#details_form')" value="Delete">
+      'Really delete {$house->hd.name} Household', 'Delete', '#details_form')" value="Delete Household">
     <input type="button"
       onClick="lookupHouse('Look up new default household','details.php','selectHouse')"
       value="Look Up Household">

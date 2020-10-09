@@ -10,7 +10,10 @@
     <table class="edit">
       <tr>
         <td style="font-weight: bold;margin: 2px 0 10px">
-             Household: {$house->hd.name}</p>
+             Household: {$house->hd.name}
+             <br />
+             ID: {$house->household_id}
+             </p>
         </td>
         <td>
           <table class="edit">

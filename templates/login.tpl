@@ -20,5 +20,4 @@
           </tr>
         </table>
       </form>
-      <p>Forgot your password? Need an account? Call the office - 505-248-0563</p>
 {/block}
