@@ -33,7 +33,7 @@ if(isset($_GET['value'])){
           "on hm.contact_id=c.contact_id left join households h ".
           "on h.household_id=hm.household_id left join degrees d ".
           "on d.degree_id=c.degree_id where ";
-  $st=explode(' ',strtolower($_GET['value']));
+  $st=explode(' ',strtolower($msi->escape_string($_GET['value'])));
   $is_first=true;
   foreach($st as $wx) {
     if(!$is_first) $query.=' && ';
