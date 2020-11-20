@@ -23,6 +23,17 @@
             <tr>
               <td class="label">Mail Name:</td><td>{$house->hd.mailname}</td>
             </tr>
+            <tr>
+              <td class="label">Members:</td>            
+              <td>
+               {foreach from=$house->members item=md}
+                 {$md.first_name} {$md.nickname|NickName} {$md.middle_name} 
+                 {$md.primary_name} {$md.degree}<br />
+               {foreachelse}
+                  No members
+               {/foreach}
+              </td>
+            </tr>
           </table>
         </td>
         <td>
@@ -40,16 +51,20 @@
             <tr>
               <td class="label"></td><td>{$address.country}</td>
             </tr>
+              {foreach $house->emails as $tx name=emails}
+                <tr>
+                  {if $smarty.foreach.emails.first}
+                    <td class="label">Emails:</td>
+                  {else}
+                    <td></td>
+                  {/if}
+                  {if $tx.preferred}
+                    <td>{$tx.email}</td>
+                  {/if}
+                </tr>
+              {/foreach}
           </table>
         </td>
-        <td style="font-size: .9em;">
-         {foreach from=$house->members item=md}
-           {$md.first_name} {$md.nickname|NickName} {$md.middle_name} 
-           {$md.primary_name} {$md.degree}<br />
-         {foreachelse}
-            No members
-         {/foreach}
-       </td>
        <td><input type="button"
          onClick="lookupHouse('Look up new default household','summary.php','selectHouse')"
          value="Look Up Household">

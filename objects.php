@@ -123,8 +123,8 @@ class HouseData {
     /* get all emails for all household members
        - member_id_list was created in the address section */
     if($stmt=$msi->prepare(
-         "select distinct !isnull(pe.email_id) preferred, et.email_type, 
-                 e.email_id,cx.first_name, e.email
+         "select distinct !isnull(pe.email_id) preferred,
+                 et.email_type, e.email_id,cx.first_name, e.email
             from contacts c
            inner join email_associations ea
               on ea.contact_id=c.contact_id
@@ -136,9 +136,8 @@ class HouseData {
               on cx.contact_id=e.owner_id
             left join preferred_emails pe
               on pe.email_id=e.email_id
-           where c.contact_id in ($member_id_list)
-             and (isnull(pe.household_id)
-              or pe.household_id=".$this->household_id.")")) {
+             and pe.household_id=".$this->household_id.
+          " where c.contact_id in ($member_id_list)")) {
       $stmt->execute();
       $result=$stmt->get_result();
       while($tx = $result->fetch_assoc()) {
@@ -148,6 +147,7 @@ class HouseData {
       $result->free();
     }
     else {
+     echo "error prepping stmt: ".$msi->error;
       $this->ErrMsg=buildErrorMessage($this->ErrMsg,
         "Email info: unable to create mysql statement object: ".
         $msi->error);

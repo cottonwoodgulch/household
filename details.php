@@ -14,7 +14,9 @@ if(isset($_SESSION['household_id'])) {
 
 /* buttonAction defaults to "" - that is, isset will always be true */
 if($_POST['buttonAction']=='selectHouse') {
-  /* yes, I know - this will re-set what was just set to $_SESSION[household_id] */
+  /* user has just selected a new default household */
+  /* yes, I know - $hid was just set to $_SESSION[household_id] and
+       this will reset it */
   $hid=$_POST['TargetHouseID'];
   $_SESSION['household_id']=$hid;
 
@@ -61,6 +63,23 @@ else if($_POST['buttonAction']=='Delete') {
   if(!$stmt->execute()) {
     buildErrorMessage($ErrMsg,
         'unable to exec delete household members query'.$msi->error);
+    goto delerror;
+  }
+  /* Delete preferred_emails from household */
+  if(!$stmt=$msi->prepare('delete from preferred_emails where household_id=?')) {
+    buildErrorMessage($ErrMsg,
+        'unable to prep delete preferred emails query'.$msi->error);
+    goto delerror;
+  }
+  /* $hid was set from $_SESSION or TargetHouseID */
+  if(!$stmt->bind_param('i',$hid)) {
+    buildErrorMessage($ErrMsg,
+        'unable to bind delete preferrred emails query params'.$msi->error);
+    goto delerror;
+  }
+  if(!$stmt->execute()) {
+    buildErrorMessage($ErrMsg,
+        'unable to exec delete preferred emails query'.$msi->error);
     goto delerror;
   }
   /* delete household */
@@ -116,6 +135,7 @@ else if ($_POST['buttonAction']=='moveMember') {
         'unable to execute move member query: '.$msi->error);
     goto moveerror;
   }
+  deletePreferredEmails($msi,$cid,$hid,$ErrMsg);
 moveerror:
 }
 
@@ -124,32 +144,32 @@ else if ($_POST['buttonAction']=='addMember') {
   $target_hid=$_POST['TargetHouseID'];
   //query in AddLookup.php will set this to 0 if null
   $already_member=(int)$_POST['CurrentHouseID'];
-  
-  //echo "<br>CurrentHouseID: ".$already_member." (".gettype($already_member).")</br>";
-  // the contact is already in another household
+  //echo "addMember, current house id (=already_member): $already_member<br />";
+
   if($already_member){
+    // the contact is already in another household
+    deletePreferredEmails($msi,$cid,$already_member,$ErrMsg);
     $stmt=$msi->prepare('update household_members set household_id=? where contact_id=?');
-  // the contact has no household
   } else {
+    // the contact has no household
     $stmt=$msi->prepare("insert into household_members (household_id, contact_id, modified) values (?, ?, now())");
   }
 
   if(!$stmt){
     $ErrMsg=buildErrorMessage($ErrMsg,
-       'unable to prep move member query: '.$msi->error);
+       'unable to prep add member query: '.$msi->error);
     goto adderror;
   }
   if(!$stmt->bind_param('ii', $target_hid, $cid)){
     $ErrMsg=buildErrorMessage($ErrMsg,
-        'unable to bind move member query params: '.$msi->error);
+        'unable to bind add member query params: '.$msi->error);
     goto adderror;
   }
   if(!$stmt->execute()){
     $ErrMsg=buildErrorMessage($ErrMsg,
-        'unable to execute move member query: '.$msi->error);
+        'unable to execute add member query: '.$msi->error);
     goto adderror;
   }
-
 adderror:
 }
 
@@ -157,5 +177,18 @@ displayFooter($smarty,$ErrMsg);
 $house=new HouseData($msi,$smarty,$hid);
 $smarty->assign('house',$house);
 $smarty->display('details.tpl');
+
+function deletePreferredEmails($msi,$cid,$hid,&$ErrMsg) {
+  /* remove preferred_emails records when a person has been moved or 
+       added to a different household */
+  if(!$msi->query(
+    "delete from preferred_emails ".
+     "where email_id in ".
+       "(select ea.email_id from email_associations ea ".
+         "where ea.contact_id=$cid) and household_id=$hid")) {
+    $ErrMsg=buildErrorMessage($ErrMsg,
+        'unable to run delete pref emails query: '.$msi->error);
+  }
+}
 
 ?>

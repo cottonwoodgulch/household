@@ -5,7 +5,8 @@
         "smarty/smarty": "3.1.*",
         "owasp/phprbac": "2.0.*@dev",
         "components/jquery": "3.*",
-        "components/jqueryui": "1.12.*"
+        "components/jqueryui": "1.12.*",
+        "quickbooks/v3-php-sdk": ">=4.0.1"
     },
     "license": "GPL-3.0",
     "authors": [
