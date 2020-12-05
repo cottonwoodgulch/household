@@ -28,7 +28,6 @@ if($hid) {
   $smarty->assign('address',$tx->getPreferredAddress());
 }
 /* if $hid is not set, only the Look up Household button will show */
-
 $smarty->assign('referrer','home');
 $smarty->display('summary.tpl');
 ?>

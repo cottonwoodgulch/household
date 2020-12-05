@@ -27,8 +27,8 @@
               <td class="label">Members:</td>            
               <td>
                {foreach from=$house->members item=md}
-                 {$md.first_name} {$md.nickname|NickName} {$md.middle_name} 
-                 {$md.primary_name} {$md.degree}<br />
+                 {$md.first_name} {$md.nickname|NickName} {$md.middle_name}
+                 {$md.primary_name} {$md.degree} ({$md.contact_id})<br />
                {foreachelse}
                   No members
                {/foreach}
