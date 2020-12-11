@@ -9,6 +9,7 @@ class HouseData {
   public $donations = array();
   public $addresses = array();
   public $emails = array();
+  public $phones = array();
   private $ErrMsg = '';
 
   function __construct($msi, $smarty, $hid) {
@@ -43,6 +44,7 @@ class HouseData {
       $stmt->execute();
       $result=$stmt->get_result();
       while($tx = $result->fetch_assoc()) {
+        $tx['trek_list']=trek_list($msi,$tx['contact_id'],$this->ErrMsg);
         $this->members[] = $tx;
       }
       $stmt->close();
@@ -119,24 +121,19 @@ class HouseData {
         "Address info: unable to create mysql statement object: ".
         $msi->error);
       return;
-    }    
+    }
     /* get all emails for all household members
        - member_id_list was created in the address section */
     if($stmt=$msi->prepare(
          "select distinct !isnull(pe.email_id) preferred,
                  et.email_type, e.email_id,cx.first_name, e.email
             from contacts c
-           inner join email_associations ea
-              on ea.contact_id=c.contact_id
-           inner join emails e
-              on e.email_id=ea.email_id
-            left join email_types et
-              on et.email_type_id=e.email_type_id
-            left join contacts cx
-              on cx.contact_id=e.owner_id
+           inner join email_associations ea on ea.contact_id=c.contact_id
+           inner join emails e on e.email_id=ea.email_id
+            left join email_types et on et.email_type_id=e.email_type_id
+            left join contacts cx on cx.contact_id=e.owner_id
             left join preferred_emails pe
-              on pe.email_id=e.email_id
-             and pe.household_id=".$this->household_id.
+              on pe.email_id=e.email_id and pe.household_id=".$this->household_id.
           " where c.contact_id in ($member_id_list)")) {
       $stmt->execute();
       $result=$stmt->get_result();
@@ -147,9 +144,34 @@ class HouseData {
       $result->free();
     }
     else {
-     echo "error prepping stmt: ".$msi->error;
+     echo "error prepping emails stmt: ".$msi->error;
       $this->ErrMsg=buildErrorMessage($this->ErrMsg,
         "Email info: unable to create mysql statement object: ".
+        $msi->error);
+      return;
+    }
+    /* get all phones for all household members
+       - member_id_list was created in the address section */
+    if($stmt=$msi->prepare(
+         "select distinct pt.phone_type,p.phone_id,cx.first_name,p.formatted,p.number
+            from contacts c
+           inner join phone_associations pa on pa.contact_id=c.contact_id
+           inner join phones p on p.phone_id=pa.phone_id
+            left join phone_types pt on pt.phone_type_id=p.phone_type_id
+            left join contacts cx on cx.contact_id=p.owner_id
+           where c.contact_id in ($member_id_list)")) {
+      $stmt->execute();
+      $result=$stmt->get_result();
+      while($tx = $result->fetch_assoc()) {
+        $this->phones[] = $tx;
+      }
+      $stmt->close();
+      $result->free();
+    }
+    else {
+     echo "error prepping phones stmt: ".$msi->error;
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+        "Phones info: unable to create mysql statement object: ".
         $msi->error);
       return;
     }

@@ -24,11 +24,14 @@
               <td class="label">Mail Name:</td><td>{$house->hd.mailname}</td>
             </tr>
             <tr>
-              <td class="label">Members:</td>            
+              <td class="label">Members:</td>
               <td>
                {foreach from=$house->members item=md}
                  {$md.first_name} {$md.nickname|NickName} {$md.middle_name}
                  {$md.primary_name} {$md.degree} ({$md.contact_id})<br />
+                 {if $md.trek_list != ''}
+                   {$md.trek_list|TrekList}<br />
+                 {/if}
                {foreachelse}
                   No members
                {/foreach}
@@ -61,6 +64,16 @@
                   {if $tx.preferred}
                     <td>{$tx.email}</td>
                   {/if}
+                </tr>
+              {/foreach}
+              {foreach $house->phones as $tx name=phones}
+                <tr>
+                  {if $smarty.foreach.phones.first}
+                    <td class="label">Phones:</td>
+                  {else}
+                    <td></td>
+                  {/if}
+                  <td>{$tx.number|Phone:$tx.formatted} ({$tx.first_name})</td>
                 </tr>
               {/foreach}
           </table>

@@ -125,6 +125,73 @@ function displayFooter($smarty,$err_msg) {
       'onClick="hideFooter();">Close</button></td></tr></table>';
     $smarty->assign('footer',$msg);
   }
+  
+}function append_wc(&$list,$element) {
+  /* add comma if needed, then element */
+  $list .= (strlen($list) ? ',' : '') . $element;
+}
+
+function trek_list($msi,$contact_id,&$ErrMsg) {
+  if($treksresult=$msi->query(
+     "select r.year,g.short_name,ifnull(ro.role,'') role
+        from roster_memberships rm
+        left join rosters r on r.roster_id=rm.roster_id
+        left join groups g on g.group_id=r.group_id
+        left join roles ro on ro.role_id=rm.role_id
+       where rm.contact_id=$contact_id
+         and g.group_id not in (61,77,86,58,11,25,54,62,53,55,57)
+       order by g.short_name, r.year")) {
+    //echo "trek count: ".$treksresult->num_rows."\n";
+    if(!$trx = $treksresult->fetch_assoc())return '';
+    $prev_group=$trx['short_name'];
+    $prev_role=$trx['role'];
+    $prev_year=$trx['year'];
+    $first_year=$prev_year;
+    $element='';
+    $le = array();
+    do {
+      $last_rec=is_null($trx = $treksresult->fetch_assoc());
+      $year=$trx['year'];
+      $group=$trx['short_name'];
+      $role=$trx['role'];
+      //echo "$year $group $role $first_year $prev_year $prev_group\n";
+      if($group == $prev_group && $role == $prev_role) {
+        if($year != ($prev_year+1)) {
+          append_wc($element,$first_year.'-'.substr($prev_year,2,2));
+          $first_year=$year;
+        }
+      }
+      else {
+        // different trek, write previous one
+        if($prev_year == $first_year) {
+          append_wc($element,$prev_year);
+        }
+        else {
+          if($first_year) {
+            append_wc($element,$first_year.'-'.substr($prev_year,2,2));
+          }
+          else {
+            append_wc($element,$prev_year);
+          }
+        }
+        $element .= " $prev_group";
+        if($prev_role != '')$element .= " $prev_role";
+        $le[]=$element;
+        $element='';
+        $first_year=$year;
+      }
+      $prev_year=$year;
+      $prev_group=$group;
+      $prev_role=$role;
+    } while(!$last_rec);
+  }
+  else {
+    // query error
+    $ErrMsg=buildErrorMessage($ErrMsg,'trek_list query error: '.$msi->error);
+  }
+  sort($le);
+  foreach($le as $lx) append_wc($element,$lx);
+  return $element;
 }
 
 ?>
