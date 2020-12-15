@@ -1,6 +1,6 @@
 <?php
 function smarty_modifier_TrekList($tl) {
-  if(strlen($tl) <= 35)return $tl;
+  if(strlen($tl) <= 35)return '&nbsp;&nbsp;'.$tl;
   $retval='';
   $pos=0;
   $segbegin=0;

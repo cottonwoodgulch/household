@@ -128,7 +128,7 @@ function displayFooter($smarty,$err_msg) {
   
 }function append_wc(&$list,$element) {
   /* add comma if needed, then element */
-  $list .= (strlen($list) ? ',' : '') . $element;
+  $list .= (strlen($list) ? ', ' : '') . $element;
 }
 
 function trek_list($msi,$contact_id,&$ErrMsg) {
