@@ -14,7 +14,8 @@ class HouseData {
 
   function __construct($msi, $smarty, $hid) {
     if($stmt=$msi->prepare(
-         "select h.household_id, h.name, h.salutation, h.mailname,h.address_id
+         "select h.household_id, h.name, h.salutation, h.mailname,
+            ifnull(h.address_id,0) address_id
             from households h
            where h.household_id=?")) {
       $stmt->bind_param('i',$hid);

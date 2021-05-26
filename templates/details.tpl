@@ -38,7 +38,7 @@
         </td>
       </tr>
     </table>
-
+    
     <table class="edit">
       <tr>
         <th colspan="2" id="preferred_label">Preferred</th>
@@ -58,6 +58,12 @@
         <td>({$tx.first_name})</td>
       </tr>
       {/foreach}
+      <tr>
+        <td><input type="radio"
+          {if $house->hd.address_id==0} checked{/if}
+          name="prefaddress" value="0"></td>
+        <td>None</td>
+      </tr>
     </table>
     
     <table class="edit">
