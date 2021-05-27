@@ -1,5 +1,6 @@
 <?php
 
+// test github 2FA
 require_once 'libe.php';
 if(!$rbac->Users->hasRole('Financial Information Editor',$_SESSION['user_id'])) {
   header("Location: NotAuthorized.html");
