@@ -15,7 +15,6 @@
     <input type="hidden" name="OldPrimaryDonorID" id="OldPrimaryDonorID">
     <input type="hidden" name="buttonAction">
     <table class="edit">
-      </tr>
       <tr><td class="label">Date</td>
           <td><input type="date" id="EditDate" name="EditDate" value="EditDate">
           </td>

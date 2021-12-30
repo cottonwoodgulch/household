@@ -191,6 +191,14 @@ input, button, select {
   /*font-family: Palatino, "Times New Roman", "Times Roman", Serif;*/
 }
 
+button.mini-button {
+  font-size: .9em;
+  color: black;
+  background-color: #C49F75;
+  box-shadow: none;
+  height: 15px;
+}
+
 input:hover, button:hover {
   background-color: #fCCFA6;
 }

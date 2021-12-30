@@ -58,15 +58,6 @@
     lookupHouse('Select another household to place '+contact_name, form_action, buttonAction='moveMember');
   }
 
-/*  function confirmIfNotSelecthouse(buttonLabel, confirm_msg, buttonAction, form_to_submit) {
-    if (buttonAction !== "selectHouse") {
-      Confirm(buttonLabel, confirm_msg, buttonAction, form_to_submit);
-    } else {
-      $(form_to_submit+ " input[name=buttonAction]").val(buttonAction);
-      $(form_to_submit).submit();
-    }
-  }*/
-
   function lookupSelect(ui,buttonAction) {
     $("#TargetHouseID").val(ui.item.value);
     if(buttonAction !== 'selectHouse') {

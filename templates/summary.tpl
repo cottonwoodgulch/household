@@ -27,8 +27,9 @@
               <td class="label">Members:</td>
               <td>
                {foreach from=$house->members item=md}
+                 <a href="contact.php?cid={$md.contact_id}">
                  {$md.first_name} {$md.nickname|NickName} {$md.middle_name}
-                 {$md.primary_name} {$md.degree} ({$md.contact_id})<br />
+                 {$md.primary_name} {$md.degree}</a> ({$md.contact_id})<br />
                  {if $md.trek_list != ''}
                    {$md.trek_list|TrekList}<br />
                  {/if}

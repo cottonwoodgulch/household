@@ -8,8 +8,8 @@ function editDonation(donation_id) {
   var xdd = new String(donation_date);
   DonationDialog("Edit",xdd.substring(5,7)+'/'+xdd.substring(8)+'/'+
        xdd.substring(0,4),donation_id);
-  /* so PHP has access to the donation and old donor IDs to change the
-       donation_assn rec */
+  /* so PHP has access to the donation and old donor IDs
+   *  to change the donation_assn rec */
   $("#EditDonationID").val(donation_id);
   $("#OldPrimaryDonorID").val($("#DonorID"+donation_id).html());
   $("#EditDate").val(donation_date);

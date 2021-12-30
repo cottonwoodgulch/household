@@ -108,8 +108,9 @@
         <img src="images/edit.png" title="Move">
         </button>
       </td>
-      <td>{$tx.first_name} {$tx.nickname|NickName} {$tx.middle_name} 
-           {$tx.primary_name} {$tx.degree}</td>
+      <td><a href="contact.php?cid={$tx.contact_id}">
+           {$tx.first_name} {$tx.nickname|NickName} {$tx.middle_name} 
+           {$tx.primary_name} {$tx.degree}</a></td>
     </tr>
     {/foreach}
   </table>

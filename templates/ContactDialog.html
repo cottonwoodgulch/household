@@ -1,0 +1,93 @@
+{* Dialogs for Contact page *}
+
+  <div id="PhoneEditDialog" style="display: none">
+  <form method="post" action="contact.php"
+        id="PhoneEditForm" autocomplete="off">
+    <input type="hidden" name="EditPhoneID" id="EditPhoneID">
+    <input type="hidden" name="ContactID" value="{$cdata->contact_id}">
+    <input type="hidden" name="buttonAction">
+    <table class="edit">
+      <tr><td class="label">Phone Type: </td>
+          <td><select id="EditPhoneType" name="EditPhoneType">
+              {foreach from=$phone_type_list item=$tl}
+                <option value="{$tl.phone_type_id}">
+                {$tl.phone_type}</option>
+              {/foreach}
+          </select></td>
+      </tr>
+      <tr><td class="label">Phone: </td>
+        <td><input id="EditNumber" name="EditNumber"></td></tr>
+        <tr title="{$phone_formatted}"><td class="label">Formatted: </td>
+        <td><input type="checkbox" id="EditFormatted"
+            name="EditFormatted"></td>
+      </tr>
+  </table>
+  </form> {* PhoneEditForm *}
+  </div> {* PhoneEditDialog *}
+
+
+  <div id="EmailEditDialog" style="display: none">
+  <form method="post" action="contact.php"
+        id="EmailEditForm" autocomplete="off">
+    <input type="hidden" name="EditEmailID" id="EditEmailID">
+    <input type="hidden" name="ContactID" value="{$cdata->contact_id}">
+    <input type="hidden" name="buttonAction">
+    <table class="edit">
+      <tr><td class="label">E-mail Type: </td>
+          <td><select id="EditEmailType" name="EditEmailType">
+              {foreach from=$email_type_list item=$tl}
+                <option value="{$tl.email_type_id}">
+                {$tl.email_type}</option>
+              {/foreach}
+          </select></td>
+      </tr>
+      <tr><td class="label">E-mail: </td>
+          <td><input id="EditEmail" name="EditEmail">
+          </td>
+      </tr>
+  </table>
+  </form> {* EmailEditForm *}
+  </div> {* EmailEditDialog *}
+
+  <div id="AddressEditDialog" style="display: none">
+  <form method="post" action="contact.php"
+        id="AddressEditForm" autocomplete="off">
+    <input type="hidden" name="EditAddressID" id="EditAddressID">
+    <input type="hidden" name="ContactID" value="{$cdata->contact_id}">
+    <input type="hidden" name="buttonAction">
+    <table class="edit">
+      <tr><td class="label">Address Type: </td>
+          <td><select id="EditAddressType" name="EditAddressType">
+              {foreach from=$address_type_list item=$tl}
+                <option value="{$tl.address_type_id}">
+                {$tl.address_type}</option>
+              {/foreach}
+          </select></td>
+      </tr>
+      <tr><td class="label">Street Address 1: </td>
+          <td><input id="EditAddr1" name="EditAddr1">
+          </td>
+      </tr>
+      <tr><td class="label">Street Address 2: </td>
+          <td><input id="EditAddr2" name="EditAddr2">
+          </td>
+      </tr>
+      <tr><td class="label">Postal Code: </td>
+          <td><input id="EditZip" name="EditZip" onblur="cityLookup(this)">
+          </td>
+      </tr>
+      <tr><td class="label">City: </td>
+          <td><input id="EditCity" name="EditCity">
+          </td>
+      </tr>
+      <tr><td class="label">State: </td>
+          <td><input id="EditState" name="EditState">
+          </td>
+      </tr>
+      <tr><td class="label">Country: </td>
+          <td><input id="EditCountry" name="EditCountry">
+          </td>
+      </tr>
+  </table>
+  </form> {* AddressEditForm *}
+  </div> {* AddressEditDialog *}
