@@ -17,20 +17,11 @@ class SF {
   }
 }
 
-/*select c.first_name,ifnull(c.middle_name,'') middle_name,
-       c.primary_name,ro.role
-  from rosters r
- inner join roster_memberships rm on rm.roster_id=r.roster_id
- inner join contacts c on c.contact_id=rm.contact_id
-  left join roles ro on ro.role_id=rm.role_id
- where r.group_id=2 and r.year=1980
- order by ro.rank,c.primary_name,c.first_name;*/
-
 $year=$_GET['year'];
 $group_id=$_GET['group_id'];
 if($result=$msi->query(
     "select c.first_name,ifnull(c.middle_name,'') middle_name,".
-    "c.primary_name,c.contact_id,ro.role from rosters r ".
+    "c.primary_name,c.contact_id,ifnull(ro.role,'') role from rosters r ".
     "inner join roster_memberships rm on rm.roster_id=r.roster_id ".
     "inner join contacts c on c.contact_id=rm.contact_id ".
     "left join roles ro on ro.role_id=rm.role_id ".

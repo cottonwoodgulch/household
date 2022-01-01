@@ -61,7 +61,8 @@ function rosterLookup(year,group,group_id) {
       gl="<tr><th>"+year+" "+group+"</th></tr>";
       res_html.forEach(function(element) {
         middle=element.middle.length>0 ? " "+element.middle+" " : " ";
-        role=element.role=='Trekker' ? "" : " ("+element.role+")";
+        role=(element.role=='Trekker' || element.role=='') ?
+            "" : " ("+element.role+")";
         namelink='<a href="contact.php?cid='+element.contact_id+
           '">'+element.first+middle+element.last+'</a> '+role;
         gl+='<tr><td>'+namelink+'</td></tr>';
