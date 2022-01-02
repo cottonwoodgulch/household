@@ -43,6 +43,7 @@ if($rbac->Users->hasRole('Financial Information Editor',$user_id)) {
   $sitemenu[]=array('d' => 'Details', 't' => 'details', 'c' => 0);
   $sitemenu[]=array('d' => 'Donations', 't' => 'donations', 'c' => 0);
   $sitemenu[]=array('d' => 'Contact', 't' => 'contact', 'c' => 0);
+  $sitemenu[]=array('d' => 'Utility', 't' => 'utility', 'c' => 0);
   foreach($sitemenu as &$sm) {
     if (stripos(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH), $sm['t']))
     {
