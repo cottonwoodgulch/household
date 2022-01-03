@@ -22,11 +22,12 @@ if(isset($_POST['buttonAction'])) {
       $csv_list=array();
       while($name) {
         //echo "name: $name";
-        $query="select c.first_name,c.primary_name,h.salutation,".
+        $query="select c.first_name,c.primary_name,d.degree,h.salutation,".
           "h.mailname,a.street_address_1,a.street_address_2,a.city,".
           "a.state,a.postal_code,a.country from contacts c ".
           "inner join household_members hm on hm.contact_id=c.contact_id ". "left join households h on h.household_id=hm.household_id ".
-          "left join addresses a on a.address_id=h.address_id where ";
+          "left join addresses a on a.address_id=h.address_id ".
+          "left join degrees d on d.degree_id=c.degree_id where ";
         $st=explode(' ',strtolower($msi->escape_string($name)));
         $is_first=true;
         foreach($st as $wx) {
@@ -35,17 +36,21 @@ if(isset($_POST['buttonAction'])) {
           $query.="(lower(c.first_name) like $wx || ".
           "lower(c.middle_name) like $wx || ".
           "lower(c.nickname) like $wx || ".
-          "lower(c.primary_name) like $wx)";
+          "lower(c.primary_name) like $wx || ".
+          "lower (d.degree) like $wx)";
           $is_first=false;
         }
         //echo "query: $query\n\n";
         if(!$result=$msi->query($query)) {
+          echo 'query error: '.$msi->error.'<br>';
           $ErrMsg=buildErrorMessage($ErrMsg,
             'unable to execute look up query'.$msi->error);
           goto sqlerror;
         }
         if($result->num_rows) {
-          $csv_list[]=$result->fetch_assoc();
+          while($cx=$result->fetch_assoc()) {
+            $csv_list[]=$cx;
+          }
         }
         else {
           $csv_list[]['first_name']="$name not found";
