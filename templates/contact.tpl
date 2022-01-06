@@ -37,7 +37,7 @@
       </td>
       
       </tr>
-      <tr><td>Relationships Here?</td></tr>
+      {*<tr><td>Relationships Here?</td></tr>*}
     </table>  {* contact, coordinates *}
     </td>
 
