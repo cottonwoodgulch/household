@@ -86,27 +86,18 @@
       </tr>
     </table>
     <br />
-    <table class="edit">
-      {foreach from=$house->donations item=md name=donations}
-        {if $smarty.foreach.donations.first}
-          <tr>
-          <th>Date</th>
-          <th>Amount</th>
-          <th>Fund</th>
-          <th>Purpose</th>
-          <th>Donor</th>
-          </tr>
-        {/if}
-        <tr><td class="label">{$md.ddate|date_format:"%m/%d/%Y"}</td>
-            <td class="label">{$md.famount}</td>
-            <td>{$md.fund}</td>
-            <td>{$md.purpose}</td>
-            <td>{$md.first_name}</td>
-        </tr> 
-      {foreachelse}
-        <tr><td>No donations</td></tr>
-      {/foreach}
 
+    <table class="edit">
+      <tr><th>Donations</th></tr>
+      {foreach $stats as $tx}
+      <tr>
+        <td class="label">{$tx.label}</td>
+        <td class="label">{$tx.amount}</td>
+        {if $tx.ddate != ''}
+          <td>{$tx.ddate|date_format:"%m/%d/%Y"}</td>
+        {/if}
+      </tr>
+    {/foreach}
     </table>
   {else}
     <input type="button"

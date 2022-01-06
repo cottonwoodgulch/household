@@ -85,7 +85,7 @@ class HouseData {
        "HouseData donations: unable to create mysql statement object: ".
         $msi->error);
     }
-    
+        
     /* get all addresses for all household members */
     $member_id_list = '';
     foreach($this->members as $tx) {

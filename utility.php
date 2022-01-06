@@ -17,6 +17,7 @@ if(isset($_POST['buttonAction'])) {
     $is_csv=true;
     //echo 'address text: '.$_POST['AddressText'].'<br>';
     $namelist=str_replace("\r","",$_POST['AddressText']);
+    $namelist=str_replace("\t"," ",$namelist);
     //if($name=strtok($_POST['AddressText'],PHP_EOL)) {
     if($name=strtok($namelist,"\n")) {
       $csv_list=array();
