@@ -196,4 +196,58 @@ function trek_list($msi,$contact_id,&$ErrMsg) {
   return $element;
 }
 
+function email_list($msi,$household_id,&$ErrMsg) {
+  /* put all preferred emails in a string */
+  $elist='';
+  if($e_result=$msi->query(
+       'select et.email_type,e.email from preferred_emails pe '.
+       'inner join emails e on e.email_id=pe.email_id '.
+       'inner join email_types et on et.email_type_id=e.email_type_id '.
+       "where pe.household_id=$household_id")) {
+    $is_first=true;
+    while($ex=$e_result->fetch_assoc()) {
+      if(!$is_first)$elist.=', ';
+      $elist.=$ex['email_type'].': '.$ex['email'];
+      $is_first=false;
+    }
+  }
+  else {
+    // query error
+    $ErrMsg=buildErrorMessage($ErrMsg,'email_list query error: '.$msi->error);
+  }
+  return $elist;
+}
+
+function phone_list($msi,$household_id,&$ErrMsg) {
+  /* put all household phone numbers in a string */
+  $plist='';
+  if($p_result=$msi->query(
+       'select pt.phone_type,p.number,p.formatted,c.first_name '.
+       'from household_members hm '.
+       'inner join contacts c on c.contact_id=hm.contact_id '.
+       'inner join phone_associations pa on pa.contact_id=hm.contact_id '.
+       'inner join phones p on p.phone_id=pa.phone_id '.
+       'inner join phone_types pt on pt.phone_type_id=p.phone_type_id '.
+       "where hm.household_id=$household_id")) {
+    $is_first=true;
+    while($px=$p_result->fetch_assoc()) {
+      if(!$is_first)$plist.=', ';
+      if($px['formatted']) {
+        $pn=$px['number'];
+      }
+      else {
+        $pn=substr($px['number'],0,3).'-'.substr($px['number'],3,3).'-'.
+           substr($px['number'],6);
+      }
+      $plist.=$px['phone_type'].": $pn (".$px['first_name'].')';
+      $is_first=false;
+    }
+  }
+  else {
+    // query error
+    $ErrMsg=buildErrorMessage($ErrMsg,'email_list query error: '.$msi->error);
+  }
+  return $plist;
+}
+
 ?>

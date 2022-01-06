@@ -24,8 +24,8 @@ if(isset($_POST['buttonAction'])) {
       while($name) {
         //echo "name: $name";
         $query="select c.first_name,c.primary_name,d.degree,h.salutation,".
-          "h.mailname,a.street_address_1,a.street_address_2,a.city,".
-          "a.state,a.postal_code,a.country from contacts c ".
+          "h.mailname,h.household_id,a.street_address_1,a.street_address_2,".
+          "a.city,a.state,a.postal_code,a.country from contacts c ".
           "inner join household_members hm on hm.contact_id=c.contact_id ". "left join households h on h.household_id=hm.household_id ".
           "left join addresses a on a.address_id=h.address_id ".
           "left join degrees d on d.degree_id=c.degree_id where ";
@@ -50,6 +50,8 @@ if(isset($_POST['buttonAction'])) {
         }
         if($result->num_rows) {
           while($cx=$result->fetch_assoc()) {
+            $cx['emails']=email_list($msi,$cx['household_id'],$ErrMsg);
+            $cx['phones']=phone_list($msi,$cx['household_id'],$ErrMsg);
             $csv_list[]=$cx;
           }
         }
