@@ -57,7 +57,6 @@ function rosterLookup(year,group,group_id) {
     url: "ajax/RosterLookup.php?year="+year+"&group_id="+group_id,
     dataType: "json",
     success: function(res_html, textStatus, xhr) {
-      console.log('success');
       gl="<tr><th>"+year+" "+group+"</th></tr>";
       res_html.forEach(function(element) {
         middle=element.middle.length>0 ? " "+element.middle+" " : " ";
@@ -70,14 +69,56 @@ function rosterLookup(year,group,group_id) {
     $("#rosters").html(gl);
     },
     error: function(xhr, textStatus, errorThrown) {
-      console.log('failure');
       $("#content").html(textStatus+errorThrown);
     }
   });
 }
 
-/* editPhone, editEmail, editAddress manage both edit and add based on 
-   the phone_id, email_id, or address_id, which is passed as 0 if it's add */
+/* editContact, editPhone, editEmail, editAddress manage
+   both edit and add based on the contact_id, phone_id,
+   email_id, or address_id, which is passed as 0 if it's add */
+function editContact(contact_id) {
+  $("#EditContactID").val(contact_id);
+  /* pw is never retrieved, can only be set */
+  $('#EditPassword').val('');
+  if(contact_id) {
+    $('#EditContactType').val($("#contact_type_id").val());
+    $('#EditFirst').val($('#first').html());
+    $('#EditMiddle').val($('#middle').html());
+    $('#EditLast').val($('#last').html());
+    $('#EditDegree').val($('#degree').val());
+    $('#EditNickname').val($('#nickname').html());
+    $('#EditDOB').val($('#dob').val());
+    if($('#gender').html().length>0) {
+      $('#'+($('#gender').html())).prop('checked',true);
+    }
+    $('#EditDeceased').prop('checked',
+      $('#deceased').html() == 'yes');
+    $('#EditUsername').val($('#username').val());
+    $('#EditRedRocks').prop('checked',
+      $('#redrocks').val() != 0);
+  }
+  else {  // add
+    /* default Contact Type to individual */
+    $("#EditContactType").val(1);
+    $('#EditFirst').val('');
+    $('#EditMiddle').val('');
+    $('#EditLast').val('');
+    $('#EditDegree').val(0);
+    $('#EditNickname').val('');
+    $('#EditDOB').val('');
+    $('#EditGender').val('');
+    //$('#Male').prop('checked',false);
+    $('#EditDeceased').prop('checked',false);
+    $('#EditUsername').val('');
+    $('#EditRedRocks').prop('checked',false);
+  }
+  CoordinateDialog(contact_id ? "Edit" : "Add","Contact");
+}
+
+/* since there can be multiple phones, e-mails, addresses,
+    relationships, & notes, each one is identified by the
+    field name + the _id */
 function editPhone(phone_id) {
   $("#EditPhoneID").val(phone_id);
   if(phone_id && ($("#Formatted"+phone_id).val() == 1)) {
@@ -134,8 +175,7 @@ function addCoordinate(coordinate_type) {
 
 function CoordinateDialog(title,coordinate) {
   /* title is Add or Edit
-     coordinate is Phone, Email, or Address
-  */
+     coordinate is Contact Phone, Email, or Address  */
   $("#"+coordinate+"EditDialog").dialog({
     dialogClass: "no-close",  // hide close button in top corner
     height: "auto",
@@ -148,7 +188,6 @@ function CoordinateDialog(title,coordinate) {
         type: "button",
         id: "DeleteButton",
         click: function() {
-          //$("#DonationEditForm input[name=buttonAction]").val("Delete");
           Confirm("Delete","Delete "+coordinate,
                   "Delete","#"+coordinate+"EditForm");
         }

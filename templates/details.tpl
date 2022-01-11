@@ -108,7 +108,8 @@
         <img src="images/edit.png" title="Move">
         </button>
       </td>
-      <td><a href="contact.php?cid={$tx.contact_id}">
+      <td><a href="contact.php?cid={$tx.contact_id}"
+             class="filelist_normal">
            {$tx.first_name} {$tx.nickname|NickName} {$tx.middle_name} 
            {$tx.primary_name} {$tx.degree}</a></td>
     </tr>

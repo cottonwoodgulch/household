@@ -7,11 +7,9 @@ if(!$rbac->Users->hasRole('Contact Information Editor',$_SESSION['user_id'])) {
 }
 require_once 'IData.php';
 
-/*
-echo "$_post:<br>";
+/*echo "$_post:<br>";
 print_r($_POST);
-echo "<br>";
-*/
+echo "<br>";*/
 
 if(isset($_POST['ContactID'])) {
   /* from FindContact input on Contact page,
@@ -29,7 +27,54 @@ else {
 
 if(isset($_POST['buttonAction'])) {
   if($_POST['buttonAction'] == 'Add') {
-    if(isset($_POST['EditPhoneID'])) {
+    if(isset($_POST['EditContactID'])) {
+      if(!$stmt=$msi->prepare('insert into contacts '.
+        '(contact_type_id,primary_name,first_name,middle_name,'.
+        'degree_id,nickname,birth_date,gender,deceased,username,'.
+        'password,password_reset,redrocks) '.
+        'values (?,?,?,?,?,?,?,?,?,?,?,?,?)')) {
+        echo 'contact insert prep: '.$msi->error.'<br>';
+        $ErrMsg=buildErrorMessage($ErrMsg,
+          'unable to prep add contact query: '.$msi->error);
+        goto sqlerror;
+      }
+      $dob=strlen($_POST['EditDOB'])>0 ? $_POST['EditDOB'] : null;
+      $deceased=isset($_POST['EditDeceased']);
+      if($_POST['EditUsername'] == '') {
+        $username=null;
+        $pwhash=null;
+      }
+      else {
+        $username=$_POST['EditUsername'];
+        if($_POST['EditPassword'] != '') {
+          $pwhash=
+            password_hash($_POST['EditPassword'],PASSWORD_DEFAULT);
+        }
+        else {
+          $pwhash=null;
+        }
+      }
+      $pw_reset=0;
+      $redrocks=isset($_POST['EditRedRocks']);
+      if(!$stmt->bind_param('isssisssissii',$_POST['EditContactType'],
+          $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
+          $_POST['EditDegree'],$_POST['EditNickname'],
+          $dob,$_POST['EditGender'],$deceased,$username,$pwhash,
+          $pw_reset,$redrocks)) {
+        echo 'contact insert bind: '.$msi->error.'<br>';
+        $ErrMsg=buildErrorMessage($ErrMsg,
+           'unable to bind add contact query params: '.$msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->execute()) {
+        echo 'contact insert exec: '.$msi->error.'<br>';
+        $ErrMsg=buildErrorMessage($ErrMsg,
+           'unable to exec add contact query: '.$msi->error);
+        goto sqlerror;
+      }
+      $cid=$msi->insert_id;
+    }
+    else if(isset($_POST['EditPhoneID'])) {
       /* can't change owner_id here */
       if(isset($_POST['EditFormatted'])) {
         $phone_number=$_POST['EditNumber'];
@@ -109,6 +154,53 @@ if(isset($_POST['buttonAction'])) {
   }
   else if ($_POST['buttonAction'] == 'Edit') {
     /* editXxxIDs are set in Contact.js edit functions */
+    if(isset($_POST['EditContactID'])) {
+      /* this doesn't change password_reset - that happens
+         at login */
+      if(!$stmt=$msi->prepare('update contacts '.
+        'set contact_type_id=?,primary_name=?,first_name=?,'.
+        'middle_name=?,degree_id=?,nickname=?,birth_date=?,'.
+        'gender=?,deceased=?,username=?,password=?,'.
+        'redrocks=? where contact_id=?')) {
+        $ErrMsg=buildErrorMessage($ErrMsg,
+          'unable to prep edit contact query: '.$msi->error);
+        echo 'edit prep failed: '.$msi->error.'<br>';
+        goto sqlerror;
+      }
+      $dob=strlen($_POST['EditDOB'])>0 ? $_POST['EditDOB'] : null;
+      $deceased=isset($_POST['EditDeceased']);
+      if($_POST['EditUsername'] == '') {
+        $username=null;
+        $pwhash=null;
+      }
+      else {
+        $username=$_POST['EditUsername'];
+        if($_POST['EditPassword'] != '') {
+          $pwhash=
+            password_hash($_POST['EditPassword'],PASSWORD_DEFAULT);
+        }
+        else {
+          $pwhash=null;
+        }
+      }
+      $redrocks=isset($_POST['EditRedRocks']);
+      if(!$stmt->bind_param('isssisssissii',$_POST['EditContactType'],
+          $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
+          $_POST['EditDegree'],$_POST['EditNickname'],
+          $dob,$_POST['EditGender'],$deceased,
+          $username,$pwhash,$redrocks,$_POST['ContactID'])) {
+        echo 'contact edit bind: '.$msi->error.'<br>';
+        $ErrMsg=buildErrorMessage($ErrMsg,
+           'unable to bind add contact query params: '.$msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->execute()) {
+        echo 'contact edit exec: '.$msi->error.'<br>';
+        $ErrMsg=buildErrorMessage($ErrMsg,
+           'unable to exec add contact query: '.$msi->error);
+        goto sqlerror;
+      }
+    }
     if(isset($_POST['EditPhoneID'])) {
       /* can't change owner_id here */
       if(isset($_POST['EditFormatted'])) {
@@ -188,6 +280,10 @@ if(isset($_POST['buttonAction'])) {
   }
   else if ($_POST['buttonAction'] == 'Delete') {
     /* editXxxIDs are set in Contact.js edit functions */
+    if(isset($_POST['EditContactID'])) {
+      deletecoordinate($msi,'contact',$_POST['EditContactID']);
+      $cid=0;
+    }
     if(isset($_POST['EditPhoneID'])) {
       deletecoordinate($msi,'phone',$_POST['EditPhoneID']);
     }
@@ -206,20 +302,30 @@ if(isset($_POST['buttonAction'])) {
 $smarty->assign('phone_type_list',get_types($msi,'phone'));
 $smarty->assign('email_type_list',get_types($msi,'email'));
 $smarty->assign('address_type_list',get_types($msi,'address'));
+/* contact types and degrees for contact edit dialog */
+$smarty->assign('contact_type_list',get_types($msi,'contact'));
+$smarty->assign('degree_list',get_types($msi,'degree'));
+
 /* explanation for formatted checkbox for phone numbers */
 $smarty->assign('phone_formatted','If this is checked, the program assumes the number should be presented as entered. If not, the program presents the number as a Canadian/US number: (123) 456-7890');
 
 
 if($cid) {
-  $cdata=new IData($msi,$smarty,$cid);;
+  $cdata=new IData($msi,$smarty,$cid);
   $smarty->assign('cdata',$cdata);
 }
-$smarty->display('contact.tpl');
+$smarty->display('ContactMain.tpl');
 
 function get_types($msi,$table) {
   $type_list=array();
-  if($result=$msi->query("select $table"."_type_id,$table"."_type ".
-     "from $table"."_types")) {
+  if($table=='degree') {
+    $query="select degree_id,degree from degrees";
+  }
+  else {
+    $query="select $table"."_type_id,$table"."_type ".
+       "from $table"."_types";
+  }
+  if($result=$msi->query($query)) {
     while($tx = $result->fetch_assoc()) {
       $type_list[]=$tx;
     }
@@ -245,6 +351,8 @@ function deletecoordinate($msi,$coordinate,$key_value) {
   $a_table=$coordinate.'_associations';
   $key_name=$coordinate.'_id';
   if(!$msi->query("delete from $table where $key_name=$key_value")) {
+    echo "query: delete from $table where $key_name=$key_value<br>";
+    echo 'delete failed: '.$msi->error.'<br>';
     $ErrMsg=buildErrorMessage($ErrMsg,
        "delete $table query failed: ".$msi->error);
     return;

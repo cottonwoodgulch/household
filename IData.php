@@ -15,12 +15,14 @@ class IData {
   function __construct($msi,$smarty,$cid) {
     $this->contact_id=0;
     if($result=$msi->query(
-       "select c.contact_id,ct.contact_type,c.primary_name,".
-           "c.first_name,c.middle_name,d.degree,c.nickname,".
+       "select c.contact_id,ct.contact_type,c.contact_type_id,".
+           "c.primary_name,c.first_name,c.middle_name,".
+           "d.degree,c.degree_id,c.nickname,".
            "if(c.birth_date is null || c.birth_date='0000-00-00',".
                "'',c.birth_date) dob, ifnull(c.gender,'') gender,".
-           "if(c.deceased,'yes','no') deceased, ".
-           "h.mailname,ifnull(h.household_id,0) household_id ".
+           "if(c.deceased,'yes','no') deceased,c.username,".
+           "c.redrocks,h.mailname,".
+           "ifnull(h.household_id,0) household_id ".
            "from contacts c ".
            "left join contact_types ct on ct.contact_type_id=c.contact_type_id ".
            "left join degrees d on d.degree_id=c.degree_id ".
@@ -116,6 +118,29 @@ class IData {
       exit;
       $this->ErrMsg=buildErrorMessage($this->ErrMsg,
         "Notes: query exec error: ",$msi->error);
+    }
+    $result->free();
+
+    /* RELATIONSHIPS */
+    if($result=$msi->query(
+       "select if(c.gender is null,rt.relationship_type,".
+       "if(c.gender='Male',rt.male,rt.female)) relationship,".
+       "if(rc.nickname is null || rc.nickname='',".
+       "rc.first_name,rc.nickname) first,rc.primary_name,".
+       "r.relationship_id,r.relative_id from relationships r ".
+       "inner join contacts c on c.contact_id=r.contact_id ".
+       "inner join contacts rc on rc.contact_id=r.relative_id ".
+       "inner join relationship_types rt ".
+       "on rt.inverse_relationship_id=r.relationship_type_id ".
+       "where r.contact_id=".$this->contact_id)) {
+      while($tx = $result->fetch_assoc()) {
+        $this->relationships[] = $tx;
+      }
+    }
+    else {
+      echo 'relationship: '.$msi->error;
+      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
+        "Relationship info: query exec error: ",$msi->error);
     }
     $result->free();
 

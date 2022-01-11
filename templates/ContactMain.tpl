@@ -6,7 +6,7 @@
 {/block}
 
 {block name="dialog"}
-  {include file="ContactDialog.html"}
+  {include file="templates/ContactPage/ContactDialog.html"}
 {/block}
 
 {block name="content"}
@@ -18,26 +18,42 @@
       
       <td>
       <table class="edit"> {* contact *}
-        {include file="tcont/contact.tpl"}
+        {include file="templates/ContactPage/contact.tpl"}
       </table> {* contact *}
       </td>
 
       <td>
       <table class="edit"> {* phones, emails, addresses *}
       {* Phones *}
-      {include file="tcont/phones.tpl"}
+      {include file="templates/ContactPage/phones.tpl"}
 
       {* Emails *}
-      {include file="tcont/emails.tpl"}
+      {include file="templates/ContactPage/emails.tpl"}
 
       {* Addresses *}
-      {include file="tcont/addresses.tpl"}
+      {include file="templates/ContactPage/addresses.tpl"}
       
       </table> {* phones, emails, addresses *}
-      </td>
-      
-      </tr>
-      {*<tr><td>Relationships Here?</td></tr>*}
+      </td></tr>
+
+      {* relationships *}
+      <tr><td colspan="2">
+      <table class="edit">
+        <tr><td><button type="button"
+                  class="mini-button"
+                onClick="editRelationship(0)" title="Add"
+                  style="border: 0">Relationships:</button></td></tr>
+        {foreach from=$cdata->relationships item=$cx}
+          <tr><td class="label"><button type="button"
+             class="mini-button" title="Edit"
+             onClick="editRelationship({$cx.relationship_id})">
+             {$cx.relationship} of</button></td>
+          <td><a href="contact.php?cid={$cx.relative_id}"
+                 class="filelist_normal">
+                 {$cx.first} {$cx.primary_name}</a></td></tr>
+        {/foreach}
+      </td></tr>
+      </table> {* relationships *}
     </table>  {* contact, coordinates *}
     </td>
 
@@ -76,10 +92,13 @@
   </table>
 
   {/if}
+  <table><tr><td>
   <form id="FindContactForm" action="contact.php" method="post">
     <input type="hidden" name="CurrentHouseID" id="CurrentHouseID">
     <input type="hidden" name="ContactID" id="ContactID">
     <label for="FindContact">Find: </label>
     <input id="FindContact" name="FindContact" value="" autofocus>
-  </form>
+  </form></td><td>
+  <button onClick="editContact(0)">Add Contact</button></td>
+  </table>
 {/block}

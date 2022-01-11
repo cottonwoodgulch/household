@@ -1,5 +1,74 @@
 {* Dialogs for Contact page *}
 
+  <div id="ContactEditDialog" style="display: none">
+  <form method="post" action="contact.php"
+        id="ContactEditForm" autocomplete="off">
+    {* EditContactID just tells contact.php that we're editing
+        the contact info *}
+    <input type="hidden" name="EditContactID" id="EditContactID">
+    <input type="hidden" name="ContactID"
+       value="{$cdata->contact_id}">
+    <input type="hidden" name="buttonAction">
+    <table class="edit">
+      <tr><td class="label">Contact Type: </td>
+          <td><select id="EditContactType" name="EditContactType">
+              {foreach from=$contact_type_list item=$tl}
+                <option value="{$tl.contact_type_id}">
+                {$tl.contact_type}</option>
+              {/foreach}
+          </select></td>
+      </tr>
+      <tr><td class="label">First: </td>
+        <td><input id="EditFirst" name="EditFirst"></td></tr>
+      <tr><td class="label">Middle: </td>
+        <td><input id="EditMiddle" name="EditMiddle"></td></tr>
+      <tr><td class="label">Last: </td>
+        <td><input id="EditLast" name="EditLast"></td></tr>
+      <tr><td class="label">Degree: </td>
+          <td><select id="EditDegree" name="EditDegree">
+              {foreach from=$degree_list item=$tl}
+                <option value="{$tl.degree_id}">
+                {$tl.degree}</option>
+              {/foreach}
+          </select></td>
+      </tr>
+      <tr><td class="label">Nickname: </td>
+        <td><input id="EditNickname" name="EditNickname"></td></tr>
+      <tr><td class="label">DOB: </td>
+        <td><input type="date" id="EditDOB" name="EditDOB"></td>
+      </tr>
+      <tr><td class="label">Gender: </td>
+        <td><label for="Male">Male</label>
+        <input type="radio" name="EditGender" id="Male"
+           value="Male">
+        <label for="Female">Female</label>
+        <input type="radio" name="EditGender" id="Female"
+           value="Female">
+        </td>
+      </tr>
+      <tr><td class="label">Deceased: </td>
+        <td><input type="checkbox" name="EditDeceased"
+           id="EditDeceased">
+        </td>
+      </tr>
+      <tr><td class="label">Red Rocks: </td>
+        <td><input type="checkbox" name="EditRedRocks"
+           id="EditRedRocks">
+        </td>
+      </tr>
+      <tr><td class="label">Username: </td>
+        <td><input name="EditUsername" id="EditUsername">
+        </td>
+      </tr>
+      <tr><td class="label">Password: </td>
+        <td><input type="password" name="EditPassword"
+          id="EditPassword">
+        </td>
+      </tr>
+  </table>
+  </form> {* ContactEditForm *}
+  </div> {* ContactEditDialog *}
+
   <div id="PhoneEditDialog" style="display: none">
   <form method="post" action="contact.php"
         id="PhoneEditForm" autocomplete="off">

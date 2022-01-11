@@ -196,7 +196,8 @@ button.mini-button {
   color: black;
   background-color: #C49F75;
   box-shadow: none;
-  height: 15px;
+  height: 100%;
+  border: 0;
 }
 
 input:hover, button:hover {
