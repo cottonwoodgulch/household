@@ -123,7 +123,8 @@ class IData {
 
     /* RELATIONSHIPS */
     if($result=$msi->query(
-       "select if(c.gender is null,rt.relationship_type,".
+       "select r.relationship_type_id,".
+       "if(c.gender is null,rt.relationship_type,".
        "if(c.gender='Male',rt.male,rt.female)) relationship,".
        "if(rc.nickname is null || rc.nickname='',".
        "rc.first_name,rc.nickname) first,rc.primary_name,".

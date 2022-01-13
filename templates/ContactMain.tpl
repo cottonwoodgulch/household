@@ -37,23 +37,8 @@
       </td></tr>
 
       {* relationships *}
-      <tr><td colspan="2">
-      <table class="edit">
-        <tr><td><button type="button"
-                  class="mini-button"
-                onClick="editRelationship(0)" title="Add"
-                  style="border: 0">Relationships:</button></td></tr>
-        {foreach from=$cdata->relationships item=$cx}
-          <tr><td class="label"><button type="button"
-             class="mini-button" title="Edit"
-             onClick="editRelationship({$cx.relationship_id})">
-             {$cx.relationship} of</button></td>
-          <td><a href="contact.php?cid={$cx.relative_id}"
-                 class="filelist_normal">
-                 {$cx.first} {$cx.primary_name}</a></td></tr>
-        {/foreach}
-      </td></tr>
-      </table> {* relationships *}
+      {include file="templates/ContactPage/relationships.tpl"}
+    
     </table>  {* contact, coordinates *}
     </td>
 

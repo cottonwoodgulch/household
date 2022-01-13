@@ -151,6 +151,30 @@ if(isset($_POST['buttonAction'])) {
       }
       addassoc($msi,'address',$cid,$msi->insert_id);
     }
+    else if(isset($_POST['EditRelationshipID'])) {
+      if(!$stmt=$msi->prepare('insert into relationships '.
+        '(contact_id,relationship_type_id,relative_id) '.
+        'values (?,?,?)')) {
+        //echo 'cant prep rel: '.$msi-error.'<br>';
+        $ErrMsg=buildErrorMessage($ErrMsg,
+          'unable to prep add relationship query: '.$msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->bind_param('iii',$cid,
+         $_POST['EditRelationshipType'],
+          $_POST['RelativeID'])) {
+        echo 'cant bind rel: '.$msi-error.'<br>';
+        $ErrMsg=buildErrorMessage($ErrMsg,
+           'unable to bind add email query params: '.$msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->execute()) {
+        echo 'cant exec rel: '.$msi-error.'<br>';
+        $ErrMsg=buildErrorMessage($ErrMsg,
+           'unable to exec add email query: '.$msi->error);
+        goto sqlerror;
+      }
+    }
   }
   else if ($_POST['buttonAction'] == 'Edit') {
     /* editXxxIDs are set in Contact.js edit functions */
@@ -277,6 +301,28 @@ if(isset($_POST['buttonAction'])) {
         goto sqlerror;
       }
     }
+    else if(isset($_POST['EditRelationshipID'])) {
+      /* can't change owner_id here */
+      if(!$stmt=$msi->prepare('update relationships '.
+        'set relationship_type_id=?,relative_id=? '.
+        'where relationship_id=?')) {
+        $ErrMsg=buildErrorMessage($ErrMsg,
+          'unable to prep edit relationship query: '.$msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->bind_param('iii',$_POST['EditRelationshipType'],
+          $_POST['RelativeID'],$_POST['EditRelationshipID'])) {
+        $ErrMsg=buildErrorMessage($ErrMsg,
+           'unable to bind edit relationship query params: '.
+           $msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->execute()) {
+        $ErrMsg=buildErrorMessage($ErrMsg,
+           'unable to exec edit relationship query: '.$msi->error);
+        goto sqlerror;
+      }
+    }
   }
   else if ($_POST['buttonAction'] == 'Delete') {
     /* editXxxIDs are set in Contact.js edit functions */
@@ -293,18 +339,14 @@ if(isset($_POST['buttonAction'])) {
     else if(isset($_POST['EditAddressID'])) {
       deletecoordinate($msi,'address',$_POST['EditAddressID']);
     }
+    else if(isset($_POST['EditRelationshipID'])) {
+      deletecoordinate($msi,'relationship',
+         $_POST['EditRelationshipID']);
+    }
   }
   sqlerror:
     if($stmt)$stmt->close();
 }  // isset buttonAction
-
-/* phone, e-mail, aaddress types for add & edit dialogs */
-$smarty->assign('phone_type_list',get_types($msi,'phone'));
-$smarty->assign('email_type_list',get_types($msi,'email'));
-$smarty->assign('address_type_list',get_types($msi,'address'));
-/* contact types and degrees for contact edit dialog */
-$smarty->assign('contact_type_list',get_types($msi,'contact'));
-$smarty->assign('degree_list',get_types($msi,'degree'));
 
 /* explanation for formatted checkbox for phone numbers */
 $smarty->assign('phone_formatted','If this is checked, the program assumes the number should be presented as entered. If not, the program presents the number as a Canadian/US number: (123) 456-7890');
@@ -314,12 +356,34 @@ if($cid) {
   $cdata=new IData($msi,$smarty,$cid);
   $smarty->assign('cdata',$cdata);
 }
+
+/* phone, e-mail, aaddress types for add & edit dialogs */
+$smarty->assign('phone_type_list',get_types($msi,'phone'));
+$smarty->assign('email_type_list',get_types($msi,'email'));
+$smarty->assign('address_type_list',get_types($msi,'address'));
+/* contact types and degrees for contact edit dialog */
+$smarty->assign('contact_type_list',get_types($msi,'contact'));
+$smarty->assign('degree_list',get_types($msi,'degree'));
+$smarty->assign('relationship_type_list',
+    get_types($msi,'relationship',$cdata->Contact['gender']));
+
 $smarty->display('ContactMain.tpl');
 
-function get_types($msi,$table) {
+function get_types($msi,$table,$gender='') {
   $type_list=array();
   if($table=='degree') {
     $query="select degree_id,degree from degrees";
+  }
+  else if ($table=='relationship') {
+    if($gender=='' || is_null($gender)) {
+      $query='select inverse_relationship_id relationship_type_id,'.
+         'relationship_type from relationship_types';
+    }
+    else {
+      $query="select inverse_relationship_id relationship_type_id,".
+      "ifnull($gender,relationship_type) relationship_type ".
+      "from relationship_types";
+    }
   }
   else {
     $query="select $table"."_type_id,$table"."_type ".

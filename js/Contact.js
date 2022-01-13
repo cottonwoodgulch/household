@@ -166,6 +166,50 @@ function editAddress(address_id) {
   CoordinateDialog(address_id ? "Edit" : "Add","Address");
 }
 
+function editRelationship(relationship_id) {
+  $("#EditRelationshipID").val(relationship_id);
+  if(relationship_id) {
+    $("#EditRelationshipType").
+      val($("#relationship_type_id"+relationship_id).val());
+  $("#RelativeID").val($("#relative_id"+relationship_id).val());
+    $("#EditRelation").val($("#relative_name"+relationship_id).val());
+  }
+  else {
+    $("#EditRelationshipType").val(1);
+    $("#RelativeID").val(0);
+    $("#EditRelation").val("");
+  }
+  CoordinateDialog(relationship_id ? "Edit" : "Add",
+      "Relationship",editRelation,
+      function() {$("#EditRelation").autocomplete("destroy")}
+  );
+}
+
+function editRelation() {
+  $("#EditRelation").autocomplete({
+  minLength: 3,
+  source: function(request, response) {
+    $.ajax({
+      type: "GET",
+      url: "ajax/AddLookup.php?value="+$("#EditRelation").val(),
+      dataType: "json",
+      success: function(res_html, textStatus, xhr) {
+        response(res_html);
+      },
+      error: function(xhr, textStatus, errorThrown) {
+        $("#content").html(textStatus+errorThrown);
+      }
+    })
+  },
+  select: function(event, ui) {
+    console.log('setting RelativeID to: '+ui.item.value);
+    $("#RelativeID").val(ui.item.value);
+    //$("#EditRelation").val(ui.item.name);
+  }
+  });
+  $("#EditRelation").select();
+}
+
 function addCoordinate(coordinate_type) {
   /* to tell contact.php which coordinate type we are adding,
        Address, Phone, or Email */
@@ -173,7 +217,9 @@ function addCoordinate(coordinate_type) {
   CoordinateDialog("Add",coordinate_type);
 }
 
-function CoordinateDialog(title,coordinate) {
+function CoordinateDialog(title,coordinate,
+        startfunction=function(){},
+        cancelfunction=function(){}) {
   /* title is Add or Edit
      coordinate is Contact Phone, Email, or Address  */
   $("#"+coordinate+"EditDialog").dialog({
@@ -204,6 +250,7 @@ function CoordinateDialog(title,coordinate) {
       {
         text: "Cancel",
         click: function() {
+          cancelfunction();
           $(this).dialog("destroy");
         }
       }
@@ -212,4 +259,7 @@ function CoordinateDialog(title,coordinate) {
   if(title != "Edit") {
     $("#DeleteButton").hide();
   }
+  startfunction();
+  console.log('post startfunction RelativeID: '+
+    $("#RelativeID").val());
 }

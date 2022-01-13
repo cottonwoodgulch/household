@@ -69,6 +69,32 @@
   </form> {* ContactEditForm *}
   </div> {* ContactEditDialog *}
 
+  <div id="RelationshipEditDialog" style="display: none">
+  <form method="post" action="contact.php"
+        id="RelationshipEditForm" autocomplete="off">
+    <input type="hidden" name="EditRelationshipID"
+       id="EditRelationshipID">
+    <input type="hidden" name="ContactID" 
+       value="{$cdata->contact_id}">
+    <input type="hidden" id="RelativeID" name="RelativeID">
+    <input type="hidden" name="buttonAction">
+    <table class="edit">
+      <tr><td>
+         <select id="EditRelationshipType"
+             name="EditRelationshipType">
+           {foreach from=$relationship_type_list item=$tl}
+             <option value="{$tl.relationship_type_id}">
+                {$tl.relationship_type}</option>
+           {/foreach}
+         </select></td>
+      <td> of </td>
+      <td><input id="EditRelation" name="EditRelation"
+         value="">
+      </td></tr>
+  </table>
+  </form> {* RelationshipEditForm *}
+  </div> {* RelationshipEditDialog *}
+
   <div id="PhoneEditDialog" style="display: none">
   <form method="post" action="contact.php"
         id="PhoneEditForm" autocomplete="off">
