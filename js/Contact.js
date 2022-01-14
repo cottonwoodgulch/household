@@ -256,10 +256,9 @@ function CoordinateDialog(title,coordinate,
       }
     ]
   });
-  if(title != "Edit") {
+  /* household system can't delete contacts at this point */
+  if(title != "Edit" || coordinate == "Contact") {
     $("#DeleteButton").hide();
   }
   startfunction();
-  console.log('post startfunction RelativeID: '+
-    $("#RelativeID").val());
 }

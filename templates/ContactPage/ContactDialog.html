@@ -26,6 +26,7 @@
         <td><input id="EditLast" name="EditLast"></td></tr>
       <tr><td class="label">Degree: </td>
           <td><select id="EditDegree" name="EditDegree">
+              <option value="0">&nbsp;</option>
               {foreach from=$degree_list item=$tl}
                 <option value="{$tl.degree_id}">
                 {$tl.degree}</option>

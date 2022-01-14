@@ -40,27 +40,20 @@ if(isset($_POST['buttonAction'])) {
       }
       $dob=strlen($_POST['EditDOB'])>0 ? $_POST['EditDOB'] : null;
       $deceased=isset($_POST['EditDeceased']);
-      if($_POST['EditUsername'] == '') {
-        $username=null;
-        $pwhash=null;
+      if($_POST['EditPassword'] != '') {
+        $pwhash=
+          password_hash($_POST['EditPassword'],PASSWORD_DEFAULT);
       }
       else {
-        $username=$_POST['EditUsername'];
-        if($_POST['EditPassword'] != '') {
-          $pwhash=
-            password_hash($_POST['EditPassword'],PASSWORD_DEFAULT);
-        }
-        else {
-          $pwhash=null;
-        }
+        $pwhash=null;
       }
       $pw_reset=0;
       $redrocks=isset($_POST['EditRedRocks']);
       if(!$stmt->bind_param('isssisssissii',$_POST['EditContactType'],
           $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
           $_POST['EditDegree'],$_POST['EditNickname'],
-          $dob,$_POST['EditGender'],$deceased,$username,$pwhash,
-          $pw_reset,$redrocks)) {
+          $dob,$_POST['EditGender'],$deceased,
+          $_POST['EditUsername'],$pwhash,$pw_reset,$redrocks)) {
         echo 'contact insert bind: '.$msi->error.'<br>';
         $ErrMsg=buildErrorMessage($ErrMsg,
            'unable to bind add contact query params: '.$msi->error);
@@ -184,7 +177,7 @@ if(isset($_POST['buttonAction'])) {
       if(!$stmt=$msi->prepare('update contacts '.
         'set contact_type_id=?,primary_name=?,first_name=?,'.
         'middle_name=?,degree_id=?,nickname=?,birth_date=?,'.
-        'gender=?,deceased=?,username=?,password=?,'.
+        'gender=?,deceased=?,username=?,'.
         'redrocks=? where contact_id=?')) {
         $ErrMsg=buildErrorMessage($ErrMsg,
           'unable to prep edit contact query: '.$msi->error);
@@ -193,26 +186,12 @@ if(isset($_POST['buttonAction'])) {
       }
       $dob=strlen($_POST['EditDOB'])>0 ? $_POST['EditDOB'] : null;
       $deceased=isset($_POST['EditDeceased']);
-      if($_POST['EditUsername'] == '') {
-        $username=null;
-        $pwhash=null;
-      }
-      else {
-        $username=$_POST['EditUsername'];
-        if($_POST['EditPassword'] != '') {
-          $pwhash=
-            password_hash($_POST['EditPassword'],PASSWORD_DEFAULT);
-        }
-        else {
-          $pwhash=null;
-        }
-      }
       $redrocks=isset($_POST['EditRedRocks']);
-      if(!$stmt->bind_param('isssisssissii',$_POST['EditContactType'],
+      if(!$stmt->bind_param('isssisssisii',$_POST['EditContactType'],
           $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
           $_POST['EditDegree'],$_POST['EditNickname'],
           $dob,$_POST['EditGender'],$deceased,
-          $username,$pwhash,$redrocks,$_POST['ContactID'])) {
+          $_POST['EditUsername'],$redrocks,$_POST['ContactID'])) {
         echo 'contact edit bind: '.$msi->error.'<br>';
         $ErrMsg=buildErrorMessage($ErrMsg,
            'unable to bind add contact query params: '.$msi->error);
@@ -223,6 +202,18 @@ if(isset($_POST['buttonAction'])) {
         $ErrMsg=buildErrorMessage($ErrMsg,
            'unable to exec add contact query: '.$msi->error);
         goto sqlerror;
+      }
+      /* only update password if one has been entered */
+      if($_POST['EditPassword'] != '') {
+        $pwhash=
+          password_hash($_POST['EditPassword'],PASSWORD_DEFAULT);
+        if(!$msi->query("update contacts set password='$pwhash'".
+          'where contact_id='.$_POST['ContactID'])) {
+          echo 'edit contact set password: '.$msi->error.'<br>';
+          $ErrMsg=buildErrorMessage($ErrMsg,
+             'edit contact: unable to set password: '.$msi->error);
+          goto sqlerror;
+        }
       }
     }
     if(isset($_POST['EditPhoneID'])) {
@@ -331,17 +322,17 @@ if(isset($_POST['buttonAction'])) {
       $cid=0;
     }
     if(isset($_POST['EditPhoneID'])) {
-      deletecoordinate($msi,'phone',$_POST['EditPhoneID']);
+      deletecoordinate($msi,'phone',$_POST['EditPhoneID'],$cid);
     }
     else if(isset($_POST['EditEmailID'])) {
-      deletecoordinate($msi,'email',$_POST['EditEmailID']);
+      deletecoordinate($msi,'email',$_POST['EditEmailID'],$cid);
     }
     else if(isset($_POST['EditAddressID'])) {
-      deletecoordinate($msi,'address',$_POST['EditAddressID']);
+      deletecoordinate($msi,'address',$_POST['EditAddressID'],$cid);
     }
     else if(isset($_POST['EditRelationshipID'])) {
       deletecoordinate($msi,'relationship',
-         $_POST['EditRelationshipID']);
+         $_POST['EditRelationshipID'],$cid);
     }
   }
   sqlerror:
@@ -405,7 +396,7 @@ function addassoc($msi,$coordinate,$cid,$coordinate_id) {
   }
 }
 
-function deletecoordinate($msi,$coordinate,$key_value) {
+function deletecoordinate($msi,$coordinate,$key_value,$contact_id) {
   if($coordinate=='address') {
     $table='addresses';
   }
@@ -414,16 +405,30 @@ function deletecoordinate($msi,$coordinate,$key_value) {
   }
   $a_table=$coordinate.'_associations';
   $key_name=$coordinate.'_id';
-  if(!$msi->query("delete from $table where $key_name=$key_value")) {
-    echo "query: delete from $table where $key_name=$key_value<br>";
-    echo 'delete failed: '.$msi->error.'<br>';
+  /* first delete association, then if there are no other
+     associations for this coordinate, delete the coordinate */
+  //echo "key value: $key_value<br>";
+  if(!$result=$msi->query(
+     "select $key_name from $a_table where $key_name=$key_value")) {
     $ErrMsg=buildErrorMessage($ErrMsg,
-       "delete $table query failed: ".$msi->error);
+       "association check query failed: ".$msi->error);
     return;
   }
-  if(!$msi->query("delete from $a_table where $key_name=$key_value")) {
+  $association_count=$result->num_rows;
+  $result->free();
+  //echo "associations: $association_count<br>";
+  if(!$msi->query("delete from $a_table where ".
+     "$key_name=$key_value and contact_id=$contact_id")) {
     $ErrMsg=buildErrorMessage($ErrMsg,
        "delete $a_table query failed: ".$msi->error);
+    return;
+  }
+  if($association_count == 1) {
+    /* this is the only association to that coordinate - ok to del */
+    if(!$msi->query("delete from $table where $key_name=$key_value")) {
+      $ErrMsg=buildErrorMessage($ErrMsg,
+         "delete $table query failed: ".$msi->error);
+    }
   }
   return;
 }
