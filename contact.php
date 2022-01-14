@@ -40,6 +40,8 @@ if(isset($_POST['buttonAction'])) {
       }
       $dob=strlen($_POST['EditDOB'])>0 ? $_POST['EditDOB'] : null;
       $deceased=isset($_POST['EditDeceased']);
+      $username=!strlen($_POST['EditUsername']) ? null :
+         $_POST['EditUsername'];
       if($_POST['EditPassword'] != '') {
         $pwhash=
           password_hash($_POST['EditPassword'],PASSWORD_DEFAULT);
@@ -53,7 +55,7 @@ if(isset($_POST['buttonAction'])) {
           $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
           $_POST['EditDegree'],$_POST['EditNickname'],
           $dob,$_POST['EditGender'],$deceased,
-          $_POST['EditUsername'],$pwhash,$pw_reset,$redrocks)) {
+          $username,$pwhash,$pw_reset,$redrocks)) {
         echo 'contact insert bind: '.$msi->error.'<br>';
         $ErrMsg=buildErrorMessage($ErrMsg,
            'unable to bind add contact query params: '.$msi->error);
@@ -186,12 +188,14 @@ if(isset($_POST['buttonAction'])) {
       }
       $dob=strlen($_POST['EditDOB'])>0 ? $_POST['EditDOB'] : null;
       $deceased=isset($_POST['EditDeceased']);
+      $username=!strlen($_POST['EditUsername']) ? null :
+         $_POST['EditUsername'];
       $redrocks=isset($_POST['EditRedRocks']);
       if(!$stmt->bind_param('isssisssisii',$_POST['EditContactType'],
           $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
           $_POST['EditDegree'],$_POST['EditNickname'],
           $dob,$_POST['EditGender'],$deceased,
-          $_POST['EditUsername'],$redrocks,$_POST['ContactID'])) {
+          $username,$redrocks,$_POST['ContactID'])) {
         echo 'contact edit bind: '.$msi->error.'<br>';
         $ErrMsg=buildErrorMessage($ErrMsg,
            'unable to bind add contact query params: '.$msi->error);
