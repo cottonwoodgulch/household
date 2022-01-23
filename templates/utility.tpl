@@ -14,5 +14,10 @@
       onClick="AddressLookup()" title="Address Lookup">
              Address Lookup</button>
     </td></tr>
+    <tr><td><button type="button"
+      onClick="Contributions()"
+      title="Paste rows from Contributions SS">
+             Contributions</button>
+    </td></tr>
   </table>
 {/block}

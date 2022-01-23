@@ -31,4 +31,34 @@ function AddressLookup() {
   });
 }
 
+function Contributions() {
+  $('#AddressLookupForm input[name=buttonAction]').
+     val('Contributions');
+  $("#AddressLookupDialog").dialog({
+    dialogClass: "no-close",  // hide close button in top corner
+    height: "auto",
+    width: "auto",
+    closeOnEscape: true,
+    title: "Paste rows from Contributions SS",
+    buttons: [
+      {
+        text: "Submit",
+        type: "button",
+        click: function() {
+          $("#AddressLookupForm").submit();
+          $("#AddressText").val('');
+          $(this).dialog("destroy");
+        }
+      },
+      {
+        text: "Cancel",
+        click: function() {
+          $("#AddressText").val('');
+          $(this).dialog("destroy");
+        }
+      }
+    ]
+  });
+}
+
 </script>
