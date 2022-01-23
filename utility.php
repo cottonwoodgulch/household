@@ -128,19 +128,20 @@ if(isset($_POST['buttonAction'])) {
           }
         }
         $result->free();
+        // table has country between zip and email - not used here
         if(!$stmt=$msi->prepare('insert into donationimport '.
-           "values(null,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'',?,?,?)")) {
+           "values(null,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'',?,?)")) {
           echo 'donationimport prep error: '.$msi->error.'<br>';
           goto sqlerror;
         }
-        //
-        if(!$stmt->bind_param('sisdsssssssssssss',$fy,
+        // table has country between zip and email
+        if(!$stmt->bind_param('sisdssssssssssss',$fy,
            $ddata['recno'],$ddate,$ddata['amount'],
            $ddata['last'],$ddata['first'],$ddata['salutation'],   
            $ddata['fund'],$ddata['donornote'],
            $ddata['dedication'],$ddata['addr'],
            $ddata['city'],$ddata['state'],$ddata['zip'],
-           $ddata['email'],$phones,$ddata['contnote'])) {
+           $ddata['email'],$ddata['contnote'])) {
           echo
              'donationimport bind error: '.$msi->error.'<br>';
           goto sqlerror;
@@ -184,7 +185,6 @@ function getnames($msi,$first,$last,$di_id) {
                    'last' => $last);    
   }
   else if($t=strpos($last,' and ')) {
-    $t=strpos($last,' and ');
     $u=strpos($last,' ',$t+6)+1;
     $names[]=array('first' => $first,
                    'last' => substr($last,0,strpos($last,' ')));
