@@ -1,29 +1,27 @@
 {* javascript for house/Utility page *}
 <script>
-function AddressLookup() {
-  /* display dialog for user to paste list of names
-   * php will look up salutation & address & create csv
-  */
-  $("#AddressLookupDialog").dialog({
+function TextInput(buttonAction,title) {
+  $('#TextInputForm input[name=buttonAction]').val(buttonAction);
+  $("#TextInputDialog").dialog({
     dialogClass: "no-close",  // hide close button in top corner
     height: "auto",
     width: "auto",
     closeOnEscape: true,
-    title: "Address Lookup - paste list of names",
+    title: title,
     buttons: [
       {
         text: "Submit",
         type: "button",
         click: function() {
-          $("#AddressLookupForm").submit();
-          $("#AddressText").val('');
+          $("#TextInputForm").submit();
+          $("#InputText").val('');
           $(this).dialog("destroy");
         }
       },
       {
         text: "Cancel",
         click: function() {
-          $("#AddressText").val('');
+          $("#InputText").val('');
           $(this).dialog("destroy");
         }
       }
@@ -31,34 +29,9 @@ function AddressLookup() {
   });
 }
 
-function Contributions() {
-  $('#AddressLookupForm input[name=buttonAction]').
-     val('Contributions');
-  $("#AddressLookupDialog").dialog({
-    dialogClass: "no-close",  // hide close button in top corner
-    height: "auto",
-    width: "auto",
-    closeOnEscape: true,
-    title: "Paste rows from Contributions SS",
-    buttons: [
-      {
-        text: "Submit",
-        type: "button",
-        click: function() {
-          $("#AddressLookupForm").submit();
-          $("#AddressText").val('');
-          $(this).dialog("destroy");
-        }
-      },
-      {
-        text: "Cancel",
-        click: function() {
-          $("#AddressText").val('');
-          $(this).dialog("destroy");
-        }
-      }
-    ]
-  });
+/* just set buttonAction and submit the floating UtilityForm */
+function UtilitySubmit(buttonAction) {
+  $('#UtilityForm input[name=buttonAction]').val(buttonAction);
+  $('#UtilityForm').submit();
 }
-
 </script>

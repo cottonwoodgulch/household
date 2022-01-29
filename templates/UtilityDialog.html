@@ -1,11 +1,16 @@
 {* Dialogs for Utility page *}
 
-  <div id="AddressLookupDialog" style="display: none">
+<div id="TextInputDialog" style="display: none">
   <form method="post" action="utility.php"
-        id="AddressLookupForm" autocomplete="off">
-    <input type="hidden" name="buttonAction"
-       value="AddressLookup">
-    <textarea id="AddressText" name="AddressText"
+        id="TextInputForm" autocomplete="off">
+    <input type="hidden" name="buttonAction">
+    <textarea id="InputText" name="InputText"
        style="width: 300px; height: 300px;"></textarea>
-  </form> {* AddressLookupForm *}
-  </div> {* AddressLookupDialog *}
+  </form> {* TextInputForm *}
+</div> {* TextInputDialog *}
+
+{* "floating" form for buttons to submit *}
+<form method="post" action="utility.php"
+   id="UtilityForm">
+  <input type="hidden" name="buttonAction">
+</form>

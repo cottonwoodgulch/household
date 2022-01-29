@@ -9,15 +9,30 @@
 {/block}
 
 {block name="content"}
+  <p>CSV output files are tab-delimited</p>
   <table class="edit">
     <tr><td><button type="button"
-      onClick="AddressLookup()" title="Address Lookup">
-             Address Lookup</button>
-    </td></tr>
+      onClick="TextInput('AddressLookup',
+         'Address Lookup - paste list of names')">
+             Address Lookup</button></td>
+    <td>Paste list of names, 1 per line</td></tr>
     <tr><td><button type="button"
-      onClick="Contributions()"
-      title="Paste rows from Contributions SS">
-             Contributions</button>
+      onClick="TextInput('Contributions',
+      'Paste rows from Contributions SS')">
+             Contributions</button></td>
+    <td>Paste rows from Contributions SS, then visit Import page
     </td></tr>
+    <tr><td><button type="button" form="UtilityForm"
+      onClick="UtilitySubmit('RedRocks')">
+      Red Rocks</button></td>
+    <td>Red Rocks Society Members for NFTC (must be in a household)
+    </td></tr>
+    <tr><td><button type="button" form="UtilityForm"
+      onClick="UtilitySubmit('Donors')">Donors</button></td>
+    <td>Donors, El Morro, Donor Category for NFTC</td>
+    <td class="label">As of: </td>
+    <td><input type="date" form="UtilityForm"
+       id="DDate" name="DDate" value="{$DefaultDate}"></td>
+    </tr>
   </table>
 {/block}
