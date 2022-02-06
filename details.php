@@ -5,8 +5,7 @@ if(!$rbac->Users->hasRole('Financial Information Editor',$_SESSION['user_id'])) 
   header("Location: NotAuthorized.html");
 }
 require_once 'objects.php';
-
-$ErrMsg="";
+$ErrMsg=array();
 
 if(isset($_SESSION['household_id'])) {
   $hid=$_SESSION['household_id'];
@@ -19,24 +18,22 @@ if($_POST['buttonAction']=='selectHouse') {
        this will reset it */
   $hid=$_POST['TargetHouseID'];
   $_SESSION['household_id']=$hid;
-
-  buildErrorMessage($ErrMsg, $_POST['buttonAction'].$msi->error);
 }
 else if($_POST['buttonAction']=='SaveNewHouse') {
   if(!$stmt=$msi->prepare('insert into households
     (name,salutation,mailname,modified) values(?,?,?,now())')) {
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
        'unable to prep add households query: '.$msi->error);
     goto sqlerror;
   }
   if(!$stmt->bind_param('sss',$_POST['HouseholdName'],$_POST['Salutation'],
        $_POST['MailName'])) {
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
        'unable to bind add household query params: '.$msi->error);
     goto sqlerror;
   }
   if(!$stmt->execute()) {
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
        'unable to exec add household query: '.$msi->error);
     goto sqlerror;
   }
@@ -113,7 +110,7 @@ delerror:
 else if($_POST['buttonAction']=='saveChange') {
   // update household info and preferred address from $_POST
   $house=new HouseData($msi,$smarty,$hid);
-  $house->updateHouse($msi, $smarty);
+  $house->updateHouse($msi, $smarty, $ErrMsg);
 }
 
 else if ($_POST['buttonAction']=='moveMember') {
@@ -121,17 +118,17 @@ else if ($_POST['buttonAction']=='moveMember') {
   $target_hid=$_POST['TargetHouseID'];
 
   if(!$stmt=$msi->prepare('update household_members set household_id=? where contact_id=?')){
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
        'unable to prep move member query: '.$msi->error);
     goto moveerror;
   }
   if(!$stmt->bind_param('ii', $target_hid, $cid)){
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
         'unable to bind move member query params: '.$msi->error);
     goto moveerror;
   }
   if(!$stmt->execute()){
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
         'unable to execute move member query: '.$msi->error);
     goto moveerror;
   }
@@ -156,25 +153,25 @@ else if ($_POST['buttonAction']=='addMember') {
   }
 
   if(!$stmt){
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
        'unable to prep add member query: '.$msi->error);
     goto adderror;
   }
   if(!$stmt->bind_param('ii', $target_hid, $cid)){
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
         'unable to bind add member query params: '.$msi->error);
     goto adderror;
   }
   if(!$stmt->execute()){
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
         'unable to execute add member query: '.$msi->error);
     goto adderror;
   }
 adderror:
 }
 
+$house=new HouseData($msi,$smarty,$hid,$ErrMsg);
 displayFooter($smarty,$ErrMsg);
-$house=new HouseData($msi,$smarty,$hid);
 $smarty->assign('house',$house);
 $smarty->display('details.tpl');
 
@@ -186,7 +183,7 @@ function deletePreferredEmails($msi,$cid,$hid,&$ErrMsg) {
      "where email_id in ".
        "(select ea.email_id from email_associations ea ".
          "where ea.contact_id=$cid) and household_id=$hid")) {
-    $ErrMsg=buildErrorMessage($ErrMsg,
+    buildErrorMessage($ErrMsg,
         'unable to run delete pref emails query: '.$msi->error);
   }
 }

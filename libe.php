@@ -58,6 +58,49 @@ if($rbac->Users->hasRole('Financial Information Editor',$user_id)) {
 }
 $smarty->assign('sitemenu',$sitemenu);
 
+function uSelect($msi,$query,$desc,&$ErrMsg) {
+  /* select query using mysqli->query */
+  $rv=array();
+  if(!$result=$msi->query($query)) {
+    buildErrorMessage($ErrMsg,$desc,$msi->error);
+  }
+  else {
+    while($tx=$result->fetch_assoc()) {
+      $rv[]=$tx;
+    }
+    $result->free();
+  }
+  return $rv;
+}
+
+function pSelect($msi,$query,$id,$desc,&$ErrMsg) {
+  /* select query with 1 id param, using mysqli->prepare,
+       stmt->bind_param, & stmt->execute */
+  $rv=array();
+  if(!$stmt=$msi->prepare($query)) {
+    buildErrorMessage($ErrMsg,"prep $desc",$msi->error);
+  }
+  else {
+    if(!$stmt->bind_param('i',$id)) {
+      buildErrorMessage($ErrMsg,"bind $desc",$msi->error);
+    }
+    else {
+      if(!$stmt->execute()) {
+        buildErrorMessage($ErrMsg,"exec $desc",$msi->error);
+      }
+      else {
+        $result=$stmt->get_result();
+        while($tx=$result->fetch_assoc()) {
+          $rv[]=$tx;
+        }
+        $result->free();
+        $stmt->close();
+      }
+    }
+  }
+  return $rv;
+}
+
 function getHouseholdFromContact($msi,$smarty,$cid) {
   /* also gets contact name in case of error */
   if($stmt=$msi->prepare(
@@ -76,18 +119,18 @@ function getHouseholdFromContact($msi,$smarty,$cid) {
     $stmt->close();
   }
   else {
-    $smarty->assign('footer',"getHouseholdFromContact: unable to create mysql statement object: ".$msi->error);
-    return FALSE;
+    //$smarty->assign('footer',"getHouseholdFromContact: unable to create mysql statement object: ".$msi->error);
+    return 0;
   }
   if(is_null($hx['household_id'])) {
-    $smarty->assign('footer',
-      "No household for $cid ".$hx['first_name'].' '.$hx['primary_name']);
-    return FALSE;
+    /*$smarty->assign('footer',
+      "No household for $cid ".$hx['first_name'].' '.$hx['primary_name']);*/
+    return 0;
   }
   return $hx['household_id'];
 }
 
-function isDupeHousehold($msi,$house_name,$notID=0) {
+function isDupeHousehold($msi,$house_name,$notID=0,&$ErrMsg) {
       // check if name is in use other than for household_id notID
   if($stmt=$msi->prepare("select 0 from households h
        where h.name=? and h.household_id!=?")) {
@@ -105,31 +148,26 @@ function isDupeHousehold($msi,$house_name,$notID=0) {
       }
     }
     else {
-      $this->ErrMsg=buildErrorMessage($this->ErrMsg,
-         'Could not execute dupe house query: '.$msi->error);
+      buildErrorMessage($ErrMsg,
+         'exec dupe house query: ',$msi->error);
     }
   }
   else {
-    $this->ErrMsg=buildErrorMessage($this->ErrMsg,
-      'Could not prep dupe house query: '.$msi->error);
+    buildErrorMessage($ErrMsg,
+      'prep dupe house query: ',$msi->error);
   }
 }
   
-function buildErrorMessage($errmsg,$newerr) {
-  return $errmsg . strlen($errmsg) ? '<br />' : '' . $newerr;
+function buildErrorMessage(&$ErrMsg,$errortext,$sqlerror='') {
+  $ErrMsg[]=array('txt' => $errortext,'msg' => $sqlerror);
 }
 
-function displayFooter($smarty,$err_msg) {
+function displayFooter($smarty,$ErrMsg) {
   /* footer will display if the smarty variable footer is set */
-  if(strlen(trim($err_msg)) > 0) {
-    $msg='<table><tr>
-      <td class="footermsg">'.$err_msg.
-      '</td><td class="footermsg"><button type="button" '.
-      'onClick="hideFooter();">Close</button></td></tr></table>';
-    $smarty->assign('footer',$msg);
-  }
+  if(count($ErrMsg))$smarty->assign('footer',$ErrMsg);
+}
   
-}function append_wc(&$list,$element) {
+function append_wc(&$list,$element) {
   /* add comma if needed, then element */
   $list .= (strlen($list) ? ', ' : '') . $element;
 }
@@ -190,7 +228,7 @@ function trek_list($msi,$contact_id,&$ErrMsg) {
   }
   else {
     // query error
-    $ErrMsg=buildErrorMessage($ErrMsg,'trek_list query error: '.$msi->error);
+    buildErrorMessage($ErrMsg,'trek_list query: ',$msi->error);
   }
   sort($le);
   foreach($le as $lx) append_wc($element,$lx);
@@ -214,7 +252,7 @@ function email_list($msi,$household_id,&$ErrMsg) {
   }
   else {
     // query error
-    $ErrMsg=buildErrorMessage($ErrMsg,'email_list query error: '.$msi->error);
+    buildErrorMessage($ErrMsg,'email_list query: ',$msi->error);
   }
   return $elist;
 }
@@ -246,7 +284,7 @@ function phone_list($msi,$household_id,&$ErrMsg) {
   }
   else {
     // query error
-    $ErrMsg=buildErrorMessage($ErrMsg,'email_list query error: '.$msi->error);
+    buildErrorMessage($ErrMsg,'email_list query: ',$msi->error);
   }
   return $plist;
 }

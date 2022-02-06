@@ -62,7 +62,13 @@
 {if isset($footer)}
   <div id="footer">
     {block name="footer"}
-      {$footer}
+      <table class="edit">
+      {foreach $footer as $fx}
+        <tr><td class="footermsg">{$fx.txt}</td>
+        <td class="footermsg">{$fx.msg|default:'&nbsp;'}</td></tr>
+      {/foreach}
+      </table>
+      <button type="button" onClick="hideFooter();">Close</button>
     {/block}
   </div>
 {/if}

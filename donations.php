@@ -8,7 +8,7 @@ if(!$rbac->Users->hasRole('Financial Information Editor',
 }
 require_once 'objects.php';
 
-$ErrMsg='';
+$ErrMsg=array();
 if(isset($_POST['TargetHouseID'])) {
   $hid=$_POST['TargetHouseID'];
   $_SESSION['household_id']=$hid;
@@ -22,19 +22,19 @@ if(isset($_POST['buttonAction'])) {
     if(!$stmt=$msi->prepare('insert into hdonations 
       (primary_donor_id, ddate, amount, fund_id, anonymous, purpose, modified)
       values(?,str_to_date(?,\'%Y-%m-%d\'),?,?,?,?,now())')) {
-      $ErrMsg=buildErrorMessage($ErrMsg,
+      buildErrorMessage($ErrMsg,
          'unable to prep add donation query: '.$msi->error);
       goto sqlerror;
     }
     $anon=isset($_POST['EditAnonymous']) ? 1 : 0;
     if(!$stmt->bind_param('isdiis',$_POST['EditPrimaryDonor'],$_POST['EditDate'],
          $_POST['EditAmount'],$_POST['EditFund'],$anon,$_POST['EditPurpose'])) {
-      $ErrMsg=buildErrorMessage($ErrMsg,
+      buildErrorMessage($ErrMsg,
          'unable to bind add donation query params: '.$msi->error);
       goto sqlerror;
     }
     if(!$stmt->execute()) {
-      $ErrMsg=buildErrorMessage($ErrMsg,
+      buildErrorMessage($ErrMsg,
          'unable to exec add donation query: '.$msi->error);
       goto sqlerror;
     }
@@ -45,7 +45,7 @@ if(isset($_POST['buttonAction'])) {
         ddate=str_to_date(?,\'%Y-%m-%d\'),
         amount=?,fund_id=?,anonymous=?,purpose=?,modified=now()
         where donation_id=?')) {
-      $ErrMsg=buildErrorMessage($ErrMsg,
+      buildErrorMessage($ErrMsg,
          'unable to prep update donation query: '.$msi->error);
       goto sqlerror;
     }
@@ -53,12 +53,12 @@ if(isset($_POST['buttonAction'])) {
     if(!$stmt->bind_param(isdiisi,$_POST['EditPrimaryDonor'],$_POST['EditDate'],
          $_POST['EditAmount'],$_POST['EditFund'],$anon,$_POST['EditPurpose'],
         $_POST['EditDonationID'])) {
-       $ErrMsg=buildErrorMessage($ErrMsg,
+       buildErrorMessage($ErrMsg,
           'unable to bind update donation query params: '.$msi->error);
       goto sqlerror;
     }
     if(!$stmt->execute()) {
-      $ErrMsg=buildErrorMessage($ErrMsg,
+      buildErrorMessage($ErrMsg,
          'unable to exec update donation query: '.$msi->error);
       goto sqlerror;
     }
@@ -86,9 +86,10 @@ if(isset($_POST['buttonAction'])) {
 }
 
 if(isset($hid)) {
-  $house=new HouseData($msi,$smarty,$hid);
+  $house=new HouseData($msi,$smarty,$hid,$ErrMsg);
 
   /* fund list for Add and Edit Donation dialogs */
+  /*
   if($result=$msi->query('select fund_id,fund from funds')) {
     while($tx = $result->fetch_assoc()) {
       $fund_list[]=$tx;
@@ -97,7 +98,10 @@ if(isset($hid)) {
   }
   else {
     buildErrorMessage($ErrMsg,'fund query failed: '.$msi->error);
-  }
+  }*/
+  $smarty->assign('fund_list',
+     uSelect($msi,'select fund_id,fund from funds',
+     'fund list query',$ErrMsg));
   /* list of members for primary donor */
   $smarty->assign('members',$house->members);
 }

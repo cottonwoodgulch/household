@@ -7,6 +7,7 @@ if(!$rbac->Users->hasRole('Contact Information Viewer',
      $_SESSION['user_id'])) {
   header("Location: NotAuthorized.html");
 }
+$ErrMsg=array();
 
 /* if output is to a csv file, don't re-display the page,
     because for some reason, the smarty output gets added to the csv */
@@ -45,7 +46,7 @@ if(isset($_POST['buttonAction'])) {
         //echo "query: $query\n\n";
         if(!$result=$msi->query($query)) {
           echo 'query error: '.$msi->error.'<br>';
-          $ErrMsg=buildErrorMessage($ErrMsg,
+          buildErrorMessage($ErrMsg,
             'unable to execute look up query'.$msi->error);
           goto sqlerror;
         }
@@ -298,7 +299,9 @@ if(isset($_POST['buttonAction'])) {
 sqlerror:
 if(!$is_csv) {
   // for some reason, utility.tpl gets added to csv output
-  /* default as-of date for donations */
+  /* default as-of date for donations 
+     input type=date defaults to now, but doesn't display it */
+  displayFooter($smarty,$ErrMsg);
   $defdate=new DateTime();
   $smarty->assign('DefaultDate',$defdate->format('Y-m-d'));
   $smarty->display('utility.tpl');

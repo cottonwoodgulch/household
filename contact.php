@@ -6,6 +6,7 @@ if(!$rbac->Users->hasRole('Contact Information Editor',$_SESSION['user_id'])) {
   header("Location: NotAuthorized.html");
 }
 require_once 'IData.php';
+$ErrMsg=array();
 
 /*echo "$_post:<br>";
 print_r($_POST);
@@ -33,9 +34,8 @@ if(isset($_POST['buttonAction'])) {
         'degree_id,nickname,birth_date,gender,deceased,username,'.
         'password,password_reset,redrocks) '.
         'values (?,?,?,?,?,?,?,?,?,?,?,?,?)')) {
-        echo 'contact insert prep: '.$msi->error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep add contact query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+          'prep add contact: ',$msi->error);
         goto sqlerror;
       }
       $dob=strlen($_POST['EditDOB'])>0 ? $_POST['EditDOB'] : null;
@@ -56,15 +56,13 @@ if(isset($_POST['buttonAction'])) {
           $_POST['EditDegree'],$_POST['EditNickname'],
           $dob,$_POST['EditGender'],$deceased,
           $username,$pwhash,$pw_reset,$redrocks)) {
-        echo 'contact insert bind: '.$msi->error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind add contact query params: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'bind add contact query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        echo 'contact insert exec: '.$msi->error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec add contact query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec add contact query: ',$msi->error);
         goto sqlerror;
       }
       $cid=$msi->insert_id;
@@ -82,22 +80,19 @@ if(isset($_POST['buttonAction'])) {
       }
       if(!$stmt=$msi->prepare('insert into phones '.
         '(phone_type_id,owner_id,number,formatted) values (?,?,?,?)')) {
-        echo 'phone insert prep: '.$msi->error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep add phone query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+          'prep add phone query: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->bind_param('iisi',$_POST['EditPhoneType'],$cid,
           $phone_number,$phone_formatted)) {
-        echo 'phone insert bind: '.$msi->error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind add phone query params: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'bind add phone query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        echo 'phone insert exec: '.$msi->error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec add phone query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec add phone query: ',$msi->error);
         goto sqlerror;
       }
       addassoc($msi,'phone',$cid,$msi->insert_id);
@@ -106,19 +101,19 @@ if(isset($_POST['buttonAction'])) {
       /* can't change owner_id here */
       if(!$stmt=$msi->prepare('insert into emails '.
         '(email_type_id,owner_id,email) values (?,?,?)')) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep add email query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+          'prep add email query: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->bind_param('iis',$_POST['EditEmailType'],$cid,
           $_POST['EditEmail'])) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind add email query params: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'bind add email query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec add email query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec add email query: ',$msi->error);
         goto sqlerror;
       }
       addassoc($msi,'email',$cid,$msi->insert_id);
@@ -128,20 +123,20 @@ if(isset($_POST['buttonAction'])) {
       if(!$stmt=$msi->prepare('insert into addresses '.
         '(address_type_id,owner_id,street_address_1,street_address_2, '.
         'city,state,country,postal_code) values (?,?,?,?,?,?,?,?)')) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep add address query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+          'prep add address query: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->bind_param('iissssss',$_POST['EditAddressType'],$cid,
           $_POST['EditAddr1'],$_POST['EditAddr2'],$_POST['EditCity'],
           $_POST['EditState'],$_POST['EditCountry'],$_POST['EditZip'])) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind add address query params: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'bind add address query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec edit address query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec edit address query: ',$msi->error);
         goto sqlerror;
       }
       addassoc($msi,'address',$cid,$msi->insert_id);
@@ -151,22 +146,20 @@ if(isset($_POST['buttonAction'])) {
         '(contact_id,relationship_type_id,relative_id) '.
         'values (?,?,?)')) {
         //echo 'cant prep rel: '.$msi-error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep add relationship query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+          'prep add relationship query: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->bind_param('iii',$cid,
          $_POST['EditRelationshipType'],
           $_POST['RelativeID'])) {
-        echo 'cant bind rel: '.$msi-error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind add email query params: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'bind add email query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        echo 'cant exec rel: '.$msi-error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec add email query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec add email query: ',$msi->error);
         goto sqlerror;
       }
     }
@@ -181,9 +174,8 @@ if(isset($_POST['buttonAction'])) {
         'middle_name=?,degree_id=?,nickname=?,birth_date=?,'.
         'gender=?,deceased=?,username=?,'.
         'redrocks=? where contact_id=?')) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep edit contact query: '.$msi->error);
-        echo 'edit prep failed: '.$msi->error.'<br>';
+        buildErrorMessage($ErrMsg,
+          'prep edit contact query: ',$msi->error);
         goto sqlerror;
       }
       $dob=strlen($_POST['EditDOB'])>0 ? $_POST['EditDOB'] : null;
@@ -196,15 +188,13 @@ if(isset($_POST['buttonAction'])) {
           $_POST['EditDegree'],$_POST['EditNickname'],
           $dob,$_POST['EditGender'],$deceased,
           $username,$redrocks,$_POST['ContactID'])) {
-        echo 'contact edit bind: '.$msi->error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind add contact query params: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'bind add contact query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        echo 'contact edit exec: '.$msi->error.'<br>';
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec add contact query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec add contact query: ',$msi->error);
         goto sqlerror;
       }
       /* only update password if one has been entered */
@@ -213,9 +203,8 @@ if(isset($_POST['buttonAction'])) {
           password_hash($_POST['EditPassword'],PASSWORD_DEFAULT);
         if(!$msi->query("update contacts set password='$pwhash'".
           'where contact_id='.$_POST['ContactID'])) {
-          echo 'edit contact set password: '.$msi->error.'<br>';
-          $ErrMsg=buildErrorMessage($ErrMsg,
-             'edit contact: unable to set password: '.$msi->error);
+          buildErrorMessage($ErrMsg,
+             'edit contact: set password: ',$msi->error);
           goto sqlerror;
         }
       }
@@ -233,22 +222,19 @@ if(isset($_POST['buttonAction'])) {
       }
       if(!$stmt=$msi->prepare('update phones '.
         'set phone_type_id=?,number=?,formatted=? where phone_id=?')) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep edit phone query: '.$msi->error);
-        echo 'edit prep failed: '.$msi->error.'<br>';
+        buildErrorMessage($ErrMsg,
+          'prep edit phone query: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->bind_param('issi',$_POST['EditPhoneType'],
           $phone_number,$phone_formatted,$_POST['EditPhoneID'])) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind edit phone query params: '.$msi->error);
-        echo 'edit bind failed: '.$msi->error.'<br>';
+        buildErrorMessage($ErrMsg,
+           'bind edit phone query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec edit phone query: '.$msi->error);
-        echo 'edit exec failed: '.$msi->error.'<br>';
+        buildErrorMessage($ErrMsg,
+           'exec edit phone query: ',$msi->error);
         goto sqlerror;
       }
     }
@@ -256,19 +242,19 @@ if(isset($_POST['buttonAction'])) {
       /* can't change owner_id here */
       if(!$stmt=$msi->prepare('update emails '.
         'set email_type_id=?,email=? where email_id=?')) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep edit email query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+          'prep edit email query: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->bind_param('isi',$_POST['EditEmailType'],
           $_POST['EditEmail'],$_POST['EditEmailID'])) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind edit email query params: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'bind edit email query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec edit email query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec edit email query: ',$msi->error);
         goto sqlerror;
       }
     }
@@ -278,21 +264,21 @@ if(isset($_POST['buttonAction'])) {
         'set address_type_id=?,street_address_1=?,'.
         'street_address_2=?,city=?,state=?,country=?,postal_code=? '.
         'where address_id=?')) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep edit address query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+          'prep edit address query: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->bind_param('issssssi',$_POST['EditAddressType'],
           $_POST['EditAddr1'],$_POST['EditAddr2'],$_POST['EditCity'],
           $_POST['EditState'],$_POST['EditCountry'],$_POST['EditZip'],
           $_POST['EditAddressID'])) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind edit address query params: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'bind edit address query params: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec edit address query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec edit address query: ',$msi->error);
         goto sqlerror;
       }
     }
@@ -301,20 +287,20 @@ if(isset($_POST['buttonAction'])) {
       if(!$stmt=$msi->prepare('update relationships '.
         'set relationship_type_id=?,relative_id=? '.
         'where relationship_id=?')) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-          'unable to prep edit relationship query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+          'prep edit relationship query: ',$msi->error);
         goto sqlerror;
       }
       if(!$stmt->bind_param('iii',$_POST['EditRelationshipType'],
           $_POST['RelativeID'],$_POST['EditRelationshipID'])) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to bind edit relationship query params: '.
+        buildErrorMessage($ErrMsg,
+           'bind edit relationship query params: '.
            $msi->error);
         goto sqlerror;
       }
       if(!$stmt->execute()) {
-        $ErrMsg=buildErrorMessage($ErrMsg,
-           'unable to exec edit relationship query: '.$msi->error);
+        buildErrorMessage($ErrMsg,
+           'exec edit relationship query: ',$msi->error);
         goto sqlerror;
       }
     }
@@ -348,7 +334,7 @@ $smarty->assign('phone_formatted','If this is checked, the program assumes the n
 
 
 if($cid) {
-  $cdata=new IData($msi,$smarty,$cid);
+  $cdata=new IData($msi,$smarty,$cid,$ErrMsg);
   $smarty->assign('cdata',$cdata);
 }
 
@@ -362,6 +348,7 @@ $smarty->assign('degree_list',get_types($msi,'degree'));
 $smarty->assign('relationship_type_list',
     get_types($msi,'relationship',$cdata->Contact['gender']));
 
+displayFooter($smarty,$ErrMsg);
 $smarty->display('ContactMain.tpl');
 
 function get_types($msi,$table,$gender='') {
@@ -395,8 +382,8 @@ function get_types($msi,$table,$gender='') {
 function addassoc($msi,$coordinate,$cid,$coordinate_id) {
   if(!$msi->query("insert into $coordinate"."_associations ".
    "(contact_id,$coordinate"."_id) values ($cid,$coordinate_id)")) {
-    $ErrMsg=buildErrorMessage($ErrMsg,
-       "add $coordinate association failed: ".$msi->error);
+    buildErrorMessage($ErrMsg,
+       "add $coordinate association failed: ",$msi->error);
   }
 }
 
@@ -414,8 +401,8 @@ function deletecoordinate($msi,$coordinate,$key_value,$contact_id) {
   //echo "key value: $key_value<br>";
   if(!$result=$msi->query(
      "select $key_name from $a_table where $key_name=$key_value")) {
-    $ErrMsg=buildErrorMessage($ErrMsg,
-       "association check query failed: ".$msi->error);
+    buildErrorMessage($ErrMsg,
+       "association check query failed: ",$msi->error);
     return;
   }
   $association_count=$result->num_rows;
@@ -423,15 +410,15 @@ function deletecoordinate($msi,$coordinate,$key_value,$contact_id) {
   //echo "associations: $association_count<br>";
   if(!$msi->query("delete from $a_table where ".
      "$key_name=$key_value and contact_id=$contact_id")) {
-    $ErrMsg=buildErrorMessage($ErrMsg,
-       "delete $a_table query failed: ".$msi->error);
+    buildErrorMessage($ErrMsg,
+       "delete $a_table query failed: ",$msi->error);
     return;
   }
   if($association_count == 1) {
     /* this is the only association to that coordinate - ok to del */
     if(!$msi->query("delete from $table where $key_name=$key_value")) {
-      $ErrMsg=buildErrorMessage($ErrMsg,
-         "delete $table query failed: ".$msi->error);
+      buildErrorMessage($ErrMsg,
+         "delete $table query failed: ",$msi->error);
     }
   }
   return;

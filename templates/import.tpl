@@ -108,7 +108,8 @@
     <td><input type="checkbox" name="email"></td>
   </table>
   <button type="button" onClick="di_submit('Save')">Save</button>
-  <button type="button" onClick="di_submit('Next')">Next</button>
+  <button type="button" onClick="di_submit('Next')"
+      {if $eof==1}disabled{/if} autocomplete="off">Next</button>
   <button type="button" onClick="di_submit('ReLoad')">Re-Load</button>
   </div>
   </div> {* to supply flex (side-by-side) display *}

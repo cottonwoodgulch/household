@@ -22,6 +22,7 @@ require_once 'libe.php';
 if(!$rbac->Users->hasRole('Financial Information Viewer',$_SESSION['user_id'])) {
   header("Location: NotAuthorized.html");
 }
+$ErrMsg=array();
 require_once 'objects.php';
 
 if(isset($_GET['cid'])) {
@@ -37,7 +38,7 @@ else if(isset($_SESSION['household_id'])) {
 $_SESSION['household_id'] = $hid;
 
 if($hid) {
-  $tx=new HouseData($msi,$smarty,$hid);  
+  $tx=new HouseData($msi,$smarty,$hid,$ErrMsg);  
 
   /* calculate donation statistics from $tx->donations array */
   $yr10=new DateTime();
@@ -108,10 +109,12 @@ if($hid) {
   }
   $smarty->assign('stats',$stats);
 
+
   $smarty->assign('house',$tx);
   $smarty->assign('address',$tx->getPreferredAddress());
 }
 /* if $hid is not set, only the Look up Household button will show */
 $smarty->assign('referrer','home');
+displayFooter($smarty,$ErrMsg);
 $smarty->display('summary.tpl');
 ?>
