@@ -53,7 +53,7 @@ class HouseData {
     foreach($this->members as &$tx) {
       $tx['trek_list']=trek_list($msi,$tx['contact_id'],$ErrMsg);
     }
-    unset($ttx);
+    unset($tx);
     /*
     if($stmt=$msi->prepare("select c.contact_id, c.primary_name,
        c.first_name,c.middle_name, c.nickname, d.degree

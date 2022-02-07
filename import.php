@@ -31,7 +31,6 @@ if(isset($_POST['buttonAction'])) {
   }
   else if($buttonaction == "SwitchHouse") {
     /* same donation rec, different household */
-    echo "switchhouse hid: $hid<br>";
     $qwhere="where fy='$fy' && recno=$recno";
   }
   else {
