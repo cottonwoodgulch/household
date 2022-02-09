@@ -19,27 +19,6 @@ class HouseData {
          where h.household_id=?",$hid,'HouseData info',$ErrMsg);
     $this->hd=$tx[0];
     $this->household_id=$this->hd['household_id'];
-    /*
-    if($stmt=$msi->prepare(
-         "select h.household_id, h.name, h.salutation, h.mailname,
-            ifnull(h.address_id,0) address_id
-            from households h
-           where h.household_id=?")) {
-      $stmt->bind_param('i',$hid);
-      $stmt->execute();
-      $result=$stmt->get_result();
-      $this->hd = $result->fetch_assoc();
-      $stmt->close();
-      $result->free();
-      $this->household_id=$this->hd['household_id'];
-    }
-    else {
-      buildErrorMessage($ErrMsg,
-        "HouseData info: unable to create mysql statement object: ".
-        $msi->error);
-      return;
-    }
-    */
     
     /* get member info for the household */
     $this->members=pSelect($msi,
@@ -54,28 +33,6 @@ class HouseData {
       $tx['trek_list']=trek_list($msi,$tx['contact_id'],$ErrMsg);
     }
     unset($tx);
-    /*
-    if($stmt=$msi->prepare("select c.contact_id, c.primary_name,
-       c.first_name,c.middle_name, c.nickname, d.degree
-       from household_members hm
-       inner join contacts c on c.contact_id=hm.contact_id
-       left join degrees d on d.degree_id=c.degree_id
-       where hm.household_id=?")) {
-      $stmt->bind_param('i',$this->household_id);
-      $stmt->execute();
-      $result=$stmt->get_result();
-      while($tx = $result->fetch_assoc()) {
-        $tx['trek_list']=trek_list($msi,$tx['contact_id'],$ErrMsg);
-        $this->members[] = $tx;
-      }
-      $stmt->close();
-      $result->free();
-    }
-    else {
-     buildErrorMessage($ErrMsg,
-      "HouseData members: unable to create mysql statement object: ".
-      $msi->error);
-    }*/
 
     /* get donations */
     $this->donations=pSelect($msi,'select d.donation_id,'.
@@ -89,173 +46,64 @@ class HouseData {
         "left join degrees de on de.degree_id=c.degree_id ".
         "where hm.household_id=? order by d.ddate desc",
         $this->household_id,'HouseData donations',$ErrMsg);
-    /*
-    if($stmt=$msi->prepare(
-        "select d.donation_id, d.primary_donor_id, d.ddate, d.amount,".
-        "format(d.amount,2) famount,d.anonymous,".
-        "f.fund,d.purpose,c.first_name, de.degree ".
-        "from household_members hm inner join hdonations d ".
-        "on d.primary_donor_id=hm.contact_id ".
-        "inner join contacts c on c.contact_id=hm.contact_id ".
-        "left join funds f on f.fund_id=d.fund_id ".
-        "left join degrees de on de.degree_id=c.degree_id ".
-        "where hm.household_id=? order by d.ddate desc")) {
-      $stmt->bind_param('i',$this->household_id);
-      $stmt->execute();
-      $result=$stmt->get_result();
-      while($tx = $result->fetch_assoc()) {
-        $this->donations[] = $tx;
-      }
-      $stmt->close();
-      $result->free();
-    }
-    else {
-      buildErrorMessage($ErrMsg,
-       "HouseData donations: unable to create mysql statement object: ".
-        $msi->error);
-    }*/
         
     /* get all addresses for all household members */
     $member_id_list = '';
     foreach($this->members as $tx) {
       $member_id_list .= (strlen($member_id_list) ? ',' : '').$tx['contact_id'];
     }
-    $this->addresses=uSelect($msi,
-       "select distinct 0 preferred, at.address_type,
-       a.address_id,cx.first_name,a.street_address_1,
-       a.street_address_2,a.city, a.state, 
-       a.postal_code, a.country from contacts c
-       inner join address_associations aa 
-         on aa.contact_id=c.contact_id
-       inner join addresses a on a.address_id=aa.address_id
-       inner join address_types at
-         on at.address_type_id=a.address_type_id
-       left join contacts cx on cx.contact_id=a.owner_id
-       where c.contact_id in ($member_id_list)",
-       'HouseData address',$ErrMsg);
-    foreach($this->addresses as &$tx) {
-      if($tx['address_id'] == $this->hd['address_id']) {
-        $tx['preferred'] = 1;
-        break;
-      }
-    }
-    unset($tx);
-    /*
-    if($stmt=$msi->prepare(
-         "select distinct 0 preferred, at.address_type, a.address_id,
-                 cx.first_name,
-                 a.street_address_1, a.street_address_2,
-                 a.city, a.state, a.postal_code, a.country
-            from contacts c
-           inner join address_associations aa
-              on aa.contact_id=c.contact_id
-           inner join addresses a
-              on a.address_id=aa.address_id
-           inner join address_types at
-              on at.address_type_id=a.address_type_id
-            left join contacts cx
-              on cx.contact_id=a.owner_id
-           where c.contact_id in ($member_id_list)")) {
-      $stmt->execute();
-      $result=$stmt->get_result();
-      while($tx = $result->fetch_assoc()) {
+    if(strlen($member_id_list)) {
+      $this->addresses=uSelect($msi,
+         "select distinct 0 preferred, at.address_type,
+         a.address_id,cx.first_name,a.street_address_1,
+         a.street_address_2,a.city, a.state, 
+         a.postal_code, a.country from contacts c
+         inner join address_associations aa 
+           on aa.contact_id=c.contact_id
+         inner join addresses a on a.address_id=aa.address_id
+         inner join address_types at
+           on at.address_type_id=a.address_type_id
+         left join contacts cx on cx.contact_id=a.owner_id
+         where c.contact_id in ($member_id_list)",
+         'HouseData address',$ErrMsg);
+      foreach($this->addresses as &$tx) {
         if($tx['address_id'] == $this->hd['address_id']) {
           $tx['preferred'] = 1;
+          break;
         }
-        $this->addresses[] = $tx;
       }
-      $stmt->close();
-      $result->free();
-    }
-    else {
-      buildErrorMessage($ErrMsg,
-        "Address info: unable to create mysql statement object: ".
-        $msi->error);
-      return;
-    }
-    */
+      unset($tx);
 
-    /* get all emails for all household members
-       - member_id_list was created in the address section */
-    $this->emails=pSelect($msi,
-       "select distinct !isnull(pe.email_id) preferred,
-       et.email_type, e.email_id,cx.first_name, e.email
-       from contacts c inner join email_associations ea
-       on ea.contact_id=c.contact_id
-       inner join emails e on e.email_id=ea.email_id
-       left join email_types et on et.email_type_id=e.email_type_id
-       left join contacts cx on cx.contact_id=e.owner_id
-       left join preferred_emails pe
-       on pe.email_id=e.email_id and pe.household_id=?
-       where c.contact_id in ($member_id_list)",
-       $this->household_id,'e-mail info',$ErrMsg);
-/*
-    if($stmt=$msi->prepare(
+      /* get all emails for all household members
+         - member_id_list was created in the address section */
+      $this->emails=pSelect($msi,
          "select distinct !isnull(pe.email_id) preferred,
-                 et.email_type, e.email_id,cx.first_name, e.email
-            from contacts c
-           inner join email_associations ea on ea.contact_id=c.contact_id
-           inner join emails e on e.email_id=ea.email_id
-            left join email_types et on et.email_type_id=e.email_type_id
-            left join contacts cx on cx.contact_id=e.owner_id
-            left join preferred_emails pe
-              on pe.email_id=e.email_id and pe.household_id=".$this->household_id.
-          " where c.contact_id in ($member_id_list)")) {
-      $stmt->execute();
-      $result=$stmt->get_result();
-      while($tx = $result->fetch_assoc()) {
-        $this->emails[] = $tx;
-      }
-      $stmt->close();
-      $result->free();
-    }
-    else {
-     echo "error prepping emails stmt: ".$msi->error;
-      buildErrorMessage($ErrMsg,
-        "Email info: unable to create mysql statement object: ".
-        $msi->error);
-      return;
-    }
-*/
+         et.email_type, e.email_id,cx.first_name, e.email
+         from contacts c inner join email_associations ea
+         on ea.contact_id=c.contact_id
+         inner join emails e on e.email_id=ea.email_id
+         left join email_types et
+         on  et.email_type_id=e.email_type_id
+         left join contacts cx on cx.contact_id=e.owner_id
+         left join preferred_emails pe
+         on pe.email_id=e.email_id and pe.household_id=?
+         where c.contact_id in ($member_id_list)",
+         $this->household_id,'e-mail info',$ErrMsg);
 
-    /* get all phones for all household members
-       - member_id_list was created in the address section */
-    $this->phones=uSelect($msi,"select distinct pt.phone_type,
-       p.phone_id,cx.first_name,p.formatted,p.number
-       from contacts c
-       inner join phone_associations pa on
-       pa.contact_id=c.contact_id
-       inner join phones p on p.phone_id=pa.phone_id
-       left join phone_types pt on pt.phone_type_id=p.phone_type_id
-       left join contacts cx on cx.contact_id=p.owner_id
-       where c.contact_id in ($member_id_list)",
-       'phones info',$ErrMsg);
-    
-/*
-    if($stmt=$msi->prepare(
-         "select distinct pt.phone_type,p.phone_id,cx.first_name,p.formatted,p.number
-            from contacts c
-           inner join phone_associations pa on pa.contact_id=c.contact_id
-           inner join phones p on p.phone_id=pa.phone_id
-            left join phone_types pt on pt.phone_type_id=p.phone_type_id
-            left join contacts cx on cx.contact_id=p.owner_id
-           where c.contact_id in ($member_id_list)")) {
-      $stmt->execute();
-      $result=$stmt->get_result();
-      while($tx = $result->fetch_assoc()) {
-        $this->phones[] = $tx;
-      }
-      $stmt->close();
-      $result->free();
+      /* get all phones for all household members
+         - member_id_list was created in the address section */
+      $this->phones=uSelect($msi,"select distinct pt.phone_type,
+         p.phone_id,cx.first_name,p.formatted,p.number
+         from contacts c
+         inner join phone_associations pa on
+         pa.contact_id=c.contact_id
+         inner join phones p on p.phone_id=pa.phone_id
+         left join phone_types pt
+         on pt.phone_type_id=p.phone_type_id
+         left join contacts cx on cx.contact_id=p.owner_id
+         where c.contact_id in ($member_id_list)",
+         'phones info',$ErrMsg);
     }
-    else {
-     echo "error prepping phones stmt: ".$msi->error;
-      buildErrorMessage($ErrMsg,
-        "Phones info: unable to create mysql statement object: ".
-        $msi->error);
-      return;
-    }
-*/
   } // end construct function
   
   public function getPreferredAddress() {

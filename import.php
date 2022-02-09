@@ -15,7 +15,7 @@ $recno=isset($_POST['recno']) ? $_POST['recno'] : 0;
 $hid=isset($_POST['hid']) ? $_POST['hid'] : 0;
 $eof=false;
 
-echo "begin hid: $hid<br>";
+//echo "begin hid: $hid<br>";
 if(isset($_POST['buttonAction'])) {
   //echo 'button action: '.$_POST['buttonAction'].'<br>';
   $buttonaction=$_POST['buttonAction'];
