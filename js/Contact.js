@@ -202,7 +202,7 @@ function editRelation() {
     })
   },
   select: function(event, ui) {
-    console.log('setting RelativeID to: '+ui.item.value);
+    //console.log('setting RelativeID to: '+ui.item.value);
     $("#RelativeID").val(ui.item.value);
     //$("#EditRelation").val(ui.item.name);
   }
@@ -210,11 +210,23 @@ function editRelation() {
   $("#EditRelation").select();
 }
 
-function addCoordinate(coordinate_type) {
-  /* to tell contact.php which coordinate type we are adding,
-       Address, Phone, or Email */
-  $("#Edit"+coordinate_type+"ID").val('add');
-  CoordinateDialog("Add",coordinate_type);
+function editNote(note_id) {
+  console.log('in editNote');
+  $("#EditNoteID").val(note_id);
+  if(note_id) {
+    $("#EditDate").val($("#ddate"+note_id).val());
+    $("#EditNote").val($("#note"+note_id).html());
+    CoordinateDialog("Edit","Note");
+  }
+  else {
+    today=new Date();
+    $("#EditDate").val(today.getFullYear()+'-'+
+       new String(today.getMonth()+1).padStart(2,'0')+'-'+
+       new String(today.getDate()).padStart(2,'0'));
+    
+    $("#EditNote").val('');
+    CoordinateDialog("Add","Note");
+  }
 }
 
 function CoordinateDialog(title,coordinate,

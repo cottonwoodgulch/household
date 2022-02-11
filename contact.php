@@ -163,6 +163,25 @@ if(isset($_POST['buttonAction'])) {
         goto sqlerror;
       }
     }
+    else if(isset($_POST['EditNoteID'])) {
+      if(!$stmt=$msi->prepare('insert into notes '.
+        '(contact_id,modified,note) values (?,?,?)')) {
+        buildErrorMessage($ErrMsg,
+          'prep add note query: ',$msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->bind_param('iss',$cid,
+         $_POST['EditDate'],$_POST['EditNote'])) {
+        buildErrorMessage($ErrMsg,
+           'bind add note params: ',$msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->execute()) {
+        buildErrorMessage($ErrMsg,
+           'exec add note query: ',$msi->error);
+        goto sqlerror;
+      }
+    }
   }
   else if ($_POST['buttonAction'] == 'Edit') {
     /* editXxxIDs are set in Contact.js edit functions */
@@ -304,6 +323,26 @@ if(isset($_POST['buttonAction'])) {
         goto sqlerror;
       }
     }
+    else if(isset($_POST['EditNoteID'])) {
+      if(!$stmt=$msi->prepare('update notes '.
+        'set modified=?,note=? where note_id=?')) {
+        buildErrorMessage($ErrMsg,
+          'prep edit notes query: ',$msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->bind_param('ssi',$_POST['EditDate'],
+          $_POST['EditNote'],$_POST['EditNoteID'])) {
+        buildErrorMessage($ErrMsg,
+           'bind edit note query params: '.
+           $msi->error);
+        goto sqlerror;
+      }
+      if(!$stmt->execute()) {
+        buildErrorMessage($ErrMsg,
+           'exec edit note query: ',$msi->error);
+        goto sqlerror;
+      }
+    }
   }
   else if ($_POST['buttonAction'] == 'Delete') {
     /* editXxxIDs are set in Contact.js edit functions */
@@ -323,6 +362,14 @@ if(isset($_POST['buttonAction'])) {
     else if(isset($_POST['EditRelationshipID'])) {
       deletecoordinate($msi,'relationship',
          $_POST['EditRelationshipID'],$cid);
+    }
+    else if(isset($_POST['EditNoteID'])) {
+      /* notes don't have associations */
+      if(!$msi->query('delete from notes where note_id='.
+           $_POST['EditNoteID'])) {
+        buildErrorMessage($ErrMsg,"delete note failed: ",
+           $msi->error);
+      }
     }
   }
   sqlerror:

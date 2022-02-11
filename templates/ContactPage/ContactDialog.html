@@ -187,3 +187,20 @@
   </table>
   </form> {* AddressEditForm *}
   </div> {* AddressEditDialog *}
+
+  <div id="NoteEditDialog" style="display: none">
+  <form method="post" action="contact.php"
+        id="NoteEditForm" autocomplete="off">
+    <input type="hidden" name="EditNoteID" id="EditNoteID">
+    <input type="hidden" name="ContactID" value="{$cdata->contact_id}">
+    <input type="hidden" name="buttonAction">
+    <table class="edit">
+      <tr>
+      <td>Date: <input type="date" id="EditDate" name="EditDate"></td>
+      </tr><tr>
+      <td><textarea id="EditNote" name="EditNote"
+         cols="70" rows="10"></textarea>
+      </td></tr>
+    </table>
+  </form> {* NoteEditForm *}
+  </div>  {* NoteEditDialog *}

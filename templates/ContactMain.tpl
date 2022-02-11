@@ -68,12 +68,23 @@
   </table> {* main *}
 
   {* Notes *}
-  <table class="edit" style="font-size: .81em;">
-    <tr><td colspan="2">Notes:</td></tr>
-    {foreach from=$cdata->notes item=$cx}
-      <tr><td>&nbsp;</td>
-      <td>{$cx.ddate}</td><td>{$cx.note}</td></tr>
-    {/foreach}
+  <table class="edit">
+  <tr><td style="font-size: .81em;">
+    <button type="button" class="mini-button"
+             onClick="editNote(0)" title="Add"
+             style="border: 0">Notes:</button>
+  </td></tr>
+  {foreach from=$cdata->notes item=$cx}
+    <tr><td class="label" style="font-size: .81em;">
+      <button type="button" class="mini-button" title="Edit"
+            onClick="editNote({$cx.note_id})">
+             {$cx.ddate|date_format:"%m/%d/%Y"}:</button></td>
+        <td style="font-size: .81em;"
+           id="note{$cx.note_id}">{$cx.note}</td>
+        <input type="hidden" id="ddate{$cx.note_id}"
+           value="{$cx.ddate}">
+    </tr>
+  {/foreach}
   </table>
 
   {/if}
