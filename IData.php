@@ -100,7 +100,8 @@ class IData {
 
     /* GROUPS */
     $this->groups=pSelect($msi,
-       "select ifnull(ro.role,'') role,r.year,g.group_id,g.group ".
+       "select ifnull(ro.role,'') role,".
+       "r.year,rm.roster_id,g.group_id,g.group ".
        "from roster_memberships rm ".
        "inner join rosters r on r.roster_id=rm.roster_id ".
        "inner join groups g on g.group_id=r.group_id ".

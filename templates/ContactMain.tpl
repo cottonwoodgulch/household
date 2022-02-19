@@ -44,11 +44,15 @@
 
     <td>
     <table class="edit"> {* groups *}
-      <tr><td colspan="2" style="font-size: .9em;">Groups:</td></tr>
+      <tr><td style="font-size: .81em;">Groups:
+        {*<button type="button" class="mini-button"
+             onClick="editGroup(0)" title="Add">Groups:</button>*}
+      </td></tr>
       {foreach from=$cdata->groups item=$cx}
-        <tr><td>&nbsp;</td><td><button type="button"
+        <tr><td style="padding-left: 7px;"><button type="button"
              class="mini-button" title="Show Roster" onClick=
-               "rosterLookup({$cx.year},'{$cx.group}',{$cx.group_id})"
+               "rosterLookup({$cx.year},'{$cx.group}',
+               {$cx.group_id},{$cx.roster_id})"
              style="border: 0; font-size: .81em;">
           {if $cx.role != ''}{$cx.role}, {/if}
           {if $cx.year > 0}{$cx.year} {/if}
@@ -62,6 +66,10 @@
     <td>
     <table class="edit" id="rosters">
     </table>
+    <form method="post" action="contact.php" id="RosterMemberDeleteForm">
+      <input type="hidden" name="ContactID" value="{$cdata->contact_id}">
+      <input type="hidden" name="EditRosterID">
+    </form>
     </td>
     
     </tr>

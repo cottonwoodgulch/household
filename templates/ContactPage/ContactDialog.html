@@ -188,7 +188,29 @@
   </form> {* AddressEditForm *}
   </div> {* AddressEditDialog *}
 
-  <div id="NoteEditDialog" style="display: none">
+<div id="GroupEditDialog" style="display: none;">
+<form method="post" action="contact.php" id="GroupEditForm"
+   autocomplete="off">
+  <input type="hidden" name="EditGroupID" id="EditGroupID">
+  <input type="hidden" name="ContactID" value="{$cdata->contact_id}">
+  <input type="hidden" name="buttonAction">
+  <table class="edit">
+    <tr><td class="label">Group:</td><td>
+    <input id="FindGroup" name="FindGroup" value="" autofocus></td></tr>
+    <tr><td class="label">Year:</td><td>
+    <input id="FindYear" name="FindYear" value=""></td></tr>
+    <tr><td class="label">Role:</td><td>
+    {*<input id="FindRole" name="FindRole" value=""></td></tr>*}
+    <select id="EditRole" name="EditRole">
+       {foreach from=$role_list item=$tl}
+         <option value="{$tl.role_id}">{$tl.role}</option>
+       {/foreach}
+     </select></td></tr>
+  </table>
+</form> {* GroupEditForm *}
+</div> {* GroupEditDialog *}
+
+  <div id="NoteEditDialog" style="display: none;">
   <form method="post" action="contact.php"
         id="NoteEditForm" autocomplete="off">
     <input type="hidden" name="EditNoteID" id="EditNoteID">

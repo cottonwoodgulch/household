@@ -50,30 +50,6 @@ function cityLookup(tthis) {
   }
 }
 
-function rosterLookup(year,group,group_id) {
-  /* display group members as table rows in table id=rosters */
-  $.ajax({
-    type: "GET",
-    url: "ajax/RosterLookup.php?year="+year+"&group_id="+group_id,
-    dataType: "json",
-    success: function(res_html, textStatus, xhr) {
-      gl="<tr><th>"+year+" "+group+"</th></tr>";
-      res_html.forEach(function(element) {
-        middle=element.middle.length>0 ? " "+element.middle+" " : " ";
-        role=(element.role=='Trekker' || element.role=='') ?
-            "" : " ("+element.role+")";
-        namelink='<a href="contact.php?cid='+element.contact_id+
-          '">'+element.first+middle+element.last+'</a> '+role;
-        gl+='<tr><td>'+namelink+'</td></tr>';
-      });
-    $("#rosters").html(gl);
-    },
-    error: function(xhr, textStatus, errorThrown) {
-      $("#content").html(textStatus+errorThrown);
-    }
-  });
-}
-
 /* editContact, editPhone, editEmail, editAddress manage
    both edit and add based on the contact_id, phone_id,
    email_id, or address_id, which is passed as 0 if it's add */
@@ -211,7 +187,6 @@ function editRelation() {
 }
 
 function editNote(note_id) {
-  console.log('in editNote');
   $("#EditNoteID").val(note_id);
   if(note_id) {
     $("#EditDate").val($("#ddate"+note_id).val());
@@ -227,6 +202,80 @@ function editNote(note_id) {
     $("#EditNote").val('');
     CoordinateDialog("Add","Note");
   }
+}
+
+function editGroup() {
+  /* only offers add group - delete is a button when roster
+        members are displayed
+     roles are the same for all groups
+     look up years based on the group */
+  $("#EditGroupID").val(0);
+  console.log('in editGroup');
+  
+  $("#FindYear").autocomplete({
+    minLength: 3,
+    source: ["tom","lynn","alice"],
+    select: function(event, ui) {
+      console.log('year: '+ui.item.value+': '+ui.item.label);
+    }
+  });
+  console.log('findyear autocomplete set');
+  $("#FindGroup").autocomplete({
+    minLength: 3,
+    source: function(request, response) {
+      $.ajax({
+        type: "GET",
+        url: "ajax/AddLookup.php?value="+$("#FindContact").val(),
+        dataType: "json",
+        success: function(res_html, textStatus, xhr) {
+          response(res_html);
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          $("#content").html(textStatus+errorThrown);
+        }
+      })
+    },
+    select: function(event, ui) {
+      //$("#FindYear").autocomplete("option","source","");
+      /*$("#ContactID").val(ui.item.value);
+      $("#CurrentHouseID").val(ui.item.hid);
+      $("#FindContactForm").submit();*/
+    }
+  });
+  CoordinateDialog("Add","Group");
+}
+
+function rosterLookup(year,group,group_id,roster_id) {
+  /* display group members as table rows in table id=rosters */
+  $.ajax({
+    type: "GET",
+    url: "ajax/RosterLookup.php?year="+year+"&group_id="+group_id,
+    dataType: "json",
+    success: function(res_html, textStatus, xhr) {
+      gl='<tr><th style="text-align: left;">'+year+" "+group+"</th></tr>";
+      res_html.forEach(function(element) {
+        middle=element.middle.length>0 ? " "+element.middle+" " : " ";
+        role=(element.role=='Trekker' || element.role=='') ?
+            "" : " ("+element.role+")";
+        namelink='<a href="contact.php?cid='+element.contact_id+
+          '">'+element.first+middle+element.last+'</a> '+role;
+        gl+='<tr><td>'+namelink+'</td></tr>';
+      });
+    //gl+='<tr><td>&nbsp;</td></tr><tr><td>';
+    gl+='<tr><td>&nbsp;</td></tr>';
+    /*name=$("#first").html()+' '+$("#last").html();
+    conf="Confirm('Remove',"+
+         "'Remove "+name+' from '+year+' '+group+"',"+
+         "'Delete','#RosterMemberDeleteForm')";
+    gl+='<button onClick="'+conf+'">';
+    gl+='Remove '+name+' from roster</button></td></tr>';*/
+    $("#rosters").html(gl);
+    $("#RosterMemberDeleteForm input[name=EditRosterID]").val(roster_id);
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      $("#content").html(textStatus+errorThrown);
+    }
+  });
 }
 
 function CoordinateDialog(title,coordinate,

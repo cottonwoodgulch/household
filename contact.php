@@ -206,7 +206,7 @@ if(isset($_POST['buttonAction'])) {
           $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
           $_POST['EditDegree'],$_POST['EditNickname'],
           $dob,$_POST['EditGender'],$deceased,
-          $username,$redrocks,$_POST['ContactID'])) {
+          $username,$redrocks,$cid)) {
         buildErrorMessage($ErrMsg,
            'bind add contact query params: ',$msi->error);
         goto sqlerror;
@@ -394,6 +394,7 @@ $smarty->assign('contact_type_list',get_types($msi,'contact'));
 $smarty->assign('degree_list',get_types($msi,'degree'));
 $smarty->assign('relationship_type_list',
     get_types($msi,'relationship',$cdata->Contact['gender']));
+$smarty->assign('role_list',get_types($msi,'role'));
 
 displayFooter($smarty,$ErrMsg);
 $smarty->display('ContactMain.tpl');
@@ -402,6 +403,9 @@ function get_types($msi,$table,$gender='') {
   $type_list=array();
   if($table=='degree') {
     $query="select degree_id,degree from degrees";
+  }
+  else if($table='role') {
+    $query='select role_id,role from roles';
   }
   else if ($table=='relationship') {
     if($gender=='' || is_null($gender)) {
