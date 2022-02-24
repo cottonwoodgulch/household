@@ -37,6 +37,16 @@
     {/foreach}
   </table>
   <table class="edit">
+    {section name=x loop=5 start=-5}
+      <tr><td>{$house->donations[x]['ddate']|date_format:"%m/%d/%Y"}
+          {$house->donations[x]['amount']}</td>
+          <td>{$house->donations[x]['fund']}</td>
+          <td>{$house->donations[x]['purpose']}</td>
+          <td>({$house->donations[x]['first_name']})</td>
+          </tr>
+    {/section}
+  </table>
+  <table class="edit">
     {foreach $house->addresses as $tx}
       <tr><td class="label">
          {if $tx.preferred == 1}* {else}&nbsp;&nbsp;{/if}
@@ -130,6 +140,14 @@
     {/if}
     </table>
     <table class="edit">
+    <tr><td class="label">Email:</td><td>{$emails.email}</td>
+    {if $emails.ok == 1}
+       <td>OK</td>
+    {elseif $hid != 0}
+        <td><button onClick="editEmail('{$emails.email}')"
+         type="button">Add</button></td>
+    {/if}
+    </tr>
     {foreach $phones as $px name=phones}
       {if $smarty.foreach.phones.first}
         <tr><td class="label">Phones:</td>
@@ -144,14 +162,6 @@
          type="button">Add</button></td>
       {/if}
     {/foreach}
-    <tr><td class="label">Email:</td><td>{$emails.email}</td>
-    {if $emails.ok == 1}
-       <td>OK</td>
-    {elseif $hid != 0}
-        <td><button onClick="editEmail('{$emails.email}')"
-         type="button">Add</button></td>
-    {/if}
-    </tr>
     <tr><td>&nbsp;</td></tr><tr><td>
       <button type="button" onClick="di_submit('Next')"
         {if $eof==1}disabled{/if}>Next</button>
