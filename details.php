@@ -109,7 +109,7 @@ delerror:
 }
 else if($_POST['buttonAction']=='saveChange') {
   // update household info and preferred address from $_POST
-  $house=new HouseData($msi,$smarty,$hid);
+  $house=new HouseData($msi,$smarty,$hid,$ErrMsg);
   $house->updateHouse($msi, $smarty, $ErrMsg);
 }
 

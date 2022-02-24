@@ -101,6 +101,15 @@ function pSelect($msi,$query,$id,$desc,&$ErrMsg) {
   return $rv;
 }
 
+function array_matchfield($needle,$haystack,$field) {
+  foreach($haystack as $hx) {
+    if($hx[$field] == $needle) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function getHouseholdFromContact($msi,$smarty,$cid) {
   /* also gets contact name in case of error */
   if($stmt=$msi->prepare(

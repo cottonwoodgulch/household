@@ -5,6 +5,7 @@
 {/block}
 
 {block name="dialog"}
+  {include file="templates/ImportDialog.html"}
 {/block}
 
 {block name="content"}
@@ -12,7 +13,11 @@
   <input type="hidden" id="fy" name="fy" value="{$di.fy}">
   <input type="hidden" id="recno" name="recno" value="{$di.recno}">
   <input type="hidden" id="hid" name="hid" value="{$hid}">
+  {*<input id="fy" name="fy" value="{$di.fy}">
+  <input id="recno" name="recno" value="{$di.recno}">
+  <input id="hid" name="hid" value="{$hid}">*}
   <input type="hidden" id="buttonAction" name="buttonAction">
+  <input type="hidden" id="subAction" name="subAction">
   <div style="display: flex;">
   <div style="border: thin solid black; padding: 10px; width: 45%;">
   {if $hid != 0}
@@ -26,28 +31,28 @@
   </table>
   <table class="edit">
     {foreach $house->members as $tx}
-      <tr><td>{$tx.first_name} {$tx.primary_name} {$tx.degree}</td>
-      </tr>
+      <tr><td><a href="contact.php?cid={$tx.contact_id}"
+             class="filelist_normal">
+        {$tx.first_name} {$tx.primary_name} {$tx.degree}</a></td></tr>
     {/foreach}
   </table>
   <table class="edit">
     {foreach $house->addresses as $tx}
-      <tr><td class="label">{$tx.address_type}:</td>
+      <tr><td class="label">
+         {if $tx.preferred == 1}* {else}&nbsp;&nbsp;{/if}
+         {$tx.address_type}:</td>
       <td>{$tx.street_address_1} {$tx.street_address_2}
          {$tx.city} {$tx.state} {$tx.postal_code} {$tx.country}</td>
-      {if $tx.preferred==1}<td>Preferred</td>{/if}
       <td>({$tx.first_name})</td></tr>
     {/foreach}
   </table>
   <table class="edit">
     {foreach $house->emails as $tx}
-      <tr><td class="label">{$tx.email_type}:</td>
+      <tr><td class="label">
+         {if $tx.preferred == 1}* {else}&nbsp;&nbsp;{/if}{$tx.email_type}:</td>
       <td>{$tx.email}</td>
-      {if $tx.preferred==1}<td>Preferred</td>{/if}
         <td>({$tx.first_name})</td></tr>
     {/foreach}
-  </table>
-  <table class="edit">
     {foreach $house->phones as $tx}
       <tr><td class="label">{$tx.phone_type}:</td>
       <td>{$tx.number|Phone:$tx.formatted}</td>
@@ -57,60 +62,105 @@
       <tr><td><select name="selecthouse" id="selecthouse"
          onchange="switchhouse()">
         {foreach $current as $tx}
-          <option value="{$tx.household_id}">{$tx.mailname}
-            {if $tx.houssehold_id == $hid}selected{/if}</option>
+          <option value="{$tx.household_id}"
+            {if $tx.household_id == $hid}selected{/if}>{$tx.mailname}
+            </option>
         {/foreach}
       </select></td></tr>
     {/if}
   </table>
   {else}
   <div style="font-weight: bold; font-size: 1.1em;">
-  No household</div>
+  No household - to load donation, create and add members</div>
   {/if}
-  </div>
+  </div> {* target household *}
+  
+  {* import record *}
   <div style="border: thin solid black; padding: 10px;">
   <div style="font-weight: bold; font-size: 1.1em;">
   {$di.fname} {$di.lname} donation</div>
-  <table class="edit">
-    <tr><td></td><td></td><td style="font-weight: bold;">Update</td>
-    </tr><tr>
+  
+  <table class="edit"><tr>
+    <input type="hidden" id="value" name="value">
     <td class="label">Salutation:</td><td>{$di.salutation}</td>
-    <td><input type="checkbox" name="salutation"></td>
+    {if $di.salutation == $house->hd.salutation}
+      <td>OK</td>
+    {elseif $hid != 0}
+        <td><button onClick="di_submit('Update','salutation')"
+         type="button">Update</button></td>
+    {/if}
     </tr><tr>
-    <td class="label">Mail Name:</td><td>{$di.fname} {$di.lname}</td>
-    <td><input type="checkbox" name="mailname"></td>
-    </tr><tr>
-    </tr><tr>
-    <td class="label">Address:</td>
-    <td>{$di.street} {$di.city} {$di.state} {$di.zip} {$di.country}</td>
-    <td><input type="checkbox" name="address"></td>
-    </tr><tr>
-    <td class="label">Donation:</td><td>{$di.ddate|date_format:"%m/%d/%Y"} {math equation="x" x=$di.amount format="%.2f"}</td>
-    <td><input type="checkbox" name="donation"></td>
-    </tr><tr>
-    <td class="label">Fund:</td><td>{$di.fund}</td>
+    <td class="label">Mail Name:</td><td>{$di.mailname}</td>
+    {if $di.mailname == $house->hd.mailname}
+      <td>OK</td>
+    {elseif $hid != 0}
+        <td><button onClick="di_submit('Update','mailname')"
+         type="button">Update</button></td>
+    {/if}
+    </tr>
+    </table>
+    <table class="edit" style="border: thin solid black;">
+    <tr><td class="label">Address:</td>
+    <td>{$di.street} {$di.city} {$di.state} {$di.zip} {$di.country}
+    </td></tr>
+    {if $hid != 0}
+      <tr><td>
+      <button onClick="editAddress('{$di.street}','{$di.city}',
+        '{$di.state}','{$di.zip}','{$di.country}')"
+        type="button">Update</button>
+      </td></tr>
+    {/if}
+    </table>
+    <table class="edit" style="border: thin solid black;">
+    <tr><td class="label">Donation:</td><td>{$di.ddate|date_format:"%m/%d/%Y"} {math equation="x" x=$di.amount format="%.2f"}</td></tr><tr>
+    <td class="label">Fund:</td><td id="FundName">{$di.fund}</td>
     </tr><tr>
     <td class="label">Purpose:</td><td>{$di.dedication}</td>
     </tr><tr>
     <td class="label">Anonymous:</td><td>?</td>
     </tr><tr>
     <td class="label">Notes:</td><td>{$di.donornote}</td>
-    </tr><tr>
-    <td></td><td>{$di.contactnote}</td></tr>
-    <tr><td></td><td></td><td style="font-weight: bold;">Add</td></tr>
-    <td>names</td><td></td>
-    <td><input type="checkbox" name="names"></td>
-    </tr><tr>
-    <td>phones</td><td></td>
-    <td><input type="checkbox" name="phones"></td>
-    </tr><tr>
-    <td class="label">Email:</td><td>{$di.emails}</td>
-    <td><input type="checkbox" name="email"></td>
+    </tr>
+    <tr><td></td><td>{$di.contactnote}</td></tr>
+    {if $hid != 0}
+    <tr><td><button onClick="editDonation('{$di.ddate}',
+       {$di.amount},'{$di.fund}','{$di.dedication}',0)"
+       type="button">Add</button></td></tr>
+    {*<input type="checkbox" name="donation"> Add</td></tr>*}
+    {/if}
+    </table>
+    <table class="edit">
+    {foreach $phones as $px name=phones}
+      {if $smarty.foreach.phones.first}
+        <tr><td class="label">Phones:</td>
+      {else}
+        <tr><td></td>
+      {/if}
+      <td>{$px.number}</td>
+      {if $px['ok'] == 1}
+        <td>OK</td>
+      {elseif $hid != 0}
+        <td><button onClick="editPhone('{$px.number}')"
+         type="button">Add</button></td>
+      {/if}
+    {/foreach}
+    <tr><td class="label">Email:</td><td>{$emails.email}</td>
+    {if $emails.ok == 1}
+       <td>OK</td>
+    {elseif $hid != 0}
+        <td><button onClick="editEmail('{$emails.email}')"
+         type="button">Add</button></td>
+    {/if}
+    </tr>
+    <tr><td>&nbsp;</td></tr><tr><td>
+      <button type="button" onClick="di_submit('Next')"
+        {if $eof==1}disabled{/if}>Next</button>
+      <button type="button" onClick="di_submit('ReLoad')">Re-Load</button>
+    </td><td>
+      <button type="button" onClick="di_submit('MarkDone')"
+        {if $eof==1}disabled{/if}>Mark Done</button>
+    </td></tr>
   </table>
-  <button type="button" onClick="di_submit('Save')">Save</button>
-  <button type="button" onClick="di_submit('Next')"
-      {if $eof==1}disabled{/if} autocomplete="off">Next</button>
-  <button type="button" onClick="di_submit('ReLoad')">Re-Load</button>
   </div>
   </div> {* to supply flex (side-by-side) display *}
   </form>

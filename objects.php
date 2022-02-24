@@ -19,11 +19,11 @@ class HouseData {
          where h.household_id=?",$hid,'HouseData info',$ErrMsg);
     $this->hd=$tx[0];
     $this->household_id=$this->hd['household_id'];
-    
+
     /* get member info for the household */
     $this->members=pSelect($msi,
-       "select c.contact_id, c.primary_name,
-       c.first_name,c.middle_name, c.nickname, d.degree
+       "select c.contact_id,c.primary_name,
+       c.first_name,c.middle_name,c.nickname,d.degree
        from household_members hm
        inner join contacts c on c.contact_id=hm.contact_id
        left join degrees d on d.degree_id=c.degree_id
@@ -55,7 +55,7 @@ class HouseData {
     if(strlen($member_id_list)) {
       $this->addresses=uSelect($msi,
          "select distinct 0 preferred, at.address_type,
-         a.address_id,cx.first_name,a.street_address_1,
+         a.address_id,a.owner_id,cx.first_name,a.street_address_1,
          a.street_address_2,a.city, a.state, 
          a.postal_code, a.country from contacts c
          inner join address_associations aa 
@@ -103,6 +103,7 @@ class HouseData {
          left join contacts cx on cx.contact_id=p.owner_id
          where c.contact_id in ($member_id_list)",
          'phones info',$ErrMsg);
+      
     }
   } // end construct function
   

@@ -1,0 +1,180 @@
+{* Dialogs for Import page *}
+
+  <div id="PhoneEditDialog" style="display: none">
+  <form method="post" action="import.php"
+        id="PhoneEditForm" autocomplete="off">
+  <input type="hidden" id="fy" name="fy" value="{$di.fy}">
+  <input type="hidden" id="recno" name="recno" value="{$di.recno}">
+  <input type="hidden" id="hid" name="hid" value="{$hid}">
+    <input type="hidden" name="buttonAction">
+    <input type="hidden" name="subAction">
+    <table class="edit">
+      <tr><td class="label">Phone Type: </td>
+          <td><select id="EditPhoneType" name="EditPhoneType">
+              {foreach from=$phone_type_list item=$tl}
+                <option value="{$tl.phone_type_id}">
+                {$tl.phone_type}</option>
+              {/foreach}
+          </select></td>
+      </tr>
+      <tr><td class="label">Phone: </td>
+        <td><input id="EditNumber" name="EditNumber"></td></tr>
+        <tr title="{$phone_formatted}"><td class="label">Formatted: </td>
+        <td><input type="checkbox" id="EditFormatted"
+            name="EditFormatted"></td>
+      </tr>
+      <tr><td class="label">Owner: </td>
+          <td><select id="EditOwner" name="EditOwner">
+            <option value="0">Select Owner</option>
+            {foreach from=$house->members item=mx}
+              <option value="{$mx.contact_id}">{$mx.first_name}</option>
+            {/foreach}
+          </td>
+      </tr>
+  </table>
+  </form> {* PhoneEditForm *}
+  </div> {* PhoneEditDialog *}
+
+
+  <div id="EmailEditDialog" style="display: none">
+  <form method="post" action="import.php"
+        id="EmailEditForm" autocomplete="off">
+  <input type="hidden" id="fy" name="fy" value="{$di.fy}">
+  <input type="hidden" id="recno" name="recno" value="{$di.recno}">
+  <input type="hidden" id="hid" name="hid" value="{$hid}">
+    <input type="hidden" name="buttonAction">
+    <input type="hidden" name="subAction">
+    <table class="edit">
+      <tr><td class="label">E-mail Type: </td>
+          <td><select id="EditEmailType" name="EditEmailType">
+              {foreach from=$email_type_list item=$tl}
+                <option value="{$tl.email_type_id}">
+                {$tl.email_type}</option>
+              {/foreach}
+          </select></td>
+      </tr>
+      <tr><td class="label">E-mail: </td>
+          <td><input id="EditEmail" name="EditEmail">
+          </td>
+      </tr>
+      <tr><td class="label">Owner</td>
+          <td><select id="EditOwner" name="EditOwner">
+            <option value="0">Select Owner</option>
+            {foreach from=$house->members item=mx}
+              <option value="{$mx.contact_id}">{$mx.first_name}</option>
+            {/foreach}
+          </td>
+      </tr>
+      <tr><td class="label">Preferred: </td>
+      <td><input type="checkbox" name="EditPreferred"></tr>
+  </table>
+  </form> {* EmailEditForm *}
+  </div> {* EmailEditDialog *}
+
+<div id="AddressEditDialog" style="display: none">
+<form method="post" action="import.php"
+        id="AddressEditForm" autocomplete="off">
+  <input type="hidden" id="fy" name="fy" value="{$di.fy}">
+  <input type="hidden" id="recno" name="recno" value="{$di.recno}">
+  <input type="hidden" id="hid" name="hid" value="{$hid}">
+  <input type="hidden" name="buttonAction">
+  <input type="hidden" name="subAction">
+  <table class="edit">
+    <tr title="Replace current preferred address with this">
+    <td class="label">Update Preferred: </td><td>
+    <input type="radio" name="AddressAction" value="updateAddress"
+       checked></td></tr>
+    <tr title="Keep current address, add this as preferred">
+    <td class="label">Add as Preferred: </td><td>
+    <input type="radio" name="AddressAction" value="addAddress">
+    </td></tr>
+    <tr><td class="label">Address Type: </td>
+        <td><select id="EditAddressType" name="EditAddressType">
+            {foreach from=$address_type_list item=$tl}
+              <option value="{$tl.address_type_id}">
+              {$tl.address_type}</option>
+            {/foreach}
+        </select></td>
+    </tr>
+    <tr><td class="label">Street Address 1: </td>
+        <td><input id="EditAddr1" name="EditAddr1">
+        </td>
+    </tr>
+    <tr><td class="label">Street Address 2: </td>
+        <td><input id="EditAddr2" name="EditAddr2">
+        </td>
+    </tr>
+    <tr><td class="label">Postal Code: </td>
+        <td><input id="EditZip" name="EditZip" onblur="cityLookup(this)">
+        </td>
+    </tr>
+    <tr><td class="label">City: </td>
+        <td><input id="EditCity" name="EditCity">
+        </td>
+    </tr>
+    <tr><td class="label">State: </td>
+        <td><input id="EditState" name="EditState">
+        </td>
+    </tr>
+    <tr><td class="label">Country: </td>
+        <td><input id="EditCountry" name="EditCountry">
+        </td>
+    </tr>
+    <tr><td class="label">Owner</td>
+        <td><select id="EditOwner" name="EditOwner">
+          <option value="0">Select Owner</option>
+          {foreach from=$house->members item=mx}
+            <option value="{$mx.contact_id}" 
+              {if $mx.contact_id == $preferred_address_owner}selected{/if}>
+              {$mx.first_name}</option>
+          {/foreach}
+        </td>
+    </tr>
+  </table>
+</form> {* AddressEditForm *}
+</div> {* AddressEditDialog *}
+
+<div id="DonationEditDialog" style="display: none">
+  <form method="post" action="import.php"
+        id="DonationEditForm">
+    <input type="hidden" id="fy" name="fy" value="{$di.fy}">
+    <input type="hidden" id="recno" name="recno" value="{$di.recno}">
+    <input type="hidden" id="hid" name="hid" value="{$hid}">
+    <input type="hidden" name="buttonAction">
+    <input type="hidden" name="subAction">
+    <table class="edit">
+      <tr><td class="label">Date</td>
+          <td><input type="date" id="EditDate" name="EditDate" value="EditDate">
+          </td>
+      </tr>
+      <tr><td class="label">Amount</td>
+          <td><input id="EditAmount" name="EditAmount" value="EditAmount"
+             autocomplete="off"></td>
+      </tr>
+      <tr><td class="label">Fund</td>
+          <td><select id="EditFund" name="EditFund">
+              {foreach from=$fund_list item=fl}
+                <option value="{$fl.fund_id}">{$fl.fund}</option>
+              {/foreach}
+          </td>
+      </tr>
+      <tr><td class="label">Purpose</td>
+          <td><input id="EditPurpose" name="EditPurpose" value="EditPurpose"
+             autocomplete="off">
+          </td>
+      </tr>
+      <tr><td class="label">Anonymous</td>
+          <td><input type="checkbox" name="EditAnonymous" id="EditAnonymous">
+            </td>
+      </tr>
+      <tr><td class="label">Primary Donor</td>
+          <td><select id="EditPrimaryDonor" name="EditPrimaryDonor">
+            <option value="0">Select Primary Donor</option>
+            {foreach from=$house->members item=mx}
+              <option value="{$mx.contact_id}">{$mx.first_name}</option>
+            {/foreach}
+          </td>
+      </tr>
+  </table>
+  </form> {* DonationEditForm *}
+</div> {* DonationEditDialog *}

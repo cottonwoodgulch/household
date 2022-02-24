@@ -404,7 +404,7 @@ function get_types($msi,$table,$gender='') {
   if($table=='degree') {
     $query="select degree_id,degree from degrees";
   }
-  else if($table='role') {
+  else if($table=='role') {
     $query='select role_id,role from roles';
   }
   else if ($table=='relationship') {
