@@ -87,23 +87,9 @@ if(isset($_POST['buttonAction'])) {
 
 if(isset($hid)) {
   $house=new HouseData($msi,$smarty,$hid,$ErrMsg);
-
-  /* fund list for Add and Edit Donation dialogs */
-  /*
-  if($result=$msi->query('select fund_id,fund from funds')) {
-    while($tx = $result->fetch_assoc()) {
-      $fund_list[]=$tx;
-    }  
-    $smarty->assign('fund_list',$fund_list);
-  }
-  else {
-    buildErrorMessage($ErrMsg,'fund query failed: '.$msi->error);
-  }*/
   $smarty->assign('fund_list',
      uSelect($msi,'select fund_id,fund from funds',
      'fund list query',$ErrMsg));
-  /* list of members for primary donor */
-  $smarty->assign('members',$house->members);
 }
 
 displayFooter($smarty,$ErrMsg);

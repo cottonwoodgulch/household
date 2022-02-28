@@ -5,6 +5,7 @@ if(!$rbac->Users->hasRole('Contact Information Viewer',
      $_SESSION['user_id'])) {
   header("Location: NotAuthorized.html");
 }
+
 require_once 'objects.php';
 $ErrMsg=array();
 
@@ -277,40 +278,41 @@ if($hid) {
       break;
     }
   }
-  else if($buttonaction == 'MarkDone') {
-    if(!$msi->query('update donationimport set done=1 '.
-       "where fy='$fy' and recno=$recno")) {
-      buildErrorMessage($ErrMsg,'mark done: ',$msi->error);
-      goto sqlerror;
-    }
-  }
-  sqlerror:
-
-  /* retrieve updated target household info */
-  $house=new HouseData($msi,$smarty,$hid,$ErrMsg);
-  /* only for Address Update dropdown */
-  foreach($house->addresses as $tx) {
-    if($tx['preferred']) {
-      $smarty->assign('preferred_address_owner',$tx['owner_id']);
-      break;
-    }
-  }
-  $smarty->assign('house',$house);
-  $phones=uSelect($msi,
-     "select number,replace(number,'-','') ufnum ".
-     'from di_phones where di_id='.$di['di_id'],
-     'phones on import rec',$ErrMsg);
-  foreach($phones as &$px) {
-    /* only offer to add phone numbers that aren't already there */
-    $px['ok']=
-       array_matchfield($px['ufnum'],$house->phones,'number') ? 1 : 0;
-  }
-  unset($px);
-  $smarty->assign('phones',$phones);
-  $emails=array('email' => $di['email'],
-    'ok'=> array_matchfield($di['email'],$house->emails,'email') ? 1 : 0);
-  $smarty->assign('emails',$emails);
 }
+else if($buttonaction == 'MarkDone') {
+  if(!$msi->query('update donationimport set done=1 '.
+     "where fy='$fy' and recno=$recno")) {
+    buildErrorMessage($ErrMsg,'mark done: ',$msi->error);
+    goto sqlerror;
+  }
+}
+sqlerror:
+
+/* retrieve updated target household info */
+$house=new HouseData($msi,$smarty,$hid,$ErrMsg);
+/* only for Address Update dropdown */
+foreach($house->addresses as $tx) {
+  if($tx['preferred']) {
+    $smarty->assign('preferred_address_owner',$tx['owner_id']);
+    break;
+  }
+}
+$smarty->assign('house',$house);
+$phones=uSelect($msi,
+   "select number,replace(number,'-','') ufnum ".
+   'from di_phones where di_id='.$di['di_id'],
+   'phones on import rec',$ErrMsg);
+foreach($phones as &$px) {
+  /* only offer to add phone numbers that aren't already there */
+  $px['ok']=
+     array_matchfield($px['ufnum'],$house->phones,'number') ? 1 : 0;
+}
+unset($px);
+$smarty->assign('phones',$phones);
+$emails=array('email' => $di['email'],
+  'ok'=> array_matchfield($di['email'],$house->emails,'email') ? 1 : 0);
+$smarty->assign('emails',$emails);
+
 
 /* explanation for formatted checkbox for phone numbers */
 $smarty->assign('phone_formatted','If this is checked, the program assumes the number should be presented as entered. If not, the program presents the number as a Canadian/US number: (123) 456-7890');

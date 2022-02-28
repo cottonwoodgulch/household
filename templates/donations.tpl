@@ -42,7 +42,7 @@
       <tr><td class="label">Primary Donor</td>
           <td><select id="EditPrimaryDonor" name="EditPrimaryDonor">
             <option class="HouseMember" value="0">Select Primary Donor</option>
-            {foreach from=$members item=mx}
+            {foreach from=$house->members item=mx}
               <option class="HouseMember"
               value="{$mx.contact_id}">{$mx.first_name}</option>
             {/foreach}

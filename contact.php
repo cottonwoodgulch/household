@@ -386,15 +386,28 @@ if($cid) {
 }
 
 /* phone, e-mail, aaddress types for add & edit dialogs */
-$smarty->assign('phone_type_list',get_types($msi,'phone'));
-$smarty->assign('email_type_list',get_types($msi,'email'));
-$smarty->assign('address_type_list',get_types($msi,'address'));
-/* contact types and degrees for contact edit dialog */
-$smarty->assign('contact_type_list',get_types($msi,'contact'));
-$smarty->assign('degree_list',get_types($msi,'degree'));
-$smarty->assign('relationship_type_list',
-    get_types($msi,'relationship',$cdata->Contact['gender']));
-$smarty->assign('role_list',get_types($msi,'role'));
+$smarty->assign('phone_type_list',uSelect($msi,
+   'select phone_type_id,phone_type from phone_types',
+   'phone types',$ErrMsg));
+$smarty->assign('email_type_list',uSelect($msi,
+   'select email_type_id,email_type from email_types',
+   'email types',$ErrMsg));
+$smarty->assign('address_type_list',uSelect($msi,
+   'select address_type_id,address_type from address_types',
+   'address types',$ErrMsg));
+$smarty->assign('contact_type_list',uSelect($msi,
+   'select contact_type_id,contact_type from contact_types',
+   'contact types',$ErrMsg));
+$smarty->assign('degree_list',uSelect($msi,
+   'select degree_id,degree from degrees','degrees',$ErrMsg));
+$rtype=$cdata->Contact['gender'] == '' ?
+   'relationship_type' : $cdata->Contact['gender'];
+$smarty->assign('relationship_type_list',uSelect($msi,
+   'select inverse_relationship_id relationship_type_id,'.
+   "ifnull($rtype,relationship_type) relationship_type ".
+   'from relationship_types','relationship types',$ErrMsg));
+$smarty->assign('role_list',uSelect($msi,
+   'select role_id,role from roles','roles',$ErrMsg));
 
 displayFooter($smarty,$ErrMsg);
 $smarty->display('ContactMain.tpl');
