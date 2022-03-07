@@ -1,34 +1,19 @@
 /* js functions for donation import screen */
 
-/*function di_submit(buttonAction) {
-  $('#buttonAction').val(buttonAction);
-  $('#diForm').submit();
-}*/
-
 function di_submit(buttonAction,subAction='') {
   /* for Next, Re-Load, and MarkDone, just use ButtonAction
      to update salutation, mailname that don't require a popup dialog,
      using value from import record */
-  $('#buttonAction').val(buttonAction);
-  $('#subAction').val(subAction);
+  $('#diForm input[name=buttonAction]').val(buttonAction);
+  $('#diForm input[name=subAction]').val(subAction);
   $('#diForm').submit();
 }
-
-
 
 function switchhouse() {
-  $('#hid').val($("#selecthouse").val());
-  $('#buttonAction').val('SwitchHouse');
+  $('#diForm input[name=hid]').val($("#selecthouse").val());
+  $('#diForm input[name=buttonAction]').val('SwitchHouse');
   $('#diForm').submit();
 }
-
-/*function doImport(action) {
-  /* to update salutation, mailname that don't require a popup dialog,
-     using value from import record */
-/*  $('#buttonAction').val('Update');
-  $('#subAction').val(action);
-  $('#di_form').submit();
-}*/
 
 function editPhone(pnumber) {
   // default to phone type 3 = mobile

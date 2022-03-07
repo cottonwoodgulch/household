@@ -14,11 +14,15 @@ $recno=isset($_POST['recno']) ? $_POST['recno'] : 0;
 $hid=isset($_POST['hid']) ? $_POST['hid'] : 0;
 $eof=false;
 
+/*echo "POST fy,recno, hid: $fy, $recno, $hid<br>";
+echo "POST buttonAction, subAction: ".$_POST['buttonAction'].', '.
+   $_POST['subAction'].'<br>';*/
+
 if(isset($_POST['buttonAction'])) {
   //echo 'button action: '.$_POST['buttonAction'].'<br>';
   $buttonaction=$_POST['buttonAction'];
   if($buttonaction == 'Update' || $buttonaction == 'MarkDone') {
-    // if Save, set done=1
+    // if MarkDone, set done=1
     // redisplay, $hid, $fy, $recno stay the same
     $qwhere="where fy='$fy' && recno=$recno";
   }
@@ -28,8 +32,6 @@ if(isset($_POST['buttonAction'])) {
   }
   else if($buttonaction == "SwitchHouse") {
     /* same donation rec, different household */
-    //echo "switchhouse: fy, recno, hid: $fy, $recno, $hid<br>";
-    //echo "switchhouse: selecthouse: ".$_POST['selecthouse'].'<br>';
     $qwhere="where fy='$fy' && recno=$recno";
   }
   else {
@@ -61,27 +63,24 @@ else {
   $di=array('di_id' => 0);
 }
 
-if(!$hid) {
-  /* if no household supplied via $_POST, try to get
-     current - target household from member names*/
-  $currh=uSelect($msi,'select distinct n.household_id,'.
-     'h.mailname,h.address_id from di_names n '.
-    'left join household_members hm on hm.contact_id=n.contact_id '.
-    'left join households h on h.household_id=hm.household_id '.
-    'where n.di_id='.$di['di_id'],'household info',$ErrMsg);
-  if(count($currh)) {
+/* get current - target household from member names*/
+$currh=uSelect($msi,'select distinct n.household_id,'.
+   'h.mailname,h.address_id from di_names n '.
+  'left join household_members hm on hm.contact_id=n.contact_id '.
+  'left join households h on h.household_id=hm.household_id '.
+  'where n.di_id='.$di['di_id'],'household info',$ErrMsg);
+if(count($currh)) {
+  if(!$hid) {
     $hid=$currh[0]['household_id'];
     $_SESSION['household_id']=$hid;
-    $smarty->assign('current',$currh);
   }
-  else {
-    $hid=0;
-  }
-} // if !$hid
+  $smarty->assign('current',$currh);
+}
+else {
+  $hid=0;
+}
 
-/*echo "fy, recno, hid: $fy, $recno, $hid<br>";
-  echo "buttonAction, subAction: $buttonaction, ".
-     $_POST['subAction']."<br>";*/
+//echo "pre hid-check: hid, buttonaction: $hid, $buttonaction<br>";
 if($hid) {
   /* if $hid from $_POST or by looking up member names */
   /* this is where updates are made to target household ($hid) */
@@ -278,12 +277,13 @@ if($hid) {
       break;
     }
   }
-}
-else if($buttonaction == 'MarkDone') {
-  if(!$msi->query('update donationimport set done=1 '.
-     "where fy='$fy' and recno=$recno")) {
-    buildErrorMessage($ErrMsg,'mark done: ',$msi->error);
-    goto sqlerror;
+  else if($buttonaction == 'MarkDone') {
+    //echo "MarkDone fy,recno, hid: $fy, $recno, $hid<br>";
+    if(!$msi->query('update donationimport set done=1 '.
+       "where fy='$fy' and recno=$recno")) {
+      buildErrorMessage($ErrMsg,'mark done: ',$msi->error);
+      goto sqlerror;
+    }
   }
 }
 sqlerror:

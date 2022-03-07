@@ -44,14 +44,14 @@
 
     <td>
     <table class="edit"> {* groups *}
-      <tr><td style="font-size: .81em;">Groups:
-        {*<button type="button" class="mini-button"
-             onClick="editGroup(0)" title="Add">Groups:</button>*}
+      <tr><td style="font-size: .81em;">
+        <button type="button" class="mini-button"
+             onClick="editGroup(0)" title="Add">Groups:</button>
       </td></tr>
       {foreach from=$cdata->groups item=$cx}
         <tr><td style="padding-left: 7px;"><button type="button"
              class="mini-button" title="Show Roster" onClick=
-               "rosterLookup({$cx.year},'{$cx.group}',
+               "rosterLookup({$cx.year},'{$cx.group|escape:'quotes'}',
                {$cx.group_id},{$cx.roster_id})"
              style="border: 0; font-size: .81em;">
           {if $cx.role != ''}{$cx.role}, {/if}

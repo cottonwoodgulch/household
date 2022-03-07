@@ -12,12 +12,9 @@
   <form method="post" action="import.php" id="diForm">
   <input type="hidden" id="fy" name="fy" value="{$di.fy}">
   <input type="hidden" id="recno" name="recno" value="{$di.recno}">
-  <input type="hidden" id="hid" name="hid" value="{$hid}">
-  {*<input id="fy" name="fy" value="{$di.fy}">
-  <input id="recno" name="recno" value="{$di.recno}">
-  <input id="hid" name="hid" value="{$hid}">*}
-  <input type="hidden" id="buttonAction" name="buttonAction">
-  <input type="hidden" id="subAction" name="subAction">
+  <input type="hidden" name="hid" value="{$hid}">
+  <input type="hidden" name="buttonAction">
+  <input type="hidden" name="subAction">
   <div style="display: flex;">
   <div style="border: thin solid black; padding: 10px; width: 45%;">
   {if $hid != 0}
@@ -38,12 +35,14 @@
   </table>
   <table class="edit">
     {section name=x loop=5 start=-5}
+      {if $house->donations[x]['amount'] >0}
       <tr><td>{$house->donations[x]['ddate']|date_format:"%m/%d/%Y"}
           {$house->donations[x]['amount']}</td>
           <td>{$house->donations[x]['fund']}</td>
           <td>{$house->donations[x]['purpose']}</td>
           <td>({$house->donations[x]['first_name']})</td>
           </tr>
+      {/if}
     {/section}
   </table>
   <table class="edit">
@@ -72,11 +71,11 @@
       <tr><td><select name="selecthouse" id="selecthouse"
          onchange="switchhouse()">
         {foreach $current as $tx}
-          <option value="{$tx.household_id}"
-            {if $tx.household_id == $hid}selected{/if}>{$tx.mailname}
-            </option>
+          <option value="{$tx.household_id}">{$tx.mailname}</option>
         {/foreach}
       </select></td></tr>
+    {else}
+      <tr><td>Current count: </td><td>{$current|count}</td></tr>
     {/if}
   </table>
   {else}
