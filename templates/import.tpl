@@ -87,16 +87,18 @@
   {* import record *}
   <div style="border: thin solid black; padding: 10px;">
   <div style="font-weight: bold; font-size: 1.1em;">
-  {$di.fname} {$di.lname} donation</div>
+  {$di.fname} {$di.lname} Contribution from Spreadsheet</div>
   
   <table class="edit"><tr>
     <input type="hidden" id="value" name="value">
     <td class="label">Salutation:</td><td>{$di.salutation}</td>
-    {if $di.salutation == $house->hd.salutation}
+    {if $di.salutationmatch == 1}
       <td>OK</td>
     {elseif $hid != 0}
         <td><button onClick="di_submit('Update','salutation')"
-         type="button">Update</button></td>
+         type="button"
+         {if $di.salutationmatch<0} style="color: red;"{/if}>
+        Update</button></td>
     {/if}
     </tr><tr>
     <td class="label">Mail Name:</td><td>{$di.mailname}</td>
@@ -134,7 +136,9 @@
     {if $hid != 0}
     <tr><td><button onClick="editDonation('{$di.ddate}',
        {$di.amount},'{$di.fund}','{$di.dedication}',0)"
-       type="button">Add</button></td></tr>
+       type="button"
+       {if $di.donationmatch==1}style="color: red;"{/if}>
+       Add</button></td></tr>
     {*<input type="checkbox" name="donation"> Add</td></tr>*}
     {/if}
     </table>

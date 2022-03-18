@@ -22,6 +22,9 @@
              Contributions</button></td>
     <td>Paste rows from Contributions SS, then visit Import page
     </td></tr>
+    {*<tr><td>
+    <button type="button" onClick="Merge()">Merge Duplicate Contacts</button>
+    </td><td>Combine info from 2 contacts that are the same person.</td></tr>*}
     <tr><td><button type="button" form="UtilityForm"
       onClick="UtilitySubmit('RedRocks')">
       Red Rocks</button></td>

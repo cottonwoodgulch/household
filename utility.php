@@ -8,6 +8,7 @@ if(!$rbac->Users->hasRole('Contact Information Viewer',
   header("Location: NotAuthorized.html");
 }
 $ErrMsg=array();
+require_once 'merge.php';
 
 /* if output is to a csv file, don't re-display the page,
     because for some reason, the smarty output gets added to the csv */
@@ -45,9 +46,8 @@ if(isset($_POST['buttonAction'])) {
         }
         //echo "query: $query\n\n";
         if(!$result=$msi->query($query)) {
-          echo 'query error: '.$msi->error.'<br>';
           buildErrorMessage($ErrMsg,
-            'unable to execute look up query'.$msi->error);
+            'unable to execute look up query',$msi->error);
           goto sqlerror;
         }
         if($result->num_rows) {
@@ -101,8 +101,8 @@ if(isset($_POST['buttonAction'])) {
         );
         if(!$result=$msi->query('select di_id from donationimport '.
            "where fy='$fy' and recno=".$ddata['recno'])) {
-            echo 'donationimport dupe check error: '.
-               $msi->error.'<br>';
+            buildErrorMessage($ErrMsg,
+              'donationimport dupe check',$msi->error);
             goto sqlerror;
         }
         if($result->num_rows > 0) {
@@ -110,21 +110,21 @@ if(isset($_POST['buttonAction'])) {
           $rx=$result->fetch_assoc();
           $old_di_id=$rx['di_id'];
           if(!$msi->query(
-            "delete from donationimport where di_id=$old_di_id")) {
-            echo 'donationimport delete previous version error: '.
-               $msi->error.'<br>';
+             "delete from donationimport where di_id=$old_di_id")) {
+            buildErrorMessage($ErrMsg,
+              'donationimport delete previous version',$msi->error);
             goto sqlerror;
           }
           if(!$msi->query(
             "delete from di_names where di_id=$old_di_id")) {
-            echo 'di_names delete previous version error: '.
-               $msi->error.'<br>';
+            buildErrorMessage($ErrMsg,
+              'di_names delete previous version',$msi->error);
             goto sqlerror;
           }
           if(!$msi->query(
             "delete from di_phones where di_id=$old_di_id")) {
-            echo 'di_phones delete previous version error: '.
-               $msi->error.'<br>';
+            buildErrorMessage($ErrMsg,
+              'di_phones delete previous version',$msi->error);
             goto sqlerror;
           }
         }
@@ -132,7 +132,7 @@ if(isset($_POST['buttonAction'])) {
         // table has country between zip and email - not used here
         if(!$stmt=$msi->prepare('insert into donationimport '.
            "values(null,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'',?,?)")) {
-          echo 'donationimport prep error: '.$msi->error.'<br>';
+            buildErrorMessage($ErrMsg,'donationimport prep',$msi->error);
           goto sqlerror;
         }
         // table has country between zip and email
@@ -143,13 +143,11 @@ if(isset($_POST['buttonAction'])) {
            $ddata['dedication'],$ddata['addr'],
            $ddata['city'],$ddata['state'],$ddata['zip'],
            $ddata['email'],$ddata['contnote'])) {
-          echo
-             'donationimport bind error: '.$msi->error.'<br>';
+          buildErrorMessage($ErrMsg,'donationimport bind',$msi->error);
           goto sqlerror;
         }
         if(!$stmt->execute()) {
-          echo
-             'donationimport exec error: '.$msi->error.'<br>';
+          buildErrorMessage($ErrMsg,'donationimport exec',$msi->error);
           goto sqlerror;
         }
         // associate this donationimport rec with member names
@@ -160,6 +158,22 @@ if(isset($_POST['buttonAction'])) {
       }
     }
   }   // buttonAction = Contributions
+  else if($buttonaction == 'Merge') {
+    $fromcid=$_POST['MergeFrom'];
+    $tocid=$_POST['MergeTo'];
+    mergeCoordinate($msi,$fromcid,$tocid,'addresses',
+       'address_associations','address_id',$ErrMsg);
+    mergeCoordinate($msi,$fromcid,$tocid,'phones',
+       'phone_associations','phone_id',$ErrMsg);
+    mergeCoordinate($msi,$fromcid,$tocid,'emails',
+       'email_associations','email_id',$ErrMsg);
+    mergeRelation($msi,$fromcid,$tocid,$ErrMsg);
+    mergeItem($msi,$fromcid,$tocid,'contact_id','notes','note_id',$ErrMsg);
+    mergeItem($msi,$fromcid,$tocid,'contact_id','roster_memberships',
+       'roster_membership_id',$ErrMsg);
+    mergeItem($msi,$fromcid,$tocid,'primary_donor_id','hdonations',
+       'donation_id',$ErrMsg);
+  }
   else if($buttonaction == 'RedRocks') {
     $is_csv=true;
     /* this uses household address & preferred_emails */
@@ -180,7 +194,7 @@ if(isset($_POST['buttonAction'])) {
          "on pex.contact_id=c.contact_id ".
        "left join emails e on e.email_id=pex.email_id ".
        "where c.redrocks order by 2")) {
-      echo 'RedRocks query error: '.$msi->error.'<br>';
+      buildErrorMessage($ErrMsg,'RedRocks query',$msi->error);
       goto sqlerror;
     }
     else {
@@ -279,7 +293,7 @@ if(isset($_POST['buttonAction'])) {
               "group by 1) hd5 ".
        "on hd5.household_id=h.household_id ".
  "order by ncat,h.name")) {
-      echo 'Donor List query error: '.$msi->error.'<br>';
+      buildErrorMessage($ErrMsg,'Donor List query',$msi->error);
       goto sqlerror;
     }
     else {
@@ -343,7 +357,7 @@ function getnames($msi,$first,$last,$di_id) {
        "where (c.first_name='".$nx['first']."' || ". 
        "nickname='".$nx['first']."') ".
        "and primary_name='".$nx['last']."'")) {
-      echo 'getnames query error: '.$msi->error.'<br>';
+      buildErrorMessage($ErrMsg,'getnames query',$msi->error);
     }
     else {
       if($result->num_rows) {
@@ -353,7 +367,7 @@ function getnames($msi,$first,$last,$di_id) {
         $result->free();
         if(!$msi->query("insert into di_names values($di_id,".
            $nx['contact_id'].','.$nx['household_id'].')')) {
-          echo 'di_names insert error'.$msi->error.'<br>';
+          buildErrorMessage($ErrMsg,'di_names insert',$msi->error);
           /*echo 'query: '."insert into di_names values($di_id,".
            $nx['contact_id'].','.$nx['household_id'].')'.'<br>';*/
         }
@@ -369,7 +383,7 @@ function getphones($msi,$contnote,$di_id) {
      $contnote,$m,PREG_OFFSET_CAPTURE,$off) ===1) {
     if(!$msi->query("insert into di_phones values ($di_id,".
       "'".$m[0][0]."')")) {
-      echo 'di_phones insert error'.$msi->error;
+      buildErrorMessage($ErrMsg,'di_phones insert',$msi->error);
     }
     //$phones[]= ($is_first ? '' : ' ').$m[0][0];
     $off=$m[0][1]+1;

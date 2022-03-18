@@ -34,4 +34,58 @@ function UtilitySubmit(buttonAction) {
   $('#UtilityForm input[name=buttonAction]').val(buttonAction);
   $('#UtilityForm').submit();
 }
+
+function Merge() {
+  $("#MergeDialog").dialog({
+    dialogClass: "no-close",  // hide close button in top corner
+    height: "auto",
+    width: "auto",
+    closeOnEscape: true,
+    title: 'Merge Duplicate Contacts',
+    buttons: [
+      {
+        text: "Merge",
+        type: "button",
+        click: function() {
+          $("#MergeForm input[name=buttonAction]").val('Merge');
+          $("#MergeForm").submit();
+        }
+      },
+      {
+        text: "Cancel",
+        click: function() {
+          $("#MergeContact1").val('');
+          $("#MergeContact2").val('');
+          $(this).dialog("destroy");
+        }
+      }
+    ]
+  });
+
+  MergeLookup('MergeContact1','MergeFrom');
+  MergeLookup('MergeContact2','MergeTo');
+}
+
+function MergeLookup(MergeInput,MergeContact_ID) {
+  $("#"+MergeInput).autocomplete({
+    minLength: 3,
+    source: function(request, response) {
+      $.ajax({
+        type: "GET",
+        url: "ajax/AddLookup.php?value="+$("#"+MergeInput).val(),
+        dataType: "json",
+        success: function(res_html, textStatus, xhr) {
+          response(res_html);
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          $("#content").html(textStatus+errorThrown);
+        }
+      })
+    },
+    select: function(event, ui) {
+      $("#"+MergeContact_ID).val(ui.item.value);
+    }
+  });
+}
+
 </script>

@@ -14,3 +14,22 @@
    id="UtilityForm">
   <input type="hidden" name="buttonAction">
 </form>
+
+<div id="MergeDialog" style="display: none;">
+<form method="post" action="utility.php" id="MergeForm" autocomplete="off">
+  <input type="hidden" id="MergeFrom" name="MergeFrom">
+  <input type="hidden" id="MergeTo" name="MergeTo">
+  <input type="hidden" name="buttonAction">
+  <p>Copy Addresses, Phones, E-Mails, Relationships, Groups, and Donations.
+    <br>Leave Name, DOB, Gender, and Households unchanged.
+    <br>Use Delete button to remove defunct From contact.</p>
+  <table class="edit">
+  <tr><td class="label">From: </td>
+  <td>
+    <input id="MergeContact1" name="MergeContact1" value="" autofocus>
+  </td></tr>
+  <tr><td class="label">To: </td>
+  <td><input id="MergeContact2" name="MergeContact2" value=""></td></tr>
+  </table>
+</form> {* MergeForm *}
+</div> {* MergeDialog *}

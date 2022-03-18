@@ -64,8 +64,9 @@ else {
 }
 
 /* get current - target household from member names*/
+//   'h.mailname,h.address_id from di_names n '.
 $currh=uSelect($msi,'select distinct n.household_id,'.
-   'h.mailname,h.address_id from di_names n '.
+   'h.mailname from di_names n '.
   'left join household_members hm on hm.contact_id=n.contact_id '.
   'left join households h on h.household_id=hm.household_id '.
   'where n.di_id='.$di['di_id'],'household info',$ErrMsg);
@@ -298,6 +299,34 @@ foreach($house->addresses as $tx) {
   }
 }
 $smarty->assign('house',$house);
+
+/* if current salutation is reverse (around and) of import */
+if($di['salutation']==$house->hd['salutation']) {
+  $di['salutationmatch']=1;
+}
+else {
+  if(($diand=strpos($di['salutation'],' and ')) &&
+    $hdand=strpos($house->hd['salutation'],' and ')) {
+    /* check if names are reversed */
+    if(substr($di['salutation'],$diand+5).' and '.
+       substr($di['salutation'],0,$diand)==$house->hd['salutation']) {
+      $di['salutationmatch']=-1;
+    }
+  }
+  else {
+    $di['salutationmatch']=0;
+  }
+}
+
+/* if donation on import rec is similar to existing one */
+foreach($house->donations as $tx) {
+  if($tx['ddate']==$di['ddate'] && $tx['amount']==$di['amount']) {
+    $di['donationmatch']=1;
+    break;
+  }
+}
+
+/* only offer to add phone numbers that aren't already there */
 $phones=uSelect($msi,
    "select number,replace(number,'-','') ufnum ".
    'from di_phones where di_id='.$di['di_id'],
@@ -312,7 +341,6 @@ $smarty->assign('phones',$phones);
 $emails=array('email' => $di['email'],
   'ok'=> array_matchfield($di['email'],$house->emails,'email') ? 1 : 0);
 $smarty->assign('emails',$emails);
-
 
 /* explanation for formatted checkbox for phone numbers */
 $smarty->assign('phone_formatted','If this is checked, the program assumes the number should be presented as entered. If not, the program presents the number as a Canadian/US number: (123) 456-7890');
