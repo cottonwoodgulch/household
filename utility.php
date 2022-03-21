@@ -155,6 +155,7 @@ if(isset($_POST['buttonAction'])) {
         getnames($msi,$ddata['first'],$ddata['last'],$di_id);
         // try to find phone numbers in the note field
         getphones($msi,$ddata['contnote'],$di_id);
+        //getemails($msi,$ddata['email'],$di_id);
       }
     }
   }   // buttonAction = Contributions
@@ -390,3 +391,7 @@ function getphones($msi,$contnote,$di_id) {
   }
 }
 ?>
+
+
+
+
