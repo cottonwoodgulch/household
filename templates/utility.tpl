@@ -37,5 +37,9 @@
     <td><input type="date" form="UtilityForm"
        id="DDate" name="DDate" value="{$DefaultDate}"></td>
     </tr>
+    <tr><td><button type="button" form="UtilityForm"
+      onClick="UtilitySubmit('MailList')">
+      Mail List</button></td>
+    <td>Postal Addresses for NFTC</td></tr>
   </table>
 {/block}

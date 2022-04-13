@@ -87,7 +87,8 @@
   {* import record *}
   <div style="border: thin solid black; padding: 10px;">
   <div style="font-weight: bold; font-size: 1.1em;">
-  {$di.fname} {$di.lname} Contribution from Spreadsheet</div>
+  {$di.fname} {$di.lname} Contribution from Spreadsheet
+  ({$di.fy} {$di.recno})</div>
   
   <table class="edit"><tr>
     <input type="hidden" id="value" name="value">
@@ -97,7 +98,7 @@
     {elseif $hid != 0}
         <td><button onClick="di_submit('Update','salutation')"
          type="button"
-         {if $di.salutationmatch<0} style="color: red;"{/if}>
+         {if $di.salutationmatch==0} style="color: red;"{/if}>
         Update</button></td>
     {/if}
     </tr><tr>
@@ -137,7 +138,7 @@
     <tr><td><button onClick="editDonation('{$di.ddate}',
        {$di.amount},'{$di.fund}','{$di.dedication}',0)"
        type="button"
-       {if $di.donationmatch==1}style="color: red;"{/if}>
+       {if $di.donationmatch==0}style="color: red;"{/if}>
        Add</button></td></tr>
     {*<input type="checkbox" name="donation"> Add</td></tr>*}
     {/if}
@@ -171,7 +172,9 @@
       <button type="button" onClick="di_submit('ReLoad')">Re-Load</button>
     </td><td>
       <button type="button" onClick="di_submit('MarkDone')"
-        {if $eof==1}disabled{/if}>Mark Done</button>
+        {if $eof==1}disabled{/if}>Mark Done</button> 
+      <button type="button" 
+        onClick="di_submit('ClearList')">Clear Import List</button>
     </td></tr>
   </table>
   </div>

@@ -286,6 +286,13 @@ if($hid) {
       goto sqlerror;
     }
   }
+  else if($buttonaction == 'ClearList') {
+    //echo "Clear Import List";
+    if(!$msi->query('delete from donationimport')) {
+      buildErrorMessage($ErrMsg,'clear donation imports: ',$msi->error);
+      goto sqlerror;
+    }
+  }
 }
 sqlerror:
 
@@ -301,6 +308,7 @@ foreach($house->addresses as $tx) {
 $smarty->assign('house',$house);
 
 /* if current salutation is reverse (around and) of import */
+$di['salutationmatch']=0;
 if($di['salutation']==$house->hd['salutation']) {
   $di['salutationmatch']=1;
 }
@@ -310,15 +318,13 @@ else {
     /* check if names are reversed */
     if(substr($di['salutation'],$diand+5).' and '.
        substr($di['salutation'],0,$diand)==$house->hd['salutation']) {
-      $di['salutationmatch']=-1;
+      $di['salutationmatch']=1;
     }
-  }
-  else {
-    $di['salutationmatch']=0;
   }
 }
 
 /* if donation on import rec is similar to existing one */
+$di['donationmatch']=0;
 foreach($house->donations as $tx) {
   if($tx['ddate']==$di['ddate'] && $tx['amount']==$di['amount']) {
     $di['donationmatch']=1;

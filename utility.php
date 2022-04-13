@@ -309,6 +309,37 @@ if(isset($_POST['buttonAction'])) {
       $result->free();
     }
   } // buttonAction == Donors
+  else if($buttonaction == 'MailList') {
+    $is_csv=true;
+    if(!$result=$msi->query('select h.mailname, h.salutation,'.
+      'a.street_address_1 address1,'.
+      "ifnull(a.street_address_2,'') address2,".
+      'a.city,a.state,a.postal_code,a.country '.
+      'from households h '.
+      'inner join (select household_id from household_members hmd '.
+      'inner join contacts cd on cd.contact_id=hmd.contact_id '.
+      'where cd.deceased=0 and cd.contact_type_id=1 '.
+      'group by hmd.household_id having count(*) > 0) hnd '.
+      'on hnd.household_id=h.household_id '.
+      'inner join addresses a on a.address_id=h.address_id '.
+      'where a.address_type_id in (1,3,5) '.
+      'and h.address_id in '.
+      '(select distinct address_id from address_associations) '.
+      'order by 8,7')) {
+      buildErrorMessage($ErrMsg,'Mail List query',$msi->error);
+      goto sqlerror;
+    }
+    else {
+      header('Content-Type: text/csv; charset=utf-8');
+      header('Content-Disposition: attachment;');
+      $output = fopen('php://output', 'w');
+      fputcsv($output,array("Mail Name","Salutation","A1","A2",      
+         "City","State","Zip","Country",),"\t");
+      foreach($result as $cx)fputcsv($output, $cx, "\t");
+      fclose($output);
+      $result->free();
+    }
+  } // buttonAction == MailList
 }      //isset buttonAction
 
 sqlerror:
