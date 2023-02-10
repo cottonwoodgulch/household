@@ -9,7 +9,7 @@
 
 {block name="content"}
   <form id="details_form" action="details.php" method="post"
-     style="border: thin solid black; padding: 1%;">
+     style="border: thin solid black; padding: 1%;" autocomplete="off">
     <table class="edit">
       <tr>
         <td class="label">
@@ -17,7 +17,7 @@
         </td>
         <td>
           <input name="house_name" value="{$house->hd.name}" 
-            id="house_name" size="50" autocomplete="off"/>
+            id="house_name" size="50"/>
         </td>
       </tr>
       <tr>
@@ -26,7 +26,7 @@
         </td>
         <td>
           <input name="salutation" value="{$house->hd.salutation}"
-             size="50" autocomplete="off"/>
+             size="50"/>
         </td>
       </tr>
       <tr>
@@ -34,7 +34,7 @@
           <label for="mail_name">Mail Name</label>
         </td>
         <td>
-          <input name="mail_name" value="{$house->hd.mailname}" size="50" autocomplete="off"/>
+          <input name="mail_name" value="{$house->hd.mailname}" size="50"/>
         </td>
       </tr>
     </table>

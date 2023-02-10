@@ -21,10 +21,29 @@ echo "POST buttonAction, subAction: ".$_POST['buttonAction'].', '.
 if(isset($_POST['buttonAction'])) {
   //echo 'button action: '.$_POST['buttonAction'].'<br>';
   $buttonaction=$_POST['buttonAction'];
-  if($buttonaction == 'Update' || $buttonaction == 'MarkDone') {
-    // if MarkDone, set done=1
+  if($buttonaction == 'Update') {
     // redisplay, $hid, $fy, $recno stay the same
     $qwhere="where fy='$fy' && recno=$recno";
+  }
+  else if($buttonaction == 'MarkDone') {
+    //echo "MarkDone fy,recno, hid: $fy, $recno, $hid<br>";
+    if(!$msi->query('update donationimport set done=1 '.
+       "where fy='$fy' and recno=$recno")) {
+      buildErrorMessage($ErrMsg,'mark done: ',$msi->error);
+      goto sqlerror;
+    }
+    // redisplay, $hid, $fy, $recno stay the same
+    //$qwhere="where fy='$fy' && !done";
+    $qwhere="where fy='$fy' && recno>$recno && !done";
+  }
+  else if($buttonaction == 'ClearList') {
+    //echo "Clear Import List";
+    if(!$msi->query('delete from donationimport')) {
+      buildErrorMessage($ErrMsg,'clear donation imports: ',$msi->error);
+      goto sqlerror;
+    }
+    // redisplay, $hid, $fy, $recno stay the same
+    $qwhere="where fy='$fy'";
   }
   else if($buttonaction == 'Next') {
     $hid=0;
@@ -276,21 +295,6 @@ if($hid) {
         }
       }
       break;
-    }
-  }
-  else if($buttonaction == 'MarkDone') {
-    //echo "MarkDone fy,recno, hid: $fy, $recno, $hid<br>";
-    if(!$msi->query('update donationimport set done=1 '.
-       "where fy='$fy' and recno=$recno")) {
-      buildErrorMessage($ErrMsg,'mark done: ',$msi->error);
-      goto sqlerror;
-    }
-  }
-  else if($buttonaction == 'ClearList') {
-    //echo "Clear Import List";
-    if(!$msi->query('delete from donationimport')) {
-      buildErrorMessage($ErrMsg,'clear donation imports: ',$msi->error);
-      goto sqlerror;
     }
   }
 }

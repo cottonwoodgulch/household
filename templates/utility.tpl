@@ -37,6 +37,15 @@
     <td><input type="date" form="UtilityForm"
        id="DDate" name="DDate" value="{$DefaultDate}"></td>
     </tr>
+
+    <tr><td><button type="button" form="UtilityForm"
+      onClick="UtilitySubmit('LYBUNT')">LYBUNT</button></td>
+    <td>Current year donation < last year's</td>
+    <td class="label">As of: </td>
+    <td><input type="date" form="UtilityForm"
+       id="LYBUNTDate" name="LYBUNTDate" value="{$DefaultDate}"></td>
+    </tr>
+
     <tr><td><button type="button" form="UtilityForm"
       onClick="UtilitySubmit('MailList')">
       Mail List</button></td>
