@@ -37,9 +37,10 @@ if(isset($_GET['value'])){
   $is_first=true;
   foreach($st as $wx) {
     if(!$is_first) $query.=' && ';
+    $query.="locate('$wx',lower(concat(ifnull(c.first_name,''),ifnull(c.middle_name,''),ifnull(c.nickname,''),ifnull(c.primary_name,'')))) >0";
+/* old version:
     $wx="'".$wx."%'";
-    $query.="(lower(c.first_name) like $wx || lower(c.middle_name) like $wx || ".
-        "lower(c.nickname) like $wx || lower(c.primary_name) like $wx)";
+    $query.="(lower(c.first_name) like $wx || lower(c.middle_name) like $wx || lower(c.nickname) like $wx || lower(c.primary_name) like $wx)";*/
     $is_first=false;
   }
   if(!$result=$msi->query($query)) {
