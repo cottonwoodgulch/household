@@ -40,7 +40,8 @@
 
     <tr><td><button type="button" form="UtilityForm"
       onClick="UtilitySubmit('LYBUNT')">LYBUNT</button></td>
-    <td>Current year donation < last year's</td>
+    <td>Donated in previous fiscal year(s) but not since last<br>
+       fiscal year end</td>
     <td class="label">As of: </td>
     <td><input type="date" form="UtilityForm"
        id="LYBUNTDate" name="LYBUNTDate" value="{$DefaultDate}"></td>
