@@ -39,17 +39,29 @@
     </tr>
 
     <tr><td><button type="button" form="UtilityForm"
-      onClick="UtilitySubmit('LYBUNT')">LYBUNT</button></td>
-    <td>Donated in previous fiscal year(s) but not since last<br>
-       fiscal year end</td>
-    <td class="label">As of: </td>
-    <td><input type="date" form="UtilityForm"
-       id="LYBUNTDate" name="LYBUNTDate" value="{$DefaultDate}"></td>
-    </tr>
-
-    <tr><td><button type="button" form="UtilityForm"
       onClick="UtilitySubmit('MailList')">
       Mail List</button></td>
     <td>Postal Addresses for NFTC</td></tr>
+
+    <tr><td>&nbsp;</td></tr>
+    <tr><td colspan="2">For Appeal as of: <input type="date" form="UtilityForm"
+       id="AppealDate" name="AppealDate" value="{$DefaultDate}"></td>
+    </tr>
+
+    <tr><td><button type="button" form="UtilityForm"
+      onClick="UtilitySubmit('LYBUNT')">LYBUNT</button></td>
+    <td>Donated in previous fiscal year(s) but not since last<br>
+       fiscal year end</td>
+    </tr>
+
+    <tr><td><button type="button" form="UtilityForm"
+      onClick="UtilitySubmit('Current')">Current</button></td>
+    <td>Donated since last fiscal year end</td>
+    </tr>
+
+    <tr><td><button type="button" form="UtilityForm"
+      onClick="UtilitySubmit('Non-Donor')">Non-Donor</button></td>
+      <td>No recent donations</td>
+    </tr>
   </table>
 {/block}

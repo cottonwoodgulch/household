@@ -217,23 +217,6 @@ if(isset($_POST['buttonAction'])) {
        add(new DateInterval('P1D'));
     $bdate="'".$d1beg->format('Y-m-d')."'";
     $edate="'".$d1end->format('Y-m-d')."'";
-    /*echo 'begin, end: '.$d1beg->format('m/d/Y').', '.
-       $d1end->format('m/d/Y').'<br>';
-    echo "begin, end: $bdate, $edate<br>"; */
-    /* get header line
-    if(!$result=$msi->query(
-      "select 'Mail Name',$PrevYE - INTERVAL 3 YEAR c4, $PrevYE - INTERVAL 2 YEAR c3,".
-         "$PrevYE - INTERVAL 1 YEAR c2, $PrevYE c1, $asofdate c0, 'Donation','Name'")) {
-      echo 'LYBUNT header error: '.$msi->error.'<br>';
-      buildErrorMessage($ErrMsg,'LYBUNT header query',$msi->error);
-      goto sqlerror;
-    }
-    else {
-      $rheader1=array('','Year Ending','','','','','Latest','Last');
-      $rheader2=$result->fetch_assoc();
-      $result->free;
-    }
-    */
     if(!$result=$msi->query(
     "select h.mailname,".
        "ifnull(hd1.total,0) d1, ifnull(hd2.total,0) d2,".
@@ -329,7 +312,7 @@ if(isset($_POST['buttonAction'])) {
      *    the period since the most recent FY-end date */
     //echo 'DDate: '.$_POST['DDate'].'<br>';
 
-    $asofdate=new DateTime($_POST['LYBUNTDate']);
+    $asofdate=new DateTime($_POST['AppealDate']);
     $PrevYE=new DateTime($asofdate->format('Y').'-09-30');
 /*
     echo "asofdate: ".$asofdate->format('Y-m-d')."\t";
@@ -349,26 +332,29 @@ if(isset($_POST['buttonAction'])) {
     /* get header line */
     if(!$result=$msi->query(
       "select 'Mail Name',$PrevYE - INTERVAL 3 YEAR c4, $PrevYE - INTERVAL 2 YEAR c3,".
-         "$PrevYE - INTERVAL 1 YEAR c2, $PrevYE c1, $asofdate c0, 'Donation','Name'")) {
+         "$PrevYE - INTERVAL 1 YEAR c2, $PrevYE c1, $asofdate c0, 'Donation','Last Name',
+         'Salutation','Address 1','Address 2','City','State','Zip','Country'")) {
       echo 'LYBUNT header error: '.$msi->error.'<br>';
       buildErrorMessage($ErrMsg,'LYBUNT header query',$msi->error);
       goto sqlerror;
     }
     else {
-      $rheader1=array('','Year Ending','','','','','Latest','Last');
+      $rheader1=array('','Year Ending','','','','','Latest');
       $rheader2=$result->fetch_assoc();
       $result->free;
     }
     if(!$result=$msi->query(
     'select h.mailname,ifnull(hd1.total,0) d1, ifnull(hd2.total,0) d2,'.
        'ifnull(hd3.total,0) d3,ifnull(hd4.total,0) d4, ifnull(hd5.total,0) d5,'.
-       'rl.latest,rl.last '.
+       'rl.latest,rl.last,h.salutation,a.street_address_1 address1,'.
+      "ifnull(a.street_address_2,'') address2,".
+      'a.city,a.state,a.postal_code,a.country '.
   'from households h '.
  'inner join (select distinct hmd.household_id '.
                'from household_members hmd '.
               'inner join contacts cd '.
                  'on cd.contact_id=hmd.contact_id '.
-              'where cd.deceased=0) hdx '.
+              'where cd.deceased=0 and cd.contact_type_id=1) hdx '.
        'on hdx.household_id=h.household_id '.
   'left join (select hm0.household_id, '.
      'floor(sum(d0.amount)) total '.
@@ -413,7 +399,8 @@ if(isset($_POST['buttonAction'])) {
        'on hd5.household_id=h.household_id '.
   'left join (select h.household_id, '.
                     "concat(date_format(rdx.maxdate,'%m/%d/%y'),' ',".
-                    'format(rx.amount,0)) latest, rdx.primary_name last '.
+                    'format(rx.amount,0)) latest,'.
+                    'rdx.primary_name last '.
                'from households h '.
                'left join (select rhm.household_id,sum(rhd.amount) amount,rhd.ddate '.
                             'from household_members rhm '.
@@ -421,7 +408,8 @@ if(isset($_POST['buttonAction'])) {
                 'on rhd.primary_donor_id=rhm.contact_id '.
               'group by rhm.household_id,rhd.ddate) rx '.
                  'on rx.household_id=h.household_id '.
-              'inner join (select rhm.household_id,max(rhd.ddate) maxdate, cx.primary_name '.
+              'inner join (select rhm.household_id,max(rhd.ddate) maxdate,'.
+                  'cx.primary_name '.
                'from household_members rhm '.
               'inner join hdonations rhd '.
                 'on rhd.primary_donor_id=rhm.contact_id '.
@@ -431,6 +419,7 @@ if(isset($_POST['buttonAction'])) {
        'on rx.household_id=rdx.household_id '.
       'and rx.ddate=rdx.maxdate) rl '.
     'on rl.household_id=h.household_id '.
+  'left join addresses a on a.address_id=h.address_id '.
  'where (ifnull(hd1.total,0)>0 or ifnull(hd2.total,0)>0 or ifnull(hd3.total,0)>0 '.
         'or ifnull(hd4.total,0)>0) and ifnull(hd5.total,0)<=0 '.
  'order by rl.last')) {
@@ -451,8 +440,123 @@ if(isset($_POST['buttonAction'])) {
       fclose($output);
       $result->free();
     }
-
   } // buttonAction == LYBUNT
+  else if($buttonaction == 'Current') {
+    $is_csv=true;
+    /* if household gave since the most recent FY-end date */
+    //echo 'DDate: '.$_POST['DDate'].'<br>';
+
+    $asofdate=new DateTime($_POST['AppealDate']);
+    $PrevYE=new DateTime($asofdate->format('Y').'-09-30');
+/*
+    echo "asofdate: ".$asofdate->format('Y-m-d')."\t";
+    echo "PrevYE: ".$PrevYE->format('Y-m-d')."\t";
+*/
+    if($asofdate<=$PrevYE) {
+      //echo "asofdate <= cutoff\t";
+      $PrevYE->sub(new DateInterval('P1Y'));
+    }
+    $asofdate=$asofdate->format('Y-m-d');
+    $PrevYE=$PrevYE->format('Y-m-d');
+    /* get header lines */
+    $rheader1=array('As of',"$asofdate",'Donated since',"$PrevYE");
+    $rheader2=array('Mail Name','Salutation',
+         'Address 1','Address 2','City','State','Zip','Country');
+    $asofdate="'".$asofdate."'";
+    $PrevYE="'".$PrevYE."'";
+
+    if(!$result=$msi->query('select h.mailname, h.salutation,'.
+      "a.street_address_1 address1,ifnull(a.street_address_2,'') address2,".
+      'a.city,a.state,a.postal_code,a.country '.
+      'from households h '.
+     'inner join (select distinct hmd.household_id '.
+                  'from household_members hmd '.
+                 'inner join contacts cd on cd.contact_id=hmd.contact_id '.
+                 'where cd.deceased=0 and cd.contact_type_id=1) hdx '.
+        'on hdx.household_id=h.household_id '.
+      'left join (select hm1.household_id,sum(d1.amount) total '.
+                   'from household_members hm1 '.
+                  'inner join hdonations d1 on d1.primary_donor_id=hm1.contact_id '.
+                  "where d1.ddate between $PrevYE and $asofdate ".
+                  'group by 1) hdd '.
+        'on hdd.household_id=h.household_id '.
+      'left join addresses a on a.address_id=h.address_id '.
+     'where ifnull(hdd.total,0)>0')) {
+      echo 'error: '.$msi->error.'<br>';
+      buildErrorMessage($ErrMsg,'NON-LYBUNT query',$msi->error);
+      goto sqlerror;
+    }
+    else {
+      $rx=$result->fetch_assoc();
+      header('Content-Type: text/csv; charset=utf-8');
+      header('Content-Disposition: attachment;');
+      $output = fopen('php://output', 'w');
+      fputcsv($output,$rheader1,"\t");
+      fputcsv($output,$rheader2,"\t");
+      /*fputcsv($output,array("Mail Name",
+         "C-4","C-3","C-2","C-1","Current","Latest"),"\t");*/
+      foreach($result as $cx)fputcsv($output, $cx, "\t");
+      fclose($output);
+      $result->free();
+    }
+  } // buttonAction == Current
+
+  else if($buttonaction == 'Non-Donor') {
+    $is_csv=true;
+    /* if household has not given since previous FY end - 4 */
+    //echo 'DDate: '.$_POST['DDate'].'<br>';
+    $asofdate=new DateTime($_POST['AppealDate']);
+    $BeginDate=new DateTime($asofdate->format('Y').'-09-30');
+
+    if($asofdate<=$BeginDate) {
+      $BeginDate->sub(new DateInterval('P5Y'));
+    }
+    else {
+      $BeginDate->sub(new DateInterval('P4Y'));
+    }
+    $BeginDate=$BeginDate->format('Y-m-d');
+    /* get header lines */
+    $rheader1=array('No Donations Since',$BeginDate);
+    $rheader2=array('Mail Name','Salutation',
+         'Address 1','Address 2','City','State','Zip','Country');
+    $BeginDate="'".$BeginDate."'";
+
+    if(!$result=$msi->query('select h.mailname, h.salutation,'.
+      "a.street_address_1 address1,ifnull(a.street_address_2,'') address2,".
+      'a.city,a.state,a.postal_code,a.country '.
+      'from households h '.
+     'inner join (select distinct hmd.household_id '.
+                  'from household_members hmd '.
+                 'inner join contacts cd on cd.contact_id=hmd.contact_id '.
+                 'where cd.deceased=0 and cd.contact_type_id=1) hdx '.
+        'on hdx.household_id=h.household_id '.
+      'left join (select hm1.household_id,sum(d1.amount) total '.
+                   'from household_members hm1 '.
+                  'inner join hdonations d1 on d1.primary_donor_id=hm1.contact_id '.
+                  "where d1.ddate >$BeginDate ".
+                  'group by 1) hdd '.
+        'on hdd.household_id=h.household_id '.
+      'inner join addresses a on a.address_id=h.address_id '.
+     'where hdd.total is null')) {
+      echo 'error: '.$msi->error.'<br>';
+      buildErrorMessage($ErrMsg,'NON-LYBUNT query',$msi->error);
+      goto sqlerror;
+    }
+    else {
+      $rx=$result->fetch_assoc();
+      header('Content-Type: text/csv; charset=utf-8');
+      header('Content-Disposition: attachment;');
+      $output = fopen('php://output', 'w');
+      fputcsv($output,$rheader1,"\t");
+      fputcsv($output,$rheader2,"\t");
+      /*fputcsv($output,array("Mail Name",
+         "C-4","C-3","C-2","C-1","Current","Latest"),"\t");*/
+      foreach($result as $cx)fputcsv($output, $cx, "\t");
+      fclose($output);
+      $result->free();
+    }
+  } // buttonAction == Non-Donor
+
   else if($buttonaction == 'MailList') {
     $is_csv=true;
     if(!$result=$msi->query('select h.mailname, h.salutation,'.
