@@ -68,6 +68,7 @@ function editContact(contact_id) {
     if($('#gender').html().length>0) {
       $('#'+($('#gender').html())).prop('checked',true);
     }
+    $('#EditGenderID').val($('#gender_id').html());
     $('#EditDeceased').prop('checked',
       $('#deceased').html() == 'yes');
     $('#EditUsername').val($('#username').val());
@@ -85,6 +86,7 @@ function editContact(contact_id) {
     $('#EditDOB').val('');
     $('#EditGender').val('');
     //$('#Male').prop('checked',false);
+    $('#EditGenderID').val('');
     $('#EditDeceased').prop('checked',false);
     $('#EditUsername').val('');
     $('#EditRedRocks').prop('checked',false);

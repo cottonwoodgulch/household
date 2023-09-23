@@ -36,6 +36,9 @@
           <td class="label">Gender:</td>
           <td id="gender">{$cdata->Contact.gender}</td>
         </tr><tr>
+          <td class="label">Gender ID:</td>
+          <td id="gender_id">{$cdata->Contact.gender_id}</td>
+        </tr><tr>
           <td class="label">Deceased:</td>
           <td id="deceased">{$cdata->Contact.deceased}</td>
         </tr><tr>

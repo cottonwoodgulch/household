@@ -32,8 +32,8 @@ if(isset($_POST['buttonAction'])) {
       if(!$stmt=$msi->prepare('insert into contacts '.
         '(contact_type_id,primary_name,first_name,middle_name,'.
         'degree_id,nickname,birth_date,gender,deceased,username,'.
-        'password,password_reset,redrocks) '.
-        'values (?,?,?,?,?,?,?,?,?,?,?,?,?)')) {
+        'password,password_reset,redrocks,gender_id) '.
+        'values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)')) {
         buildErrorMessage($ErrMsg,
           'prep add contact: ',$msi->error);
         goto sqlerror;
@@ -51,11 +51,11 @@ if(isset($_POST['buttonAction'])) {
       }
       $pw_reset=0;
       $redrocks=isset($_POST['EditRedRocks']);
-      if(!$stmt->bind_param('isssisssissii',$_POST['EditContactType'],
+      if(!$stmt->bind_param('isssisssissiis',$_POST['EditContactType'],
           $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
           $_POST['EditDegree'],$_POST['EditNickname'],
           $dob,$_POST['EditGender'],$deceased,
-          $username,$pwhash,$pw_reset,$redrocks)) {
+          $username,$pwhash,$pw_reset,$redrocks,$_POST['EditGenderID'])) {
         buildErrorMessage($ErrMsg,
            'bind add contact query params: ',$msi->error);
         goto sqlerror;
@@ -192,7 +192,7 @@ if(isset($_POST['buttonAction'])) {
         'set contact_type_id=?,primary_name=?,first_name=?,'.
         'middle_name=?,degree_id=?,nickname=?,birth_date=?,'.
         'gender=?,deceased=?,username=?,'.
-        'redrocks=? where contact_id=?')) {
+        'redrocks=?,gender_id=? where contact_id=?')) {
         buildErrorMessage($ErrMsg,
           'prep edit contact query: ',$msi->error);
         goto sqlerror;
@@ -202,11 +202,11 @@ if(isset($_POST['buttonAction'])) {
       $username=!strlen($_POST['EditUsername']) ? null :
          $_POST['EditUsername'];
       $redrocks=isset($_POST['EditRedRocks']);
-      if(!$stmt->bind_param('isssisssisii',$_POST['EditContactType'],
+      if(!$stmt->bind_param('isssisssisisi',$_POST['EditContactType'],
           $_POST['EditLast'],$_POST['EditFirst'],$_POST['EditMiddle'],
           $_POST['EditDegree'],$_POST['EditNickname'],
           $dob,$_POST['EditGender'],$deceased,
-          $username,$redrocks,$cid)) {
+          $username,$redrocks,$_POST['EditGenderID'],$cid)) {
         buildErrorMessage($ErrMsg,
            'bind add contact query params: ',$msi->error);
         goto sqlerror;

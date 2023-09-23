@@ -20,7 +20,7 @@ class IData {
        "if(c.birth_date is null || c.birth_date='0000-00-00',".
            "'',c.birth_date) dob, ifnull(c.gender,'') gender,".
        "if(c.deceased,'yes','no') deceased,c.username,".
-       "c.redrocks,h.mailname,".
+       "c.redrocks,c.gender_id,h.mailname,".
        "ifnull(h.household_id,0) household_id ".
        "from contacts c left join contact_types ct ".
        "on ct.contact_type_id=c.contact_type_id ".
