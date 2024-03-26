@@ -298,4 +298,16 @@ function phone_list($msi,$household_id,&$ErrMsg) {
   return $plist;
 }
 
+function distance ($lat1, $long1, $lat2, $long2) {
+	// this math is cribbed from 4 Guys From Rolla and is not verified
+	// http://www.4guysfromrolla.com/webtech/code/2points.asp.html
+	$x = (sin (deg2rad ($lat1)) * sin (deg2rad ($lat2)) + cos (deg2rad ($lat1)) * cos (deg2rad ($lat2)) * cos (abs ((deg2rad( $long2) - deg2rad ($long1)))));
+	$x = atan ((sqrt (1 - pow ($x, 2))) / $x);
+
+	return (1.852 * 60.0 * (($x / pi ()) * 180.0)) / 1.609344;
+	// statute miles: 1.609344
+	// nautical miles: 1.0
+	// kilometers: 1.852
+}
+
 ?>

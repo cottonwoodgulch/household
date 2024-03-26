@@ -63,5 +63,17 @@
       onClick="UtilitySubmit('Non-Donor')">Non-Donor</button></td>
       <td>No recent donations</td>
     </tr>
+
+    <tr><td>&nbsp;</td></tr>
+    <tr><td colspan="2">Regional Events</td></tr>
+
+    <tr><td><button type="button" form="UtilityForm"
+      onClick="UtilitySubmit('ZipDonor')">Zip Donors</button></td>
+    <td>Donors within <input form="UtilityForm" id="radius" name="radius"
+        size="3"> miles
+        of zip code <input form="UtilityForm" id="zip" name="zip" size="12">
+        as of <input type="date" form="UtilityForm" id="ZipDonorDate"
+        name="ZipDonorDate" value="{$DefaultDate}"></td>
+    </tr>
   </table>
 {/block}

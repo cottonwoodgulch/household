@@ -558,6 +558,7 @@ if(isset($_POST['buttonAction'])) {
   } // buttonAction == Non-Donor
 
   else if($buttonaction == 'MailList') {
+    /* at least 1 living member, selected address is valid */
     $is_csv=true;
     if(!$result=$msi->query('select h.mailname, h.salutation,'.
       'a.street_address_1 address1,'.
@@ -588,6 +589,89 @@ if(isset($_POST['buttonAction'])) {
       $result->free();
     }
   } // buttonAction == MailList
+  else if($buttonaction == 'ZipDonor') {
+    /* info on donors w/in radius of zip as of ZipDonorDate */
+    $is_csv=true;
+    /* get all living donor postal codes */
+    if(!$result=$msi->query(
+       'select distinct left(a.postal_code,5) postal_code,'.
+           'nz.latitude,nz.longitude '.
+         'from livedonation ld '.
+        'inner join households h on h.household_id=ld.household_id '.
+        'inner join addresses a on a.address_id=h.address_id '.
+        'inner join newzip nz on nz.zip=left(a.postal_code,5)')) {
+      buildErrorMessage($ErrMsg,'donor zip query',$msi->error);
+      goto sqlerror;
+    }
+    /* get lat & long of specified zip */
+    $zip=substr($_POST['zip'],0,5);
+    if(!$sres=$msi->query('select latitude,longitude '.
+        "from newzip where zip=$zip")) {
+      buildErrorMessage($ErrMsg,'zip lookup error',$msi->error);
+      goto sqlerror;
+    }
+    if($sres->num_rows == 0) {
+      buildErrorMessage($ErrMsg,'specified zip not found: ',$zip);
+      goto sqlerror;
+    }
+    $cx=$sres->fetch_assoc();
+    $latitude=$cx['latitude'];
+    $longitude=$cx['longitude'];
+    unset($cx);
+    $sres->free();
+    //echo "got lat and long for specd postal code<br />";
+    /* get donor info for zips within specified radius */
+    $radius=$_POST['radius'];
+    /* open csv output */
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment;');
+    $output = fopen('php://output', 'w');
+    fputcsv($output,array("Mail Name","City","Zip","El Morro","> 1K",
+       "> 2K","> 5K","ID","\t"));
+    while($cx=$result->fetch_assoc()) {
+      if(distance($cx['latitude'],$cx['longitude'],$latitude,$longitude)
+         <= $radius) {
+        /*echo "cx postal_code, latitude: ".$cx['postal_code'].', '.
+           $cx['latitude'].'<br/>';*/
+        if(!$sres=$msi->query('select h.mailname,'.
+           "concat(a.city,' ',a.state) town,a.postal_code zip,mx.elmorro,".
+           "ifnull(gt1x.gt1k,'') gt1K, ifnull(gt2x.gt2k,'') gt2K,". "ifnull(gt5x.gt5k,'') gt5K,h.household_id ".
+           'from households h '.
+           'inner join addresses a on a.address_id=h.address_id '.
+           "inner join (select ldm.household_id,if(count(*)>=5,'*','') elmorro ".
+           'from livedonation ldm '.
+           'where ldm.ddate > now() - interval 5 year '.
+           'group by ldm.household_id) mx '.
+           'on mx.household_id=h.household_id '.
+           'left join (select ld1.household_id,count(*) gt1k '.
+           'from livedonation ld1 '.
+           'where ld1.ddate > now() - interval 5 year and ld1.amount>=1000 '.
+           'group by ld1.household_id) gt1x '.
+           'on gt1x.household_id=h.household_id '.
+           'left join (select ld2.household_id,count(*) gt2k '.
+           'from livedonation ld2 '.
+           'where ld2.ddate > now() - interval 5 year and ld2.amount>=2000 '.
+           'group by ld2.household_id) gt2x '.
+           'on gt2x.household_id=h.household_id '.
+           'left join (select ld5.household_id,count(*) gt5k '.
+           'from livedonation ld5 '.
+           'where ld5.ddate > now() - interval 5 year and ld5.amount>=5000 '.
+           'group by ld5.household_id) gt5x '.
+           'on gt5x.household_id=h.household_id '.
+           "where a.postal_code=".$cx['postal_code'])) {
+          buildErrorMessage($ErrMsg,'donor info lookup error',$msi->error);
+          goto sqlerror;
+        }
+        foreach($sres as $tx)fputcsv($output, $tx, "\t");
+        /*while($tx = $sres->fetch_assoc()) {
+          echo $tx['mailname'].' '.$tx['zip'].'<br />';
+        }*/
+        $sres->free();
+      }  // if within specified radius
+    }  // foreach zip that has donors
+    fclose($output);
+    $result->free();
+  } // buttonAction == ZipDonor
 }      //isset buttonAction
 
 sqlerror:
@@ -670,7 +754,3 @@ function getphones($msi,$contnote,$di_id) {
   }
 }
 ?>
-
-
-
-
